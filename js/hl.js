@@ -1,4 +1,4 @@
-/* hl.js — tiny syntax highlighter, annotation parser, line diff, complexity maths */
+/* hl.js, tiny syntax highlighter, annotation parser, line diff, complexity maths */
 (function(){
 const PY=new Set('def class return if elif else for while in not and or is None True False import from as with try except finally raise lambda pass break continue yield global nonlocal assert del async await'.split(' '));
 const JS=new Set('function return if else for while do of in new const let var class extends this null undefined true false typeof instanceof try catch finally throw async await break continue switch case default yield static super delete void'.split(' '));

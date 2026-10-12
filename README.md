@@ -1,4 +1,4 @@
-# DryRun — see every algorithm run
+# DryRun, see every algorithm run
 
 A static site (HTML + CSS + vanilla JS, no build step, no backend). Paste a LeetCode URL → get a beginner solution,
 an optimized solution, an animated trace, a diff "morph" between them, a complexity race, a memory trick and Anki cards.
@@ -16,7 +16,7 @@ Deploy the folder as-is to GitHub Pages, Cloudflare Pages, Netlify or any static
 site as one self-contained file (only the Google Fonts link is external; it falls back gracefully offline).
 
 ## Tracks
-`js/data/tracks.js` — Data Science, AI Engineer, Forward Deployed Engineer, AI/ML Researcher, Software Engineer,
+`js/data/tracks.js`, Data Science, AI Engineer, Forward Deployed Engineer, AI/ML Researcher, Software Engineer,
 Backend, Frontend, Core Developer. Edit the `ids` arrays (25 slugs each) to re-curate.
 
 ## Add a problem
@@ -36,10 +36,10 @@ trick, real, viz, lang ('py' default | 'js'), test + exp (python) or jt + je [+ 
 ## AI for new problems
 Settings (key icon, top right) accepts any OpenAI-compatible `/chat/completions` endpoint, plus Anthropic directly.
 Presets: Groq, Google Gemini, OpenRouter, Cerebras, Mistral, GitHub Models, NVIDIA NIM, Hugging Face, DeepSeek, Qwen,
-OpenAI, Anthropic, Pollinations (experimental, may need credits) and Custom. Free tiers and model names change often —
+OpenAI, Anthropic, Pollinations (experimental, may need credits) and Custom. Free tiers and model names change often,
 use *List models* or edit the Model field. Keys live in `localStorage` and go only to the provider you choose.
 Generated problems are cached in the browser (`dr-mine`) and can be exported as JSON or Anki cards.
-**AI output is unverified — read the code before trusting it.**
+**AI output is unverified, read the code before trusting it.**
 
 ## Anki
 * *Download cards* → tab-separated `.txt` (2 cards per problem: pattern recall, write-the-code) → Anki *File → Import*.

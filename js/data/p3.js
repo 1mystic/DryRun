@@ -1,4 +1,4 @@
-/* p3 — linked lists, trees, tries */
+/* p3, linked lists, trees, tries */
 (function(){const r=String.raw,f=DR.f;
 DR.add(
 {id:'reverse-linked-list',n:206,t:'Reverse Linked List',d:'E',tg:['Linked List'],pat:'Flip Arrows with prev / cur',
@@ -130,9 +130,9 @@ o:r`class Solution:
 trick:'"Clone with extra pointers" → park each copy right after its original; then copy.random = original.random.next. No map needed.',
 real:'Deep-copying object graphs (config trees, ASTs) without a lookup table.',
 viz:{flow:[f('Goal: copy every node AND its random pointer. Idea: place each copy right behind its original.',['7','13','11'],{aux:[['original chain','7 → 13 → 11']]}),
- f('Step 1 – weave: 7 → 7′ → 13 → 13′ → 11 → 11′',['7','7′','13','13′','11','11′'],{h:[1,3,5]}),
- f('Step 2 – set randoms: copy.random = original.random.next. 13.random = 7 → 13′.random = 7′.',['7','7′','13','13′','11','11′'],{h:[3],g:[1],aux:[['rule','copy.random = orig.random.next']]}),
- f('Step 3 – unweave: restore the original chain and extract the copy chain.',['7′','13′','11′'],{g:[0,1,2],aux:[['result','7′ → 13′ → 11′ (randoms intact)']]})]},
+ f('Step 1 - weave: 7 → 7′ → 13 → 13′ → 11 → 11′',['7','7′','13','13′','11','11′'],{h:[1,3,5]}),
+ f('Step 2 - set randoms: copy.random = original.random.next. 13.random = 7 → 13′.random = 7′.',['7','7′','13','13′','11','11′'],{h:[3],g:[1],aux:[['rule','copy.random = orig.random.next']]}),
+ f('Step 3 - unweave: restore the original chain and extract the copy chain.',['7′','13′','11′'],{g:[0,1,2],aux:[['result','7′ → 13′ → 11′ (randoms intact)']]})]},
 test:`ns=[Node(7),Node(13),Node(11)]\nfor i in range(2): ns[i].next=ns[i+1]\nns[1].random=ns[0]; ns[2].random=ns[0]\nc=Solution().copyRandomList(ns[0])\ncs=[]\nx=c\nwhile x:\n    cs.append(x); x=x.next\nidx={id(n):i for i,n in enumerate(cs)}\nold={id(n) for n in ns}\nres=([[n.val, idx.get(id(n.random))] for n in cs], all(id(n) not in old for n in cs))`,exp:`([[7,None],[13,0],[11,0]],True)`},
 
 {id:'invert-binary-tree',n:226,t:'Invert Binary Tree',d:'E',tg:['Tree','DFS'],pat:'Swap Children Everywhere',
@@ -244,7 +244,7 @@ trick:'"BST check" → comparing to the parent is not enough. Carry an (lo, hi) 
 real:'Validating ordered index invariants (B-tree style).',
 viz:{tree:[5,1,4,null,null,3,6],flow:[f('Each node must fall inside (lo, hi) inherited from its ancestors.',null,{th:[0],aux:[['root bounds','(−∞, ∞)']]}),
  f('1 is inside (−∞, 5) ✓',null,{th:[1],tg:[0],aux:[['bounds','(−∞, 5)']]}),
- f('4 must be inside (5, ∞) — but 4 < 5 ✗. Not a valid BST.',null,{th:[2],tg:[0,1],aux:[['bounds','(5, ∞)'],['4 is','too small']]})]},
+ f('4 must be inside (5, ∞), but 4 < 5 ✗. Not a valid BST.',null,{th:[2],tg:[0,1],aux:[['bounds','(5, ∞)'],['4 is','too small']]})]},
 test:`res=[Solution().isValidBST(T([2,1,3])),Solution().isValidBST(T([5,1,4,None,None,3,6])),Solution().isValidBST(T([5,4,6,None,None,3,7]))]`,exp:`[True,False,False]`},
 
 {id:'lowest-common-ancestor-of-a-binary-tree',n:236,t:'Lowest Common Ancestor of a Binary Tree',d:'M',tg:['Tree','DFS'],pat:'Post-order: Found on Both Sides',
@@ -408,7 +408,7 @@ o:r`class WordDictionary:
                 return any(dfs(child, i + 1) for k, child in node.items() if k != "$")  #! wildcard: try every branch
             return c in node and dfs(node[c], i + 1)
         return dfs(self.root, 0)`,
-trick:'"Pattern with blanks" → trie for the letters, DFS that fans out only at a "." — everywhere else it follows one path.',
+trick:'"Pattern with blanks" → trie for the letters, DFS that fans out only at a ".", everywhere else it follows one path.',
 real:'Wildcard routing and fuzzy matching of identifiers.',
 viz:{sim:'trie',words:['bad','dad','mad'],query:'ba'},
 test:`w=WordDictionary()\nfor x in ("bad","dad","mad"): w.addWord(x)\nres=[w.search("pad"),w.search("bad"),w.search(".ad"),w.search("b..")]`,exp:`[False,True,True,True]`},

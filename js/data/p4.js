@@ -1,4 +1,4 @@
-/* p4 — graphs, union-find, backtracking */
+/* p4, graphs, union-find, backtracking */
 (function(){const r=String.raw,f=DR.f;
 const grid=(rows,cls)=>({v:rows,c:rows.map((row,i)=>row.map((x,j)=>(cls&&cls(i,j,x))||''))});
 DR.add(
@@ -30,7 +30,7 @@ o:r`class Solution:
                 if grid[r][c] == "1":
                     count += 1  #! unvisited land = a brand-new island
                     stack = [(r, c)]
-                    grid[r][c] = "0"  #! "sink" the land in place — no visited set
+                    grid[r][c] = "0"  #! "sink" the land in place, no visited set
                     while stack:  #! iterative DFS: no recursion-depth limit
                         x, y = stack.pop()
                         for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
@@ -147,7 +147,7 @@ o:r`class Solution:
                 if indeg[nxt] == 0:
                     q.append(nxt)
         return order if len(order) == numCourses else []`,
-trick:'Same peel-off-zero-in-degree loop as Course Schedule — just record the order you peel in.',
+trick:'Same peel-off-zero-in-degree loop as Course Schedule, just record the order you peel in.',
 real:'Dependency resolution in package managers and task orchestrators (Airflow-style DAG order).',
 viz:{sim:'topo',nodes:[[260,30],[110,120],[410,120],[260,215]],edges:[[0,1],[0,2],[1,3],[2,3]],dir:true},
 test:`pre=[[1,0],[2,0],[3,1],[3,2]]\no=Solution().findOrder(4,pre)\npos={c:i for i,c in enumerate(o)}\nres=(len(o)==4 and all(pos[b]<pos[a] for a,b in pre),Solution().findOrder(2,[[0,1],[1,0]]))`,exp:`(True,[])`},
@@ -202,7 +202,7 @@ b:r`class Solution:
                 return
             if used == k + 1:
                 return
-            for nxt, w in adj[city]:  #? explores every route up to k+1 flights — exponential
+            for nxt, w in adj[city]:  #? explores every route up to k+1 flights, exponential
                 dfs(nxt, used + 1, cost + w)
         dfs(src, 0, 0)
         return -1 if best == float("inf") else best`,
@@ -335,7 +335,7 @@ o:r`class Solution:
         return [[owner[root]] + sorted(es) for root, es in groups.items()]`,
 trick:'"Merge records that share a key" → treat each shared key as a union. One union-find over the emails, then group by root.',
 real:'Entity resolution: collapsing duplicate customer profiles in a CRM or feature store.',
-viz:{flow:[f('Four accounts. Accounts 1 and 2 share johnsmith@… — so they belong to the same person.',['A1','A2','A3','A4'],{aux:[['A1','john_newyork, johnsmith'],['A2','johnsmith, john00'],['A3','mary'],['A4','johnnybravo']]}),
+viz:{flow:[f('Four accounts. Accounts 1 and 2 share johnsmith@…, so they belong to the same person.',['A1','A2','A3','A4'],{aux:[['A1','john_newyork, johnsmith'],['A2','johnsmith, john00'],['A3','mary'],['A4','johnnybravo']]}),
  f('Union the emails of A1 under one root.',['A1','A2','A3','A4'],{h:[0],aux:[['group 1','john_newyork','johnsmith']]}),
  f('A2 contains johnsmith (already in group 1) → john00 joins group 1.',['A1','A2','A3','A4'],{h:[1],g:[0,1],aux:[['group 1','john_newyork','johnsmith','john00']]}),
  f('A3 and A4 share nothing → they stay separate. Result: 3 merged accounts, emails sorted.',['A1','A2','A3','A4'],{g:[0,1,2,3],aux:[['group 1','john00','john_newyork','johnsmith'],['group 2','mary'],['group 3','johnnybravo']]})]},
@@ -476,7 +476,7 @@ o:r`class Solution:
         go(0)
         return res`,
 trick:'"One queen per row" → recurse row by row; a square is safe if its column, its (r−c) diagonal and its (r+c) diagonal are free.',
-real:'Constraint satisfaction and pruning search — the idea behind SAT/CSP solvers.',
+real:'Constraint satisfaction and pruning search, the idea behind SAT/CSP solvers.',
 viz:{flow:(()=>{const Q=(qs,bad)=>grid([0,1,2,3].map(r=>[0,1,2,3].map(c=>qs.some(q=>q[0]===r&&q[1]===c)?'♛':'')),(r,c)=>{if(bad&&bad.some(b=>b[0]===r&&b[1]===c))return 'bad';const k=qs.findIndex(q=>q[0]===r&&q[1]===c);return k<0?'':(k===qs.length-1?'on':'done');});
  return [f('4 queens, one per row. Place row by row; skip any square whose column or diagonal is taken.',null,{grid:Q([])}),
  f('Row 0 → try column 0.',null,{grid:Q([[0,0]])}),

@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DRYRUN — see every algorithm run</title>
+<title>DRYRUN: see every algorithm run</title>
 <meta name="description" content="Paste a LeetCode link. Get a beginner and an optimized solution, an animated step-by-step trace, a memory trick and an Anki card. 200 curated problems across 8 role tracks.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' rx='2' fill='%230f1013' stroke='%23c8f542' stroke-width='2'/%3E%3Cpath d='M10 7l7 5-7 5z' fill='%23c8f542'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@300..700&display=swap" rel="stylesheet">
 <style>
-/* DRYRUN — design system. Dark-first, cream ink, volt-lime accent, hard offset shadows. */
+/* DRYRUN design system. Dark-first, cream ink, volt-lime accent, hard offset shadows. */
 :root{
   --bg:#0f1013;--bg2:#17181c;--bg3:#1f2126;--ink:#ece8dc;--mute:#8e8b82;--acc:#c8f542;--acc-ink:#11130a;
   --line:#ece8dc;--shadow:#3a3c33;--red:#ff6b57;--ok:#8be36b;--blue:#6ab7ff;--glow:rgba(200,245,66,.07);
@@ -34,8 +34,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;font-size:14px;letter-spacing:.02em}
 .brand svg{width:24px;height:24px;color:var(--acc)}
 .top-actions{display:flex;gap:10px}
-.sq{width:42px;height:42px;display:grid;place-items:center;background:var(--bg);border:2px solid var(--line);cursor:pointer;box-shadow:3px 3px 0 var(--shadow);transition:transform .12s,box-shadow .12s}
-.sq:hover{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+.sq{width:42px;height:42px;display:grid;place-items:center;background:var(--bg);border:2px solid var(--line);cursor:pointer;box-shadow:3px 3px 0 var(--shadow);transition:transform .12s,box-shadow .12s,border-color .2s,color .2s,background .2s}
+.sq:hover{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow);color:var(--acc);border-color:var(--acc)}
 .sq svg{width:18px;height:18px}
 
 /* generic */
@@ -45,14 +45,17 @@ button,input,select,textarea{font:inherit;color:inherit}
 h2.big{font-size:clamp(30px,5vw,48px);font-weight:500;letter-spacing:-.02em;text-align:center;line-height:1.15}
 .pix{font-family:var(--pix);font-weight:800;color:var(--acc);letter-spacing:.02em}
 .sub{color:var(--mute);text-align:center;max-width:620px;margin:16px auto 0}
-.btn{display:inline-flex;align-items:center;gap:12px;padding:18px 34px;background:var(--acc);color:var(--acc-ink);border:0;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;box-shadow:6px 6px 0 var(--shadow);transition:transform .12s,box-shadow .12s}
-.btn:hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--shadow)}
+.btn{display:inline-flex;align-items:center;gap:12px;padding:18px 34px;background:var(--acc);color:var(--acc-ink);border:0;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;box-shadow:6px 6px 0 var(--shadow);background-image:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%);background-size:250% 100%;background-position:120% 0;transition:transform .12s,box-shadow .12s,background-position .55s ease,background-color .2s,color .2s,border-color .2s}
+.btn:hover{transform:translate(3px,3px);box-shadow:3px 3px 0 var(--shadow);background-position:-20% 0}
 .btn:active{transform:translate(6px,6px);box-shadow:0 0 0 var(--shadow)}
 .btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn.ghost:hover{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
 .btn.small{padding:10px 16px;font-size:13px;box-shadow:4px 4px 0 var(--shadow)}
 .btn svg{width:16px;height:16px}
-.card{position:relative;background:var(--bg2);border:1.5px solid var(--line);padding:22px 22px 24px;box-shadow:6px 6px 0 var(--shadow)}
-.card::after{content:"";position:absolute;inset:7px -7px -7px 7px;border:1px solid var(--acc);opacity:.35;pointer-events:none;z-index:0}
+.card{position:relative;background:var(--bg2);border:1.5px solid var(--line);padding:22px 22px 24px;box-shadow:6px 6px 0 var(--shadow);transition:transform .18s ease,box-shadow .18s ease,border-color .25s}
+.card::after{content:"";position:absolute;inset:7px -7px -7px 7px;border:1px solid var(--acc);opacity:.35;pointer-events:none;z-index:0;transition:opacity .25s}
+a.card:hover,.card.feat:hover{transform:translate(-3px,-3px);border-color:var(--acc);box-shadow:9px 9px 0 var(--shadow);cursor:pointer}
+a.card:hover::after,.card.feat:hover::after{opacity:.9}
 .card>*{position:relative;z-index:1}
 section.block{padding:110px 0 40px;position:relative}
 canvas.dots{position:absolute;left:0;right:0;bottom:0;width:100%;height:300px;pointer-events:none;z-index:0;-webkit-mask-image:linear-gradient(to top,#000 55%,transparent);mask-image:linear-gradient(to top,#000 55%,transparent)}
@@ -61,7 +64,8 @@ canvas.dots{position:absolute;left:0;right:0;bottom:0;width:100%;height:300px;po
 .mono{font-family:var(--mono)}
 
 /* hero */
-.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:110px 20px 150px;overflow:hidden}
+.hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:110px 20px 210px;overflow:hidden}
+.hero canvas.dots{height:190px}
 .hero .logo-glow{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,var(--glow),transparent 70%);margin-bottom:6px}
 .hero .logo-glow svg{width:84px;height:84px;color:var(--acc)}
 .wordmark{font-size:clamp(64px,15vw,168px);font-weight:500;letter-spacing:.06em;line-height:1;padding-left:.06em}
@@ -71,7 +75,7 @@ canvas.dots{position:absolute;left:0;right:0;bottom:0;width:100%;height:300px;po
 .urlform input{flex:1;min-width:0;padding:18px 20px;background:var(--bg2);border:2px solid var(--line);border-right:0;font-family:var(--mono);font-size:14px;outline:0;box-shadow:6px 6px 0 var(--shadow)}
 .urlform input:focus{border-color:var(--acc)}
 .urlform .btn{box-shadow:6px 6px 0 var(--shadow);padding:18px 26px;white-space:nowrap}
-.try{margin-top:22px;font-size:13px;color:var(--mute);position:relative;z-index:2}
+.try{margin:22px 0 30px;font-size:13px;color:var(--mute);position:relative;z-index:2;background:color-mix(in srgb,var(--bg) 88%,transparent);padding:8px 16px;border:1px solid color-mix(in srgb,var(--line) 35%,transparent)}
 .try a{color:var(--ink);margin:0 6px;text-decoration:underline;text-decoration-color:var(--acc);text-underline-offset:4px;cursor:pointer}
 .hint{margin-top:10px;font-size:12px;color:var(--red);min-height:18px;position:relative;z-index:2}
 
@@ -84,7 +88,8 @@ canvas.dots{position:absolute;left:0;right:0;bottom:0;width:100%;height:300px;po
 /* features */
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:56px}
 .grid3c{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin:26px auto 0;width:75%}
-.feat svg{width:34px;height:34px;color:var(--ink);margin-bottom:14px;display:block}
+.feat svg,.feat .lucide{width:34px;height:34px;color:var(--ink);margin-bottom:14px;display:block;transition:color .25s,transform .25s}
+.feat:hover .lucide{color:var(--acc);transform:scale(1.1) rotate(-5deg)}
 .feat h3{font-size:17px;font-weight:500;margin-bottom:6px}
 .feat p{font-size:13px;color:var(--mute);line-height:1.55}
 
@@ -92,6 +97,9 @@ canvas.dots{position:absolute;left:0;right:0;bottom:0;width:100%;height:300px;po
 .tracks{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:56px}
 .track{text-decoration:none;cursor:pointer;display:block;transition:transform .12s}
 .track:hover{transform:translate(-3px,-3px)}
+.track:hover h3{color:var(--acc)}
+.track .go .lucide{width:14px;height:14px;vertical-align:-2px;transition:transform .25s}
+.track:hover .go .lucide{transform:translateX(5px)}
 .track .n{font-family:var(--pix);font-weight:800;font-size:44px;color:var(--acc);line-height:1}
 .track h3{font-size:16px;font-weight:600;margin:10px 0 4px}
 .track p{font-size:12.5px;color:var(--mute);line-height:1.5}
@@ -140,8 +148,8 @@ footer b{color:var(--ink)}footer a{color:var(--acc)}
 .tbl{width:100%;border-collapse:collapse;margin-top:24px}
 .tbl th{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mute);text-align:left;padding:10px 12px;border-bottom:2px solid var(--line);font-weight:500}
 .tbl td{padding:13px 12px;border-bottom:1px solid color-mix(in srgb,var(--line) 22%,transparent);font-size:14px;vertical-align:middle}
-.tbl tr.row{cursor:pointer;transition:background .1s}
-.tbl tr.row:hover{background:var(--bg2)}
+.tbl tr.row{cursor:pointer;transition:background .15s,box-shadow .15s}
+.tbl tr.row:hover{background:var(--bg2);box-shadow:inset 3px 0 var(--acc)}
 .tbl td.t{font-weight:500}
 .tbl td.num{font-family:var(--mono);color:var(--mute);font-size:12px;width:56px}
 .tbl .done{accent-color:var(--acc);width:18px;height:18px;cursor:pointer}
@@ -264,6 +272,49 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
 .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--acc);border-top-color:transparent;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px;margin-right:8px}
 @keyframes sp{to{transform:rotate(1turn)}}
 
+/* lucide icons */
+.lucide{width:18px;height:18px;flex:none;vertical-align:-3px}
+.btn .lucide{width:16px;height:16px}
+.sq .lucide{width:18px;height:18px}
+.go .lucide,.get .lucide{width:14px;height:14px;vertical-align:-2px}
+
+/* hover + animated fills: cards, buttons, rows, tabs */
+.stat{transition:transform .18s ease,border-color .25s,box-shadow .18s ease}
+.stat:hover{transform:translateY(-4px);border-color:var(--acc);cursor:pointer}
+.step{transition:transform .18s ease,border-color .25s,box-shadow .18s ease}
+.step:hover{transform:translate(-2px,-2px);border-color:var(--acc);box-shadow:8px 8px 0 var(--shadow);cursor:pointer}
+.prov a h3{transition:color .2s}
+.prov a:hover h3{color:var(--acc)}
+.prov a:hover .get{color:var(--acc)}
+.prov .get .lucide{transition:transform .25s}
+.prov a:hover .get .lucide{transform:translateX(4px)}
+.tab{transition:background .2s,color .2s,border-color .2s,transform .12s}
+.tab:hover{border-color:var(--acc);color:var(--acc)}
+.tab.on:hover{color:var(--acc-ink);transform:translateY(-2px)}
+.ctrl button{transition:background .2s,color .2s,border-color .2s,transform .1s}
+.ctrl button:active{transform:scale(.92)}
+.try a{transition:color .2s}
+.try a:hover{color:var(--acc)}
+.crumbs a,.free a,footer a{transition:color .2s}
+.stage{transition:border-color .25s}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+
+/* short minimal theme scrollbar */
+*{scrollbar-width:thin;scrollbar-color:var(--shadow) transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--shadow);border:3px solid var(--bg);border-radius:8px;min-height:44px;min-width:44px}
+::-webkit-scrollbar-thumb:hover{background:var(--acc)}
+::-webkit-scrollbar-corner{background:transparent}
+.dbody::-webkit-scrollbar-thumb{border-color:var(--bg2)}
+.code::-webkit-scrollbar-thumb{border-width:2px}
+
+/* dialog header + close icon button */
+.dlg-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.dlg-x{width:38px;height:38px;flex:none;display:grid;place-items:center;background:transparent;border:1.5px solid var(--line);cursor:pointer;color:var(--ink);transition:background .2s,color .2s,border-color .2s,transform .12s}
+.dlg-x:hover{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);transform:rotate(90deg)}
+.dlg-x .lucide{width:16px;height:16px}
+
 @media(max-width:980px){.grid4,.tracks{grid-template-columns:repeat(2,1fr)}.grid3c{width:100%;grid-template-columns:repeat(2,1fr)}.prov{grid-template-columns:1fr}.trick{grid-template-columns:1fr}}
 @media(max-width:560px){.grid4,.tracks,.grid3c{grid-template-columns:1fr}.urlform{flex-direction:column}.urlform input{border-right:2px solid var(--line)}.urlform .btn{justify-content:center}.rbar{grid-template-columns:90px 1fr 90px}.step{padding:18px}.tbl .hm{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -277,8 +328,8 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/></svg>DRYRUN
   </a>
   <div class="top-actions">
-    <button class="sq" id="btn-keys" title="AI settings &amp; API keys" aria-label="AI settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/></svg></button>
-    <button class="sq" id="btn-theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg></button>
+    <button class="sq" id="btn-keys" title="AI settings &amp; API keys" aria-label="AI settings"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg></button>
+    <button class="sq" id="btn-theme" title="Toggle theme" aria-label="Toggle theme"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
   </div>
 </header>
 
@@ -286,14 +337,14 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
 <!-- HOME -->
 <section id="v-home" class="view">
   <div class="hero">
-    <canvas class="dots" data-h="300"></canvas>
+    <canvas class="dots" data-h="190"></canvas>
     <div class="logo-glow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/><path d="M6 21v1.5M12 21v1.5M18 21v1.5" opacity=".5"/></svg></div>
     <h1 class="wordmark">DRYRUN</h1>
     <p class="tag">See every algorithm run.</p>
-    <p class="lede">Paste a LeetCode link. Get a beginner and an optimized solution, an animated trace of how it works, a memory trick and an Anki card — in one page.</p>
+    <p class="lede">Paste a LeetCode link. Get a beginner and an optimized solution, an animated trace of how it works, a memory trick and an Anki card, in one page.</p>
     <form class="urlform" id="urlform" autocomplete="off">
       <input id="url" type="text" placeholder="https://leetcode.com/problems/two-sum/" aria-label="LeetCode problem URL" spellcheck="false">
-      <button class="btn" type="submit">Dry-run it <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button class="btn" type="submit">Dry-run it <svg class="lucide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
     </form>
     <div class="hint" id="urlhint"></div>
     <div class="try">Try: <a data-slug="two-sum">two-sum</a>·<a data-slug="lru-cache">lru-cache</a>·<a data-slug="kth-largest-element-in-an-array">kth-largest</a>·<a data-slug="edit-distance">edit-distance</a></div>
@@ -304,7 +355,7 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
   <section class="block"><div class="wrap">
     <div class="eyebrow">What's inside</div>
     <h2 class="big">Every problem, in <span class="pix">TWO</span> speeds</h2>
-    <p class="sub">Beginner-friendly first, then the version interviewers want. Watch exactly what changes — line by line.</p>
+    <p class="sub">Beginner-friendly first, then the version interviewers want. Watch exactly what changes, line by line.</p>
     <div class="grid4" id="feat1"></div>
     <div class="grid3c" id="feat2"></div>
   </div></section>
@@ -312,7 +363,7 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
   <section class="block" id="tracks"><div class="wrap">
     <div class="eyebrow">Pick your track</div>
     <h2 class="big">Eight roles. <span class="pix">200</span> drills.</h2>
-    <p class="sub">25 problems per role, chosen for what that job actually asks — from KV-cache eviction to debounce.</p>
+    <p class="sub">25 problems per role, chosen for what that job actually asks, from KV-cache eviction to debounce.</p>
     <div class="tracks" id="trackgrid"></div>
   </div></section>
 
@@ -346,12 +397,12 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
     <div class="sprites" id="sprites"></div>
     <div class="eyebrow">Ready?</div>
     <h2 class="big">Ready to see your code <span class="pix">RUN</span>?</h2>
-    <div style="margin-top:40px"><a class="btn" href="#tracks" id="cta-top">Pick a track <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <div style="margin-top:40px"><a class="btn" href="#tracks" id="cta-top">Pick a track <svg class="lucide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></div>
     <p class="small" style="margin-top:18px">Free. Static. No sign-up. Works offline for the 200 built-in drills.</p>
   </div>
   <footer>
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/></svg><br>
-    <b>DRYRUN</b> — an open, static study site<br>
+    <b>DRYRUN</b> &middot; an open, static study site<br>
     Not affiliated with LeetCode. Problem titles belong to their owners; explanations, code and visuals here are original.<br>
     <a href="#/mine">Your generated problems</a>
   </footer>
@@ -366,7 +417,7 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
 <dialog id="dlg-keys"></dialog>
 
 <script>
-/* boot.js — data registry and tiny helpers used by every data file.
+/* boot.js, data registry and tiny helpers used by every data file.
    Problem record keys: id (LeetCode slug), n (number), t (title), d (E|M|H), tg (tags), pat (pattern),
    br (brief), b (beginner code), o (optimal code), bt/bs/ot/os (time/space), trick, real,
    viz ({sim:..} | {flow:[frames]}), lang ('py'|'js'), test (python snippet setting res), exp (python literal).
@@ -378,7 +429,7 @@ window.DR={P:{},T:[],
 
 </script>
 <script>
-/* p1 — arrays, hashing, two pointers, sliding window, prefix tricks */
+/* p1, arrays, hashing, two pointers, sliding window, prefix tricks */
 (function(){const r=String.raw,f=DR.f;
 DR.add(
 {id:'two-sum',n:1,t:'Two Sum',d:'E',tg:['Array','Hash Map'],pat:'Hash Map Complement',
@@ -506,7 +557,7 @@ o:r`class Solution:
                 res.append(x)
                 if len(res) == k:
                     return res`,
-trick:'"Top-k by count" → counts are bounded by n, so use the count itself as an array index (bucket sort) — no sorting needed.',
+trick:'"Top-k by count" → counts are bounded by n, so use the count itself as an array index (bucket sort), no sorting needed.',
 real:'Most frequent tokens for vocabulary building; top queries in logs.',
 viz:{flow:[f('Step 1: count each value.',[1,1,1,2,2,3],{aux:[['count']]}),
  f('Counts: 1→3, 2→2, 3→1.',[1,1,1,2,2,3],{aux:[['count','1→3','2→2','3→1']]}),
@@ -515,7 +566,7 @@ viz:{flow:[f('Step 1: count each value.',[1,1,1,2,2,3],{aux:[['count']]}),
 test:`res=sorted(Solution().topKFrequent([1,1,1,2,2,3],2))`,exp:`[1,2]`},
 
 {id:'product-of-array-except-self',n:238,t:'Product of Array Except Self',d:'M',tg:['Array','Prefix Sum'],pat:'Prefix × Suffix',
-br:'For each position, the product of all other numbers — without division.',
+br:'For each position, the product of all other numbers, without division.',
 bt:'O(n²)',bs:'O(1)',ot:'O(n)',os:'O(1)',
 b:r`class Solution:
     def productExceptSelf(self, nums: List[int]) -> List[int]:
@@ -576,7 +627,7 @@ real:'Windowed aggregates over time series; anomaly detection on cumulative metr
 viz:{flow:[f('Running total = prefix sum. A subarray ending here sums to k if some earlier prefix equals total − k. k = 2.',[1,1,1],{aux:[['prefix counts','0→1'],['count',0]]}),
  f('total = 1. Need an earlier prefix of 1−2 = −1 → none. Record prefix 1.',[1,1,1],{p:{i:0},h:[0],aux:[['prefix counts','0→1','1→1'],['count',0]]}),
  f('total = 2. Need prefix 0 → seen once ⇒ subarray [1,1] ✓.',[1,1,1],{p:{i:1},h:[1],w:[0,1],aux:[['prefix counts','0→1','1→1','2→1'],['count',1]]}),
- f('total = 3. Need prefix 1 → seen once ⇒ subarray [1,1] (positions 2–3) ✓.',[1,1,1],{p:{i:2},h:[2],w:[1,2],aux:[['prefix counts','0→1','1→1','2→1','3→1'],['count',2]]})]},
+ f('total = 3. Need prefix 1 → seen once ⇒ subarray [1,1] (positions 2-3) ✓.',[1,1,1],{p:{i:2},h:[2],w:[1,2],aux:[['prefix counts','0→1','1→1','2→1','3→1'],['count',2]]})]},
 test:`res=Solution().subarraySum([1,1,1],2)`,exp:`2`},
 
 {id:'longest-consecutive-sequence',n:128,t:'Longest Consecutive Sequence',d:'M',tg:['Array','Hash Set'],pat:'Set + Run Starts',
@@ -634,7 +685,7 @@ o:r`class Solution:
         return best`,
 trick:'"Best buy then sell" → at each day, assume you bought at the lowest price seen so far.',
 real:'Max drawdown / max run-up on a metric time series.',
-viz:{flow:(()=>{const a=[7,1,5,3,6,4];let low=1e9,best=0;const o=[f('Track the lowest price so far and the best profit if we sold today.',a,{aux:[['lowest','—'],['best profit',0]]})];a.forEach((p,i)=>{low=Math.min(low,p);best=Math.max(best,p-low);o.push(f('Price '+p+'. Lowest so far = '+low+'; selling now earns '+(p-low)+'. Best = '+best+'.',a,{p:{i},h:[i],aux:[['lowest',low],['best profit',best]]}));});return o;})()},
+viz:{flow:(()=>{const a=[7,1,5,3,6,4];let low=1e9,best=0;const o=[f('Track the lowest price so far and the best profit if we sold today.',a,{aux:[['lowest','-'],['best profit',0]]})];a.forEach((p,i)=>{low=Math.min(low,p);best=Math.max(best,p-low);o.push(f('Price '+p+'. Lowest so far = '+low+'; selling now earns '+(p-low)+'. Best = '+best+'.',a,{p:{i},h:[i],aux:[['lowest',low],['best profit',best]]}));});return o;})()},
 test:`res=Solution().maxProfit([7,1,5,3,6,4])`,exp:`5`},
 
 {id:'maximum-subarray',n:53,t:'Maximum Subarray',d:'M',tg:['Array','DP','Kadane'],pat:"Kadane's Algorithm",
@@ -778,7 +829,7 @@ o:r`class Solution:
                 water += rmax - height[r]
                 r -= 1
         return water`,
-trick:'"Water on a bar" = min(tallest left, tallest right) − bar. Process the LOWER side first — its limit is already known.',
+trick:'"Water on a bar" = min(tallest left, tallest right) − bar. Process the LOWER side first, its limit is already known.',
 real:'Capacity / buffer-fill calculations between peaks.',
 viz:{sim:'rain',arr:[0,1,0,2,1,0,1,3,2,1,2,1]},
 test:`res=Solution().trap([0,1,0,2,1,0,1,3,2,1,2,1])`,exp:`6`},
@@ -793,7 +844,7 @@ b:r`class Solution:
 o:r`class Solution:
     def isPalindrome(self, s: str) -> bool:
         l, r = 0, len(s) - 1
-        while l < r:  #! two pointers walk inward — no copy needed
+        while l < r:  #! two pointers walk inward, no copy needed
             while l < r and not s[l].isalnum():
                 l += 1
             while l < r and not s[r].isalnum():
@@ -932,7 +983,7 @@ test:`res=Solution().longestCommonPrefix(["flower","flow","flight"])`,exp:`"fl"`
 
 </script>
 <script>
-/* p2 — binary search, stacks, intervals, heaps, sorting, scheduling */
+/* p2, binary search, stacks, intervals, heaps, sorting, scheduling */
 (function(){const r=String.raw,f=DR.f;
 DR.add(
 {id:'binary-search',n:704,t:'Binary Search',d:'E',tg:['Array','Binary Search'],pat:'Halve the Search Space',
@@ -1100,7 +1151,7 @@ o:r`class Solution:
         k = 0
         for i, c in enumerate(haystack):
             while k and c != needle[k]:
-                k = lps[k - 1]  #! on a mismatch, fall back — never move i backwards
+                k = lps[k - 1]  #! on a mismatch, fall back, never move i backwards
             if c == needle[k]:
                 k += 1
             if k == len(needle):
@@ -1357,11 +1408,11 @@ o:r`class Solution:
         return len(rooms)`,
 trick:'"How many at once?" → keep a min-heap of end times; if the earliest end is before the next start, reuse that room.',
 real:'GPU / worker allocation: how many accelerators does a job queue need?',
-viz:{flow:[f('Meetings: (0,30) (5,10) (15,20). Heap holds the end time of each room in use.',['0–30','5–10','15–20'],{aux:[['room end-times']]}),
- f('(0,30): no rooms yet → open room 1.',['0–30','5–10','15–20'],{p:{i:0},h:[0],aux:[['room end-times',30]]}),
- f('(5,10): earliest end 30 > 5 → all busy → open room 2.',['0–30','5–10','15–20'],{p:{i:1},h:[1],aux:[['room end-times',10,30]]}),
- f('(15,20): earliest end 10 ≤ 15 → reuse that room (end becomes 20).',['0–30','5–10','15–20'],{p:{i:2},h:[2],aux:[['room end-times',20,30]]}),
- f('Heap size = 2 rooms needed.',['0–30','5–10','15–20'],{g:[0,1,2],aux:[['rooms',2]]})]},
+viz:{flow:[f('Meetings: (0,30) (5,10) (15,20). Heap holds the end time of each room in use.',['0-30','5-10','15-20'],{aux:[['room end-times']]}),
+ f('(0,30): no rooms yet → open room 1.',['0-30','5-10','15-20'],{p:{i:0},h:[0],aux:[['room end-times',30]]}),
+ f('(5,10): earliest end 30 > 5 → all busy → open room 2.',['0-30','5-10','15-20'],{p:{i:1},h:[1],aux:[['room end-times',10,30]]}),
+ f('(15,20): earliest end 10 ≤ 15 → reuse that room (end becomes 20).',['0-30','5-10','15-20'],{p:{i:2},h:[2],aux:[['room end-times',20,30]]}),
+ f('Heap size = 2 rooms needed.',['0-30','5-10','15-20'],{g:[0,1,2],aux:[['rooms',2]]})]},
 test:`res=[Solution().minMeetingRooms([[0,30],[5,10],[15,20]]),Solution().minMeetingRooms([[7,10],[2,4]])]`,exp:`[2,1]`},
 
 {id:'sort-colors',n:75,t:'Sort Colors',d:'M',tg:['Array','Two Pointers','Sorting'],pat:'Dutch National Flag',
@@ -1412,7 +1463,7 @@ o:r`class Solution:
             else:
                 r = i - 1`,
 trick:'"kth without sorting" → partition like quicksort but only follow ONE side. Average O(n). (Or keep a size-k min-heap.)',
-real:'Top-k sampling over logits in LLM decoding — keep only the k best candidates.',
+real:'Top-k sampling over logits in LLM decoding, keep only the k best candidates.',
 viz:{sim:'qselect',arr:[3,2,1,5,6,4],k:2},
 test:`res=[Solution().findKthLargest([3,2,1,5,6,4],2),Solution().findKthLargest([3,2,3,1,2,4,5,5,6],4)]`,exp:`[5,4]`},
 
@@ -1426,7 +1477,7 @@ o:r`class Solution:
     def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:
         heap = []  #! max-heap (negated distance) holding the k closest so far
         for x, y in points:
-            d = x * x + y * y  #! squared distance is enough — no sqrt
+            d = x * x + y * y  #! squared distance is enough, no sqrt
             heapq.heappush(heap, (-d, x, y))
             if len(heap) > k:
                 heapq.heappop(heap)  #! evict the farthest of the k+1
@@ -1534,13 +1585,13 @@ real:'Batching and rate-limited job scheduling (API calls with per-key cooldowns
 viz:{flow:[f('Tasks AAABBB, cooldown n = 2. A is the busiest (3×).',[...'AAABBB'],{aux:[['frame width','n + 1 = 3']]}),
  f('Frame 1: A B idle',['A','B','·'],{aux:[['time',3]]}),
  f('Frame 2: A B idle',['A','B','·','A','B','·'],{aux:[['time',6]]}),
- f('Last frame has no idle at the end — only the tied tasks (A, B): A B',['A','B','·','A','B','·','A','B'],{g:[6,7],aux:[['time',8],['formula','(3−1)·3 + 2 = 8']]})]},
+ f('Last frame has no idle at the end, only the tied tasks (A, B): A B',['A','B','·','A','B','·','A','B'],{g:[6,7],aux:[['time',8],['formula','(3−1)·3 + 2 = 8']]})]},
 test:`res=[Solution().leastInterval(list("AAABBB"),2),Solution().leastInterval(list("AAABBB"),0),Solution().leastInterval(list("AAAAAABCDEFG"),2)]`,exp:`[8,6,16]`}
 );})();
 
 </script>
 <script>
-/* p3 — linked lists, trees, tries */
+/* p3, linked lists, trees, tries */
 (function(){const r=String.raw,f=DR.f;
 DR.add(
 {id:'reverse-linked-list',n:206,t:'Reverse Linked List',d:'E',tg:['Linked List'],pat:'Flip Arrows with prev / cur',
@@ -1672,9 +1723,9 @@ o:r`class Solution:
 trick:'"Clone with extra pointers" → park each copy right after its original; then copy.random = original.random.next. No map needed.',
 real:'Deep-copying object graphs (config trees, ASTs) without a lookup table.',
 viz:{flow:[f('Goal: copy every node AND its random pointer. Idea: place each copy right behind its original.',['7','13','11'],{aux:[['original chain','7 → 13 → 11']]}),
- f('Step 1 – weave: 7 → 7′ → 13 → 13′ → 11 → 11′',['7','7′','13','13′','11','11′'],{h:[1,3,5]}),
- f('Step 2 – set randoms: copy.random = original.random.next. 13.random = 7 → 13′.random = 7′.',['7','7′','13','13′','11','11′'],{h:[3],g:[1],aux:[['rule','copy.random = orig.random.next']]}),
- f('Step 3 – unweave: restore the original chain and extract the copy chain.',['7′','13′','11′'],{g:[0,1,2],aux:[['result','7′ → 13′ → 11′ (randoms intact)']]})]},
+ f('Step 1 - weave: 7 → 7′ → 13 → 13′ → 11 → 11′',['7','7′','13','13′','11','11′'],{h:[1,3,5]}),
+ f('Step 2 - set randoms: copy.random = original.random.next. 13.random = 7 → 13′.random = 7′.',['7','7′','13','13′','11','11′'],{h:[3],g:[1],aux:[['rule','copy.random = orig.random.next']]}),
+ f('Step 3 - unweave: restore the original chain and extract the copy chain.',['7′','13′','11′'],{g:[0,1,2],aux:[['result','7′ → 13′ → 11′ (randoms intact)']]})]},
 test:`ns=[Node(7),Node(13),Node(11)]\nfor i in range(2): ns[i].next=ns[i+1]\nns[1].random=ns[0]; ns[2].random=ns[0]\nc=Solution().copyRandomList(ns[0])\ncs=[]\nx=c\nwhile x:\n    cs.append(x); x=x.next\nidx={id(n):i for i,n in enumerate(cs)}\nold={id(n) for n in ns}\nres=([[n.val, idx.get(id(n.random))] for n in cs], all(id(n) not in old for n in cs))`,exp:`([[7,None],[13,0],[11,0]],True)`},
 
 {id:'invert-binary-tree',n:226,t:'Invert Binary Tree',d:'E',tg:['Tree','DFS'],pat:'Swap Children Everywhere',
@@ -1786,7 +1837,7 @@ trick:'"BST check" → comparing to the parent is not enough. Carry an (lo, hi) 
 real:'Validating ordered index invariants (B-tree style).',
 viz:{tree:[5,1,4,null,null,3,6],flow:[f('Each node must fall inside (lo, hi) inherited from its ancestors.',null,{th:[0],aux:[['root bounds','(−∞, ∞)']]}),
  f('1 is inside (−∞, 5) ✓',null,{th:[1],tg:[0],aux:[['bounds','(−∞, 5)']]}),
- f('4 must be inside (5, ∞) — but 4 < 5 ✗. Not a valid BST.',null,{th:[2],tg:[0,1],aux:[['bounds','(5, ∞)'],['4 is','too small']]})]},
+ f('4 must be inside (5, ∞), but 4 < 5 ✗. Not a valid BST.',null,{th:[2],tg:[0,1],aux:[['bounds','(5, ∞)'],['4 is','too small']]})]},
 test:`res=[Solution().isValidBST(T([2,1,3])),Solution().isValidBST(T([5,1,4,None,None,3,6])),Solution().isValidBST(T([5,4,6,None,None,3,7]))]`,exp:`[True,False,False]`},
 
 {id:'lowest-common-ancestor-of-a-binary-tree',n:236,t:'Lowest Common Ancestor of a Binary Tree',d:'M',tg:['Tree','DFS'],pat:'Post-order: Found on Both Sides',
@@ -1950,7 +2001,7 @@ o:r`class WordDictionary:
                 return any(dfs(child, i + 1) for k, child in node.items() if k != "$")  #! wildcard: try every branch
             return c in node and dfs(node[c], i + 1)
         return dfs(self.root, 0)`,
-trick:'"Pattern with blanks" → trie for the letters, DFS that fans out only at a "." — everywhere else it follows one path.',
+trick:'"Pattern with blanks" → trie for the letters, DFS that fans out only at a ".", everywhere else it follows one path.',
 real:'Wildcard routing and fuzzy matching of identifiers.',
 viz:{sim:'trie',words:['bad','dad','mad'],query:'ba'},
 test:`w=WordDictionary()\nfor x in ("bad","dad","mad"): w.addWord(x)\nres=[w.search("pad"),w.search("bad"),w.search(".ad"),w.search("b..")]`,exp:`[False,True,True,True]`},
@@ -1985,7 +2036,7 @@ test:`res=Solution().suggestedProducts(["mobile","mouse","moneypot","monitor","m
 
 </script>
 <script>
-/* p4 — graphs, union-find, backtracking */
+/* p4, graphs, union-find, backtracking */
 (function(){const r=String.raw,f=DR.f;
 const grid=(rows,cls)=>({v:rows,c:rows.map((row,i)=>row.map((x,j)=>(cls&&cls(i,j,x))||''))});
 DR.add(
@@ -2017,7 +2068,7 @@ o:r`class Solution:
                 if grid[r][c] == "1":
                     count += 1  #! unvisited land = a brand-new island
                     stack = [(r, c)]
-                    grid[r][c] = "0"  #! "sink" the land in place — no visited set
+                    grid[r][c] = "0"  #! "sink" the land in place, no visited set
                     while stack:  #! iterative DFS: no recursion-depth limit
                         x, y = stack.pop()
                         for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
@@ -2134,7 +2185,7 @@ o:r`class Solution:
                 if indeg[nxt] == 0:
                     q.append(nxt)
         return order if len(order) == numCourses else []`,
-trick:'Same peel-off-zero-in-degree loop as Course Schedule — just record the order you peel in.',
+trick:'Same peel-off-zero-in-degree loop as Course Schedule, just record the order you peel in.',
 real:'Dependency resolution in package managers and task orchestrators (Airflow-style DAG order).',
 viz:{sim:'topo',nodes:[[260,30],[110,120],[410,120],[260,215]],edges:[[0,1],[0,2],[1,3],[2,3]],dir:true},
 test:`pre=[[1,0],[2,0],[3,1],[3,2]]\no=Solution().findOrder(4,pre)\npos={c:i for i,c in enumerate(o)}\nres=(len(o)==4 and all(pos[b]<pos[a] for a,b in pre),Solution().findOrder(2,[[0,1],[1,0]]))`,exp:`(True,[])`},
@@ -2189,7 +2240,7 @@ b:r`class Solution:
                 return
             if used == k + 1:
                 return
-            for nxt, w in adj[city]:  #? explores every route up to k+1 flights — exponential
+            for nxt, w in adj[city]:  #? explores every route up to k+1 flights, exponential
                 dfs(nxt, used + 1, cost + w)
         dfs(src, 0, 0)
         return -1 if best == float("inf") else best`,
@@ -2322,7 +2373,7 @@ o:r`class Solution:
         return [[owner[root]] + sorted(es) for root, es in groups.items()]`,
 trick:'"Merge records that share a key" → treat each shared key as a union. One union-find over the emails, then group by root.',
 real:'Entity resolution: collapsing duplicate customer profiles in a CRM or feature store.',
-viz:{flow:[f('Four accounts. Accounts 1 and 2 share johnsmith@… — so they belong to the same person.',['A1','A2','A3','A4'],{aux:[['A1','john_newyork, johnsmith'],['A2','johnsmith, john00'],['A3','mary'],['A4','johnnybravo']]}),
+viz:{flow:[f('Four accounts. Accounts 1 and 2 share johnsmith@…, so they belong to the same person.',['A1','A2','A3','A4'],{aux:[['A1','john_newyork, johnsmith'],['A2','johnsmith, john00'],['A3','mary'],['A4','johnnybravo']]}),
  f('Union the emails of A1 under one root.',['A1','A2','A3','A4'],{h:[0],aux:[['group 1','john_newyork','johnsmith']]}),
  f('A2 contains johnsmith (already in group 1) → john00 joins group 1.',['A1','A2','A3','A4'],{h:[1],g:[0,1],aux:[['group 1','john_newyork','johnsmith','john00']]}),
  f('A3 and A4 share nothing → they stay separate. Result: 3 merged accounts, emails sorted.',['A1','A2','A3','A4'],{g:[0,1,2,3],aux:[['group 1','john00','john_newyork','johnsmith'],['group 2','mary'],['group 3','johnnybravo']]})]},
@@ -2463,7 +2514,7 @@ o:r`class Solution:
         go(0)
         return res`,
 trick:'"One queen per row" → recurse row by row; a square is safe if its column, its (r−c) diagonal and its (r+c) diagonal are free.',
-real:'Constraint satisfaction and pruning search — the idea behind SAT/CSP solvers.',
+real:'Constraint satisfaction and pruning search, the idea behind SAT/CSP solvers.',
 viz:{flow:(()=>{const Q=(qs,bad)=>grid([0,1,2,3].map(r=>[0,1,2,3].map(c=>qs.some(q=>q[0]===r&&q[1]===c)?'♛':'')),(r,c)=>{if(bad&&bad.some(b=>b[0]===r&&b[1]===c))return 'bad';const k=qs.findIndex(q=>q[0]===r&&q[1]===c);return k<0?'':(k===qs.length-1?'on':'done');});
  return [f('4 queens, one per row. Place row by row; skip any square whose column or diagonal is taken.',null,{grid:Q([])}),
  f('Row 0 → try column 0.',null,{grid:Q([[0,0]])}),
@@ -2476,7 +2527,7 @@ test:`res=sorted(Solution().solveNQueens(4))`,exp:`[["..Q.","Q...","...Q",".Q.."
 
 </script>
 <script>
-/* p5 — dynamic programming, bit tricks, math */
+/* p5, dynamic programming, bit tricks, math */
 (function(){const r=String.raw,f=DR.f;
 const B=(v,w=8)=>v.toString(2).padStart(w,'0').split('');
 
@@ -2486,13 +2537,13 @@ const lisFlow=(()=>{const a=[10,9,2,5,3,7,101,18],tails=[];
   a.forEach((x,i)=>{let lo=0,hi=tails.length;while(lo<hi){const m=(lo+hi)>>1;if(tails[m]<x)lo=m+1;else hi=m;}
     const grow=lo===tails.length;if(grow)tails.push(x);else tails[lo]=x;
     fr.push(f(grow?`${x} is bigger than every tail → extend: length is now ${tails.length}.`:`${x} replaces the first tail ≥ it (slot ${lo}): same length, smaller tail.`,a,{p:{i},h:[i],aux:[['tails',...tails]]}));});
-  fr.push(f(`Answer = len(tails) = ${tails.length}. (tails is not itself a real subsequence — only its length is meaningful.)`,a,{aux:[['length',tails.length]]}));return fr;})();
+  fr.push(f(`Answer = len(tails) = ${tails.length}. (tails is not itself a real subsequence, only its length is meaningful.)`,a,{aux:[['length',tails.length]]}));return fr;})();
 
 const popFlow=(()=>{let n=11,c=0;const fr=[f('n = 11 → 00001011. Each loop removes exactly the lowest 1-bit, so we loop once per 1-bit, not once per position.',B(n),{g:[4,6,7],aux:[['count',0]]})];
   while(n){const low=Math.log2(n&-n),prev=n;n&=n-1;c++;fr.push(f(`n & (n−1) clears the lowest 1 (bit ${low}): ${prev} → ${n}. count = ${c}.`,B(prev),{x:[7-low],aux:[['count',c],['next n',n]]}));}
   fr.push(f(`n is 0 → no bits left. Answer ${c}.`,B(0),{aux:[['count',c]]}));return fr;})();
 
-const xorFlow=(()=>{const a=[4,1,2,1,2];let x=0;const fr=[f('XOR rules: a ^ a = 0 and a ^ 0 = a. Pairs cancel out, the loner survives — order does not matter.',a,{aux:[['xor',0]]})];
+const xorFlow=(()=>{const a=[4,1,2,1,2];let x=0;const fr=[f('XOR rules: a ^ a = 0 and a ^ 0 = a. Pairs cancel out, the loner survives, order does not matter.',a,{aux:[['xor',0]]})];
   a.forEach((v,i)=>{const p=x;x^=v;fr.push(f(`${p} ^ ${v} = ${x}`,a,{h:[i],w:[0,i],aux:[['xor',x]]}));});
   fr.push(f(`Every pair vanished. Answer ${x}.`,a,{g:[0],aux:[['xor',x]]}));return fr;})();
 
@@ -2503,7 +2554,7 @@ const sumFlow=(()=>{let a=5,b=3;const fr=[f('No "+" allowed. XOR adds without ca
 const revFlow=(()=>{let n=0b00010110;const fr=[f('Reverse 8 bits by swapping halves, then quarters, then pairs: log₂(8) = 3 swaps instead of 8 single-bit moves.',B(n),{})];
   const steps=[['swap the two nibbles',0xF0,0x0F,4],['swap pairs inside each nibble',0xCC,0x33,2],['swap neighbouring bits',0xAA,0x55,1]];
   for(const [name,hi,lo,s] of steps){n=((n&hi)>>s)|((n&lo)<<s);fr.push(f(`${name} → ${B(n).join('')}`,B(n),{}));}
-  fr.push(f('00010110 is now 01101000 — exactly the mirror image. 32-bit works the same with 5 swaps.',B(n),{g:[1,2,4]}));return fr;})();
+  fr.push(f('00010110 is now 01101000, exactly the mirror image. 32-bit works the same with 5 swaps.',B(n),{g:[1,2,4]}));return fr;})();
 
 const powFlow=(()=>{let x=2,n=10,res=1;const fr=[f('2^10: write 10 in binary (1010). Square the base each step; multiply it into the result only where the exponent has a 1.',B(n,4),{aux:[['x',x],['result',res]]})];
   while(n){const bit=n&1;let t=bit?`bit is 1 → result = ${res} × ${x} = ${res*x}.`:'bit is 0 → skip.';if(bit)res*=x;x*=x;const prev=n;n>>=1;
@@ -2513,14 +2564,14 @@ const powFlow=(()=>{let x=2,n=10,res=1;const fr=[f('2^10: write 10 in binary (10
 const sieveFlow=(()=>{const N=30,a=[];for(let i=2;i<=N;i++)a.push(i);const dead=new Set();
   const fr=[f('List 2..30. Every prime crosses out all of its multiples. What is never crossed out is prime.',a,{})];
   for(let p=2;p*p<=N;p++){if(dead.has(p))continue;for(let m=p*p;m<=N;m+=p)dead.add(m);
-    fr.push(f(`${p} is prime → cross out ${p*p}, ${p*p+p}, … (start at ${p}² — smaller multiples were already crossed by smaller primes).`,a,{h:[p-2],x:[...dead].map(v=>v-2)}));}
+    fr.push(f(`${p} is prime → cross out ${p*p}, ${p*p+p}, … (start at ${p}², smaller multiples were already crossed by smaller primes).`,a,{h:[p-2],x:[...dead].map(v=>v-2)}));}
   const pr=a.map((v,i)=>dead.has(v)?-1:i).filter(i=>i>=0);
   fr.push(f(`Next candidate 7: 7² = 49 > 30, so we can stop. ${pr.length} numbers survive → ${pr.length} primes up to 30.`,a,{x:[...dead].map(v=>v-2),g:pr}));return fr;})();
 
 const A5=[1,3,8,9,15],B6=[7,11,18,19,21,25];
 const medFlow=[
  f('A = [1,3,8,9,15], B = [7,11,18,19,21,25]. Total 11 → the left half holds 6 values. We only choose how many come from A (i); B supplies 6 − i.',A5,{aux:[['B',...B6]],w:[0,4]}),
- f('Try i = 2: left of A = [1,3], so j = 4 and left of B = [7,11,18,19]. Check 19 ≤ A[2] = 8? No — B’s left side is too big. Take more from A.',A5,{w:[0,1],p:{cut:2},aux:[['B left',7,11,18,19],['B right',21,25]],x:[2]}),
+ f('Try i = 2: left of A = [1,3], so j = 4 and left of B = [7,11,18,19]. Check 19 ≤ A[2] = 8? No, B’s left side is too big. Take more from A.',A5,{w:[0,1],p:{cut:2},aux:[['B left',7,11,18,19],['B right',21,25]],x:[2]}),
  f('Search moves right: i = 4, j = 2. Left of A = [1,3,8,9], left of B = [7,11].',A5,{w:[0,3],p:{cut:4},aux:[['B left',7,11],['B right',18,19,21,25]]}),
  f('Check both borders: 9 ≤ 18 ✓ and 11 ≤ 15 ✓. Every left value ≤ every right value → this is the true cut.',A5,{w:[0,3],g:[3,4],p:{cut:4},aux:[['B left',7,11],['B right',18,19,21,25],['borders','9 ≤ 18','11 ≤ 15']]}),
  f('Total is odd → median = max(left side) = max(9, 11) = 11. Only ~log(min(m,n)) cuts were tried.',A5,{g:[3],aux:[['median',11]]})];
@@ -2686,7 +2737,7 @@ b:r`class Solution:
 o:r`class Solution:
     def minDistance(self, word1: str, word2: str) -> int:
         if len(word1) < len(word2):
-            word1, word2 = word2, word1  #! distance is symmetric — keep the row short
+            word1, word2 = word2, word1  #! distance is symmetric, keep the row short
         prev = list(range(len(word2) + 1))
         for i, a in enumerate(word1, 1):
             cur = [i]
@@ -2738,7 +2789,7 @@ o:r`class Solution:
                     break
         return dp[-1]`,
 trick:'dp[i] = "the first i letters can be built". It is true if some earlier True cell plus one dictionary word lands on i.',
-real:'Tokenisation and word segmentation — the same idea as splitting text into vocabulary pieces.',
+real:'Tokenisation and word segmentation, the same idea as splitting text into vocabulary pieces.',
 viz:(()=>{const s='leetcode',dict=['leet','code'];const ok=i=>i===0||[...Array(i).keys()].some(j=>ok(j)&&dict.includes(s.slice(j,i)));
   return {sim:'dp1',n:9,init:[true],f:(dp,i)=>ok(i),deps:i=>ok(i)?[...Array(i).keys()].filter(j=>ok(j)&&dict.includes(s.slice(j,i))):[],rule:'dp[i] = some True cell j where s[j:i] is a word',start:'s = "leetcode", words {leet, code}. dp[0] = True (empty prefix).'};})(),
 test:`res=[Solution().wordBreak("leetcode",["leet","code"]),Solution().wordBreak("applepenapple",["apple","pen"]),Solution().wordBreak("catsandog",["cats","dog","sand","and","cat"])]`,exp:`[True,True,False]`},
@@ -2773,7 +2824,7 @@ o:r`class Solution:
                     dp[l][r] = max(dp[l][r], dp[l][k] + a[l] * a[k] * a[r] + dp[k][r])  #! k is popped last, so its neighbours are exactly l and r
         return dp[0][n - 1]`,
 trick:'Think backwards: pick the LAST balloon k to burst in a gap. Its neighbours are then the fixed borders, and the two sides become independent.',
-real:'Interval DP: matrix-chain ordering, optimal BST, parsing — "choose the split point last".',
+real:'Interval DP: matrix-chain ordering, optimal BST, parsing, "choose the split point last".',
 viz:(()=>{const a=[1,3,1,5,8,1];return {sim:'dp2',R:6,C:6,init:(i,j)=>j-i===1?0:undefined,
   order:()=>{const o=[];for(let L=2;L<=5;L++)for(let i=0;i+L<=5;i++)o.push([i,i+L]);return o;},
   f:(dp,i,j)=>{let b=0;for(let k=i+1;k<j;k++)b=Math.max(b,dp[i][k]+a[i]*a[k]*a[j]+dp[k][j]);return b;},
@@ -2846,14 +2897,14 @@ o:r`class Solution:
             memo[(r, c)] = best
             return best
         return max(dfs(r, c) for r in range(R) for c in range(C))`,
-trick:'"Strictly increasing" means the grid is a DAG — no cycles. So longest path from a cell is a fixed number: compute it once and cache it.',
+trick:'"Strictly increasing" means the grid is a DAG, no cycles. So longest path from a cell is a fixed number: compute it once and cache it.',
 real:'Longest path in a DAG: build-dependency depth, critical-path analysis.',
 viz:(()=>{const M=[[9,9,4],[6,6,8],[2,1,1]],D=[[1,0],[-1,0],[0,1],[0,-1]];
   const sm=(i,j)=>D.map(([a,b])=>[i+a,j+b]).filter(([x,y])=>x>=0&&y>=0&&x<3&&y<3&&M[x][y]<M[i][j]);
   return {sim:'dp2',R:3,C:3,order:()=>{const c=[];for(let i=0;i<3;i++)for(let j=0;j<3;j++)c.push([i,j]);return c.sort((a,b)=>M[a[0]][a[1]]-M[b[0]][b[1]]);},
   f:(dp,i,j)=>1+Math.max(0,...sm(i,j).map(([x,y])=>dp[x][y])),deps:(i,j)=>sm(i,j),
   rule:(i,j)=>`value ${M[i][j]}: 1 + best path among strictly smaller neighbours`,ans:[0,0],
-  start:'Matrix [[9,9,4],[6,6,8],[2,1,1]]. Cells are visited from smallest value up, which is the order memoised DFS settles them — each cell is solved once.'};})(),
+  start:'Matrix [[9,9,4],[6,6,8],[2,1,1]]. Cells are visited from smallest value up, which is the order memoised DFS settles them, each cell is solved once.'};})(),
 test:`res=[Solution().longestIncreasingPath([[9,9,4],[6,6,8],[2,1,1]]),Solution().longestIncreasingPath([[3,4,5],[3,2,6],[2,2,1]]),Solution().longestIncreasingPath([[1]])]`,exp:`[4,4,1]`},
 
 {id:'number-of-1-bits',n:191,t:'Number of 1 Bits',d:'E',tg:['Bit Manipulation'],pat:'Clear the Lowest Set Bit',
@@ -2899,11 +2950,11 @@ o:r`class Solution:
         return res`,
 trick:'i is just (i >> 1) with one more bit on the end, so bits(i) = bits(i >> 1) + (i & 1).',
 real:'Building popcount lookup tables; classic example of DP on binary structure.',
-viz:{sim:'dp1',n:9,init:[0],f:(dp,i)=>dp[i>>1]+(i&1),deps:i=>[i>>1],rule:'bits(i) = bits(i >> 1) + (i & 1)',start:'bits(0) = 0. Each number reuses the answer for its half.',end:'The whole array is the answer: [0,1,1,2,1,2,2,3,1] — built in O(n), one step per number.'},
+viz:{sim:'dp1',n:9,init:[0],f:(dp,i)=>dp[i>>1]+(i&1),deps:i=>[i>>1],rule:'bits(i) = bits(i >> 1) + (i & 1)',start:'bits(0) = 0. Each number reuses the answer for its half.',end:'The whole array is the answer: [0,1,1,2,1,2,2,3,1], built in O(n), one step per number.'},
 test:`res=[Solution().countBits(2),Solution().countBits(5)]`,exp:`[[0,1,1],[0,1,1,2,1,2]]`},
 
 {id:'single-number',n:136,t:'Single Number',d:'E',tg:['Bit Manipulation','Array'],pat:'XOR Cancels Pairs',
-br:'Every number appears twice except one — find it in O(1) space.',
+br:'Every number appears twice except one, find it in O(1) space.',
 bt:'O(n)',bs:'O(n)',ot:'O(n)',os:'O(1)',
 b:r`class Solution:
     def singleNumber(self, nums: List[int]) -> int:
@@ -2917,7 +2968,7 @@ o:r`class Solution:
         for n in nums:
             x ^= n  #! pairs cancel (a^a = 0), the loner is left
         return x`,
-trick:'a ^ a = 0 and a ^ 0 = a. XOR everything — duplicates annihilate.',
+trick:'a ^ a = 0 and a ^ 0 = a. XOR everything, duplicates annihilate.',
 real:'Parity/checksum tricks; RAID parity and error detection use the same XOR cancellation.',
 viz:{flow:xorFlow},
 test:`res=[Solution().singleNumber([2,2,1]),Solution().singleNumber([4,1,2,1,2]),Solution().singleNumber([1])]`,exp:`[1,4,1]`},
@@ -2940,7 +2991,7 @@ o:r`class Solution:
             a, b = (a ^ b) & mask, ((a & b) << 1) & mask  #! XOR = sum without carry, AND<<1 = the carries
         return a if a <= 0x7FFFFFFF else ~(a ^ mask)  #! undo Python's unbounded ints (32-bit sign)`,
 trick:'XOR adds without carrying; (a & b) << 1 is the carry. Repeat until the carry dies. Mask to 32 bits in Python.',
-real:'How an ALU adder works — half-adders chained into a full adder.',
+real:'How an ALU adder works, half-adders chained into a full adder.',
 viz:{flow:sumFlow},
 test:`res=[Solution().getSum(1,2),Solution().getSum(2,3),Solution().getSum(-2,3),Solution().getSum(-5,-7),Solution().getSum(5,3)]`,exp:`[3,5,1,-12,8]`},
 
@@ -2972,7 +3023,7 @@ b:r`class Solution:
         if n < 0:
             x, n = 1 / x, -n
         res = 1.0
-        for _ in range(n):  #? n multiplications — billions for a big n
+        for _ in range(n):  #? n multiplications, billions for a big n
             res *= x
         return res`,
 o:r`class Solution:
@@ -3016,7 +3067,7 @@ o:r`class Solution:
             if sieve[i]:
                 sieve[i * i::i] = bytearray(len(range(i * i, n, i)))  #! cross out every multiple, starting at i²
         return sum(sieve)`,
-trick:'Do not test each number — let every prime cross out its multiples. Start at p² and stop at √n.',
+trick:'Do not test each number, let every prime cross out its multiples. Start at p² and stop at √n.',
 real:'Hashing/crypto parameter generation, number-theoretic precomputation.',
 viz:{flow:sieveFlow},
 test:`res=[Solution().countPrimes(10),Solution().countPrimes(0),Solution().countPrimes(1),Solution().countPrimes(2),Solution().countPrimes(100),Solution().countPrimes(1000)]`,exp:`[4,0,0,0,25,168]`},
@@ -3056,7 +3107,7 @@ o:r`class Solution:
             else:
                 lo = i + 1`,
 trick:'Don’t merge. Binary-search how many elements of the shorter array sit in the left half; the rest is forced. A cut is right when each left border ≤ the opposite right border.',
-real:'Order statistics across sharded sorted data — percentiles from several sorted partitions.',
+real:'Order statistics across sharded sorted data, percentiles from several sorted partitions.',
 viz:{flow:medFlow},
 test:`res=[Solution().findMedianSortedArrays([1,3],[2]),Solution().findMedianSortedArrays([1,2],[3,4]),Solution().findMedianSortedArrays([],[1]),Solution().findMedianSortedArrays([0,0],[0,0]),Solution().findMedianSortedArrays([1,3,5,7],[2,4,6,8,10]),Solution().findMedianSortedArrays([1,3,8,9,15],[7,11,18,19,21,25])]`,exp:`[2.0,2.5,1.0,0.0,5.0,11.0]`}
 );
@@ -3064,7 +3115,7 @@ test:`res=[Solution().findMedianSortedArrays([1,3],[2]),Solution().findMedianSor
 
 </script>
 <script>
-/* p6 — system-design style classes, sampling, string/stack utilities */
+/* p6, system-design style classes, sampling, string/stack utilities */
 (function(){const r=String.raw,f=DR.f;
 const gr=(rows,cur)=>({grid:{v:rows.map(x=>x.map(String)),c:rows.map((x,i)=>x.map((v,j)=>cur&&cur[0]===i&&cur[1]===j?'on':v===2?'i1':''))}});
 
@@ -3346,7 +3397,7 @@ trick:'Array = random access, dict = fast lookup. To delete from the middle in O
 real:'Random sampling from a dynamic pool: negative sampling, work stealing, A/B bucket picks.',
 viz:{flow:[f('Array [10,20,30,40] with a dict value → index. Remove 20 (index 1).',[10,20,30,40],{h:[1],aux:[['remove',20]]}),
  f('Copy the LAST element (40) into the hole and update its index in the dict.',[10,40,30,40],{h:[1],x:[3],aux:[['pos[40]',1]]}),
- f('Pop the end of the array — O(1), nothing shifts.',[10,40,30],{g:[1],aux:[['removed',20]]})]},
+ f('Pop the end of the array, O(1), nothing shifts.',[10,40,30],{g:[1],aux:[['removed',20]]})]},
 test:`s=RandomizedSet();r=[s.insert(1),s.remove(2),s.insert(2),s.getRandom() in (1,2),s.remove(1),s.insert(2),s.getRandom()];res=r`,exp:`[True,False,True,True,True,False,2]`},
 
 {id:'maximum-frequency-stack',n:895,t:'Maximum Frequency Stack',d:'H',tg:['Design','Stack','Hash Map'],pat:'Stack Per Frequency',
@@ -3383,7 +3434,7 @@ o:r`class FreqStack:
         if not self.group[self.mx]:
             self.mx -= 1
         return val`,
-trick:'A value pushed for the 3rd time lives on level 3 (and still on levels 1 and 2). Pop from the top level — recency is automatic because each level is a stack.',
+trick:'A value pushed for the 3rd time lives on level 3 (and still on levels 1 and 2). Pop from the top level, recency is automatic because each level is a stack.',
 real:'Priority by popularity then recency: hot-item eviction, trending queues.',
 viz:{flow:[f('Push 5,7,5,7,4,5. Level f keeps values in the order they reached count f.',[5,7,5,7,4,5],{aux:[['level 1',5,7,4],['level 2',5,7],['level 3',5]]}),
  f('pop() → top level (3) holds only 5.',[5,7,5,7,4,5],{h:[5],aux:[['level 1',5,7,4],['level 2',5,7],['level 3']]}),
@@ -3492,12 +3543,12 @@ o:r`class Twitter:
 
     def unfollow(self, followerId: int, followeeId: int) -> None:
         self.f[followerId].discard(followeeId)`,
-trick:'Each user’s tweets are already time-ordered. The feed is "merge k sorted lists, stop after 10" — a heap of each followee’s newest tweet.',
+trick:'Each user’s tweets are already time-ordered. The feed is "merge k sorted lists, stop after 10", a heap of each followee’s newest tweet.',
 real:'Timeline fan-in for social feeds, activity streams and log aggregation.',
 viz:{flow:[f('You follow A and B. Each has their own newest-first list.',['A: 9','A: 6','A: 2'],{aux:[['B',8,5,3]]}),
  f('Heap starts with each person’s newest: 9 (A) and 8 (B). Pop the largest → 9.',['A: 9','A: 6','A: 2'],{h:[0],aux:[['feed',9],['heap',8,6]]}),
  f('Push A’s next (6). Heap [8,6]. Pop → 8.',['A: 9','A: 6','A: 2'],{h:[1],aux:[['feed',9,8],['heap',6,5]]}),
- f('We never touch older tweets than we need — 10 pops at most.',['A: 9','A: 6','A: 2'],{g:[0,1],aux:[['feed',9,8,6,5,'…']]})]},
+ f('We never touch older tweets than we need, 10 pops at most.',['A: 9','A: 6','A: 2'],{g:[0,1],aux:[['feed',9,8,6,5,'…']]})]},
 test:`tw=Twitter();tw.postTweet(1,5);r=[tw.getNewsFeed(1)];tw.follow(1,2);tw.postTweet(2,6);r+=[tw.getNewsFeed(1)];tw.unfollow(1,2);r+=[tw.getNewsFeed(1)];res=r`,exp:`[[5],[6,5],[5]]`},
 
 {id:'design-hashmap',n:706,t:'Design HashMap',d:'E',tg:['Design','Hash Table'],pat:'Bucket Chaining',
@@ -3595,7 +3646,7 @@ o:r`class MyCircularQueue:
     def deQueue(self) -> bool:
         if self.n == 0:
             return False
-        self.h = (self.h + 1) % self.k  #! just advance the head — nothing shifts
+        self.h = (self.h + 1) % self.k  #! just advance the head, nothing shifts
         self.n -= 1
         return True
 
@@ -3664,7 +3715,7 @@ o:r`class MyQueue:
 
     def empty(self) -> bool:
         return not self.inp and not self.out`,
-trick:'Reversing a stack twice restores order. Push into "in", and only when "out" runs dry pour "in" into it — every element moves at most once.',
+trick:'Reversing a stack twice restores order. Push into "in", and only when "out" runs dry pour "in" into it, every element moves at most once.',
 real:'Amortised analysis made visible; the same trick builds queues in functional languages.',
 viz:{flow:[f('push(1), push(2), push(3): they pile up in the IN stack (top is the right).',['in: 1','in: 2','in: 3'],{aux:[['in',1,2,3],['out']]}),
  f('pop(): OUT is empty → pour IN into OUT. The order flips: 3 at the bottom, 1 on top.',['out: 3','out: 2','out: 1'],{aux:[['in'],['out',3,2,1]]}),
@@ -3703,7 +3754,7 @@ o:r`class BrowserHistory:
         if self.i == len(self.h):
             self.h.append(url)
         else:
-            self.h[self.i] = url  #! overwrite the old "forward" page — no slicing
+            self.h[self.i] = url  #! overwrite the old "forward" page, no slicing
         self.n = self.i + 1  #! moving the end marker forgets the forward history
 
     def back(self, steps: int) -> str:
@@ -3743,7 +3794,7 @@ class Solution:
     def pickIndex(self) -> int:
         r = random.randint(1, self.total)
         return bisect_left(self.pre, r)  #! the bucket that r falls into`,
-trick:'Lay the weights end to end on a number line. A uniform random point lands in index i’s segment with probability w[i]/total — find the segment with binary search.',
+trick:'Lay the weights end to end on a number line. A uniform random point lands in index i’s segment with probability w[i]/total, find the segment with binary search.',
 real:'Weighted sampling: sampling tokens from a distribution (temperature/top-p), load balancing, reservoir mixes.',
 viz:{flow:[f('Weights [1,3,2] → prefix sums [1,4,6]. Think of a line from 1 to 6 split into segments 1 | 2-4 | 5-6.',[1,3,2],{aux:[['prefix',1,4,6]]}),
  f('Draw r = 5 uniformly from 1..6.',[1,3,2],{aux:[['prefix',1,4,6],['r',5]]}),
@@ -3751,7 +3802,7 @@ viz:{flow:[f('Weights [1,3,2] → prefix sums [1,4,6]. Think of a line from 1 to
  f('Index 1 owns 3 of the 6 points → picked 50% of the time, as required.',[1,3,2],{g:[1],aux:[['P(index 1)','3/6']]})]},
 test:`random.seed(1)\ns=Solution([1,3])\nc=Counter(s.pickIndex() for _ in range(4000))\nres=[700<c[0]<1300,2700<c[1]<3300,Solution([5]).pickIndex()]`,exp:`[True,True,0]`},
 
-{id:'shuffle-an-array',n:384,t:'Shuffle an Array',d:'M',tg:['Math','Randomized'],pat:'Fisher–Yates',
+{id:'shuffle-an-array',n:384,t:'Shuffle an Array',d:'M',tg:['Math','Randomized'],pat:'Fisher-Yates',
 br:'Return a uniformly random permutation, and support reset().',
 bt:'O(n²)',bs:'O(n)',ot:'O(n)',os:'O(n)',
 b:r`import random
@@ -3820,7 +3871,7 @@ class Solution:
         return res`,
 trick:'Reservoir sampling: the k-th match replaces the current pick with probability 1/k. Every match ends up equally likely, with O(1) memory.',
 real:'Sampling from a stream of unknown length: log sampling, telemetry, mini-batch selection.',
-viz:{flow:[f('nums = [1,2,3,3,3], target 3. Matches are at indices 2, 3, 4.',[1,2,3,3,3],{aux:[['pick','—']]}),
+viz:{flow:[f('nums = [1,2,3,3,3], target 3. Matches are at indices 2, 3, 4.',[1,2,3,3,3],{aux:[['pick','-']]}),
  f('Index 2 is the 1st match: keep it with probability 1/1 = 100%.',[1,2,3,3,3],{h:[2],aux:[['pick',2],['seen',1]]}),
  f('Index 3 is the 2nd match: replace with probability 1/2.',[1,2,3,3,3],{h:[3],aux:[['pick','2 or 3'],['seen',2]]}),
  f('Index 4 is the 3rd match: replace with probability 1/3 → every match has ended with exactly 1/3.',[1,2,3,3,3],{g:[2,3,4],aux:[['each index','1/3'],['seen',3]]})]},
@@ -4017,10 +4068,10 @@ test:`s=Solution();res=[s.floodFill([[1,1,1],[1,1,0],[1,0,1]],1,1,2),s.floodFill
 
 </script>
 <script>
-/* p7 — JavaScript utility problems (30-days-of-JS style) for the front-end track.
+/* p7, JavaScript utility problems (30-days-of-JS style) for the front-end track.
    lang:'js'. Tests live in jt (body of an async function; `sleep(ms)` is provided) with expected JSON in je
    (and jeb when variant 1 is expected to behave differently). Annotations: //? slow/naive line, //! key line.
-   Code is inside String.raw — no backticks and no dollar-brace sequences. */
+   Code is inside String.raw, no backticks and no dollar-brace sequences. */
 (function(){const r=String.raw,f=DR.f;
 
 DR.add(
@@ -4125,7 +4176,7 @@ o:r`var debounce = function(fn, t) {
   debounced.cancel = () => clearTimeout(timer); //! lets callers (e.g. on unmount) drop the pending call
   return debounced;
 };`,
-trick:'One timer in a closure. Each call clears it and starts a new one — only the quiet gap after the LAST call lets it fire.',
+trick:'One timer in a closure. Each call clears it and starts a new one, only the quiet gap after the LAST call lets it fire.',
 real:'Search-as-you-type, window resize handlers, autosave, validating form fields.',
 viz:{flow:[f('A user types: c1, c2, c3 quickly. Wait time t = 50 ms.',['c1','c2','c3','…','…','run'],{}),
  f('c1 starts a 50 ms timer.',['c1','c2','c3','…','…','run'],{h:[0]}),
@@ -4141,7 +4192,7 @@ b:r`var throttle = function(fn, t) {
   let last = 0;
   return function(...args) {
     const now = Date.now();
-    if (now - last >= t) { //? calls inside the window are simply dropped — the final call is lost
+    if (now - last >= t) { //? calls inside the window are simply dropped, the final call is lost
       last = now;
       fn(...args);
     }
@@ -4189,7 +4240,7 @@ o:r`function memoize(fn) {
     let node = root;
     for (const a of args) {
       if (!node.has(a)) node.set(a, new Map());
-      node = node.get(a); //! arguments are compared by identity — no serialisation
+      node = node.get(a); //! arguments are compared by identity, no serialisation
     }
     if (!node.has(END)) node.set(END, fn(...args));
     return node.get(END);
@@ -4380,11 +4431,11 @@ viz:{flow:[f('compose([x+1, 2x])(4) → first apply 2x, then x+1.',['x+1','2x'],
  f('Result 9. An empty list returns x unchanged.',['x+1','2x'],{g:[0,1],aux:[['result',9]]})]},
 jt:`return [compose([x=>x+1,x=>2*x])(4), compose([])(5), compose([x=>x*x,x=>x+1])(3)];`,je:`[9,5,16]`},
 
-{id:'sort-by',n:2724,t:'Sort By',d:'E',tg:['JavaScript','Sorting'],pat:'Decorate – Sort – Undecorate',lang:'js',
+{id:'sort-by',n:2724,t:'Sort By',d:'E',tg:['JavaScript','Sorting'],pat:'Decorate - Sort - Undecorate',lang:'js',
 br:'Sort an array ascending by the value returned from fn(item).',
 bt:'O(n log n) fn calls',bs:'O(1)',ot:'n fn calls',os:'O(n)',
 b:r`var sortBy = function(arr, fn) {
-  return arr.sort((a, b) => fn(a) - fn(b)); //? fn runs twice per comparison — O(n log n) calls
+  return arr.sort((a, b) => fn(a) - fn(b)); //? fn runs twice per comparison, O(n log n) calls
 };`,
 o:r`var sortBy = function(arr, fn) {
   return arr
@@ -4396,7 +4447,7 @@ trick:'If computing the key is costly, compute it once per item, sort the (key, 
 real:'Sorting by an expensive derived value: relevance scores, parsed dates, distance to a point.',
 viz:{flow:[f('Sort [5,4,1,2,3] by fn(x) = x. The comparator version calls fn twice on every comparison.',[5,4,1,2,3],{aux:[['fn calls',0]]}),
  f('Decorate: call fn once per item → pairs [key, item].',['5·5','4·4','1·1','2·2','3·3'],{aux:[['fn calls',5]]}),
- f('Sort the pairs by key. Comparisons only read stored keys — no more fn calls.',['1·1','2·2','3·3','4·4','5·5'],{h:[0,1,2,3,4],aux:[['fn calls',5]]}),
+ f('Sort the pairs by key. Comparisons only read stored keys, no more fn calls.',['1·1','2·2','3·3','4·4','5·5'],{h:[0,1,2,3,4],aux:[['fn calls',5]]}),
  f('Undecorate: keep the items → [1,2,3,4,5].',[1,2,3,4,5],{g:[0,1,2,3,4],aux:[['fn calls',5]]})]},
 jt:`let calls=0; const r=sortBy([5,4,1,2,3],x=>{calls++; return x;}); return [r, calls===5];`,je:`[[1,2,3,4,5],true]`,jeb:`[[1,2,3,4,5],false]`},
 
@@ -4433,19 +4484,19 @@ jt:`return [chunk([1,2,3,4,5],2), chunk([],1), chunk([1,2,3],5)];`,je:`[[[1,2],[
 
 </script>
 <script>
-/* tracks.js — 8 role tracks × 25 problems. Problems are shared across tracks (ids refer to DR.P). */
+/* tracks.js, 8 role tracks × 25 problems. Problems are shared across tracks (ids refer to DR.P). */
 DR.T=[
-{id:'ds',name:'Data Science',blurb:'Counting, ranking, streaming statistics, sampling and sequence similarity — what data interviews actually probe.',
+{id:'ds',name:'Data Science',blurb:'Counting, ranking, streaming statistics, sampling and sequence similarity, what data interviews actually probe.',
  ids:['two-sum','contains-duplicate','valid-anagram','group-anagrams','top-k-frequent-elements','product-of-array-except-self','subarray-sum-equals-k','longest-consecutive-sequence','best-time-to-buy-and-sell-stock','maximum-subarray','merge-intervals','kth-largest-element-in-an-array','find-median-from-data-stream','k-closest-points-to-origin','sliding-window-maximum','longest-substring-without-repeating-characters','edit-distance','longest-common-subsequence','coin-change','longest-increasing-subsequence','random-pick-with-weight','merge-k-sorted-lists','koko-eating-bananas','sort-colors','maximum-product-subarray']},
-{id:'ai',name:'AI Engineer',blurb:'Caches (KV / prompt), tries and prefix search, tokenisation-style DP, schedulers and streaming — the plumbing under LLM apps.',
+{id:'ai',name:'AI Engineer',blurb:'Caches (KV / prompt), tries and prefix search, tokenisation-style DP, schedulers and streaming, the plumbing under LLM apps.',
  ids:['lru-cache','lfu-cache','time-based-key-value-store','design-hit-counter','number-of-recent-calls','top-k-frequent-elements','kth-largest-element-in-an-array','merge-k-sorted-lists','implement-trie-prefix-tree','design-add-and-search-words-data-structure','search-suggestions-system','word-break','edit-distance','longest-common-subsequence','longest-common-prefix','sliding-window-maximum','task-scheduler','meeting-rooms-ii','course-schedule-ii','random-pick-with-weight','find-median-from-data-stream','minimum-window-substring','maximum-frequency-stack','snapshot-array','serialize-and-deserialize-binary-tree']},
-{id:'fde',name:'Forward Deployed Engineer',blurb:'Messy-data wrangling, parsers, rate limits, integrations and graph joins — the problems you hit at a customer site.',
+{id:'fde',name:'Forward Deployed Engineer',blurb:'Messy-data wrangling, parsers, rate limits, integrations and graph joins, the problems you hit at a customer site.',
  ids:['two-sum','group-anagrams','valid-parentheses','decode-string','simplify-path','basic-calculator-ii','daily-temperatures','merge-intervals','meeting-rooms-ii','task-scheduler','lru-cache','design-hit-counter','time-based-key-value-store','insert-delete-getrandom-o1','top-k-frequent-elements','longest-consecutive-sequence','accounts-merge','course-schedule','number-of-islands','clone-graph','join-two-arrays-by-id','group-by','flatten-deeply-nested-array','serialize-and-deserialize-binary-tree','word-break']},
-{id:'researcher',name:'AI/ML Researcher',blurb:'Numerics, sampling, dynamic programming and graph optimisation — the algorithmic ideas behind ML research code.',
+{id:'researcher',name:'AI/ML Researcher',blurb:'Numerics, sampling, dynamic programming and graph optimisation, the algorithmic ideas behind ML research code.',
  ids:['powx-n','sqrtx','median-of-two-sorted-arrays','kth-largest-element-in-an-array','random-pick-with-weight','shuffle-an-array','random-pick-index','maximum-subarray','maximum-product-subarray','edit-distance','longest-common-subsequence','longest-increasing-subsequence','coin-change','burst-balloons','regular-expression-matching','longest-increasing-path-in-a-matrix','course-schedule','min-cost-to-connect-all-points','network-delay-time','cheapest-flights-within-k-stops','largest-rectangle-in-histogram','trapping-rain-water','find-peak-element','k-closest-points-to-origin','count-primes']},
 {id:'swe',name:'Software Engineer',blurb:'The classic generalist loop: arrays, strings, lists, trees, graphs, DP and backtracking at medium difficulty.',
  ids:['two-sum','valid-parentheses','merge-two-sorted-lists','best-time-to-buy-and-sell-stock','valid-palindrome','invert-binary-tree','climbing-stairs','linked-list-cycle','reverse-linked-list','binary-search','number-of-islands','3sum','longest-substring-without-repeating-characters','group-anagrams','merge-intervals','validate-binary-search-tree','binary-tree-level-order-traversal','search-in-rotated-sorted-array','coin-change','product-of-array-except-self','container-with-most-water','house-robber','combination-sum','word-search','maximum-subarray']},
-{id:'backend',name:'Backend Engineer',blurb:'Caches, rate limiters, schedulers, dependency graphs and data-structure design — server-side building blocks.',
+{id:'backend',name:'Backend Engineer',blurb:'Caches, rate limiters, schedulers, dependency graphs and data-structure design, server-side building blocks.',
  ids:['lru-cache','lfu-cache','design-hit-counter','time-based-key-value-store','insert-delete-getrandom-o1','design-twitter','number-of-recent-calls','task-scheduler','meeting-rooms-ii','merge-k-sorted-lists','course-schedule-ii','network-delay-time','top-k-frequent-elements','find-median-from-data-stream','design-hashmap','design-circular-queue','implement-queue-using-stacks','snapshot-array','serialize-and-deserialize-binary-tree','accounts-merge','redundant-connection','maximum-frequency-stack','kth-largest-element-in-an-array','random-pick-with-weight','design-browser-history']},
 {id:'frontend',name:'Frontend Engineer',blurb:'Debounce, throttle, memoize, event emitters and promise utilities in JavaScript, plus the DOM-flavoured DSA you get asked.',
  ids:['debounce','throttle','memoize','cache-with-time-limit','event-emitter','curry','promise-pool','promise-time-limit','flatten-deeply-nested-array','group-by','function-composition','sort-by','join-two-arrays-by-id','chunk-array','valid-parentheses','decode-string','flood-fill','lowest-common-ancestor-of-a-binary-tree','maximum-depth-of-binary-tree','binary-tree-level-order-traversal','design-browser-history','simplify-path','text-justification','search-suggestions-system','lru-cache']},
@@ -4455,7 +4506,7 @@ DR.T=[
 
 </script>
 <script>
-/* hl.js — tiny syntax highlighter, annotation parser, line diff, complexity maths */
+/* hl.js, tiny syntax highlighter, annotation parser, line diff, complexity maths */
 (function(){
 const PY=new Set('def class return if elif else for while in not and or is None True False import from as with try except finally raise lambda pass break continue yield global nonlocal assert del async await'.split(' '));
 const JS=new Set('function return if else for while do of in new const let var class extends this null undefined true false typeof instanceof try catch finally throw async await break continue switch case default yield static super delete void'.split(' '));
@@ -4523,7 +4574,7 @@ window.HL={line,parse,diff,ops,esc};
 
 </script>
 <script>
-/* sims.js — pattern simulators. Each takes a spec and returns frames (or {frames, ...static structure}).
+/* sims.js, pattern simulators. Each takes a spec and returns frames (or {frames, ...static structure}).
    Frame fields: a (cells; primitives or {k,v,c}), h/g/x (highlight/good/dim idx), p (pointers {name:idx}), w ([l,r] window),
    aux ([[label,...items]]), note, grid {v,c}, tree (level-order override), th/tg/tv (tree node ids: current/done/visible),
    gh/gv (graph nodes current/visited), ge/gb (edges accepted/rejected), gl ({node:label}). */
@@ -4580,7 +4631,7 @@ S.swmax=({arr,k})=>{const dq=[],out=[],f=[];
   return f;};
 
 S.minwin=({s,t})=>{const a=[...s],need={};for(const c of t)need[c]=(need[c]||0)+1;let miss=t.length,l=0,bl=-1,br=-1;const f=[];
-  const A=()=>[['still missing',miss],['best',bl<0?'—':s.slice(bl,br+1)]];
+  const A=()=>[['still missing',miss],['best',bl<0?'-':s.slice(bl,br+1)]];
   f.push({a,aux:A(),note:`Need all letters of "${t}". Expand r until the window is valid, then shrink l as far as possible.`});
   for(let r=0;r<a.length;r++){
     if(need[a[r]]>0)miss--;need[a[r]]=(need[a[r]]||0)-1;
@@ -4612,7 +4663,7 @@ S.stackMono=({arr})=>{const st=[],res=arr.map(()=>0),f=[];
   f.push({a:arr,aux:A(),note:'Keep a stack of days still waiting for a warmer day (decreasing temps).'});
   for(let i=0;i<arr.length;i++){
     while(st.length&&arr[st[st.length-1]]<arr[i]){const j=st.pop();res[j]=i-j;f.push({a:arr,p:{i},g:[j],h:[i],aux:A(),note:`${arr[i]} > ${arr[j]}: day ${j} waited ${i-j} day(s). Pop it.`});}
-    st.push(i);f.push({a:arr,p:{i},h:[i],aux:A(),note:`Push day ${i} (${arr[i]}) — it now waits.`});}
+    st.push(i);f.push({a:arr,p:{i},h:[i],aux:A(),note:`Push day ${i} (${arr[i]}), it now waits.`});}
   return f;};
 
 S.parens=({s})=>{const a=[...s],st=[],f=[],pair={')':'(',']':'[','}':'{'};
@@ -4689,7 +4740,7 @@ S.dijkstra=v=>{const n=v.nodes.length,d=Array(n).fill(Infinity),done=new Set(),f
   f.push({gh:[v.start],gv:[],gl:L(),note:`Dijkstra: always finalise the unvisited node with the smallest known distance. dist[${v.start}] = 0.`});
   for(let k=0;k<n;k++){let u=-1;for(let i=0;i<n;i++)if(!done.has(i)&&d[i]<Infinity&&(u<0||d[i]<d[u]))u=i;if(u<0)break;done.add(u);const es=[];
     v.edges.forEach(([a,b,w],ei)=>{const x=v.dir?[[a,b]]:[[a,b],[b,a]];x.forEach(([p,q])=>{if(p===u&&!done.has(q)&&d[u]+w<d[q]){d[q]=d[u]+w;es.push(ei);}});});
-    f.push({gh:[u],gv:[...done],ge:es,gl:L(),note:`Finalise ${u} (dist ${d[u]}). Relax its edges${es.length?': shorter routes found.':' — nothing improved.'}`});}
+    f.push({gh:[u],gv:[...done],ge:es,gl:L(),note:`Finalise ${u} (dist ${d[u]}). Relax its edges${es.length?': shorter routes found.':', nothing improved.'}`});}
   f.push({gv:[...done],gl:L(),note:`Done. Answer = ${v.answer!==undefined?v.answer:Math.max(...d)}.`});return f;};
 
 S.bellman=v=>{const n=v.nodes.length;let d=Array(n).fill(Infinity);d[v.src]=0;const f=[];const L=a=>{const o={};a.forEach((x,i)=>o[i]=x===Infinity?'∞':x);return o;};
@@ -4703,8 +4754,8 @@ S.uf=v=>{const n=v.nodes.length,p=[...Array(n).keys()],find=x=>p[x]===x?x:(p[x]=
   const comps=()=>{const m={};for(let i=0;i<n;i++){(m[find(i)]=m[find(i)]||[]).push(i);}return Object.values(m).map(c=>'{'+c.join(',')+'}');};
   f.push({ge:[],gb:[],aux:[['components',...comps()]],note:v.mode==='mst'?'Kruskal: take the cheapest edges first, skip any edge that closes a cycle (union-find tells us).':'Add edges one by one. An edge whose ends are already connected is the redundant one.'});
   for(const ei of order){const [a,b,w]=v.edges[ei],ra=find(a),rb=find(b);
-    if(ra===rb){rej.push(ei);f.push({ge:[...acc],gb:[...rej],gh:[a,b],aux:[['components',...comps()]],note:`Edge ${a}–${b}${w!=null?' (cost '+w+')':''}: already connected → skip (it would form a cycle).`});if(v.mode!=='mst')return f;}
-    else{p[ra]=rb;acc.push(ei);f.push({ge:[...acc],gb:[...rej],gh:[a,b],aux:[['components',...comps()]],note:`Edge ${a}–${b}${w!=null?' (cost '+w+')':''}: joins two components → keep.`});}}
+    if(ra===rb){rej.push(ei);f.push({ge:[...acc],gb:[...rej],gh:[a,b],aux:[['components',...comps()]],note:`Edge ${a}-${b}${w!=null?' (cost '+w+')':''}: already connected → skip (it would form a cycle).`});if(v.mode!=='mst')return f;}
+    else{p[ra]=rb;acc.push(ei);f.push({ge:[...acc],gb:[...rej],gh:[a,b],aux:[['components',...comps()]],note:`Edge ${a}-${b}${w!=null?' (cost '+w+')':''}: joins two components → keep.`});}}
   f.push({ge:[...acc],gb:[...rej],aux:[['components',...comps()]],note:v.mode==='mst'?`Tree complete. Total cost = ${acc.reduce((s,e)=>s+v.edges[e][2],0)}.`:'No redundant edge.'});return f;};
 
 S.heapk=({arr,k})=>{const h=[],f=[];const A=()=>[['min-heap (size ≤ '+k+')',...[...h].sort((a,b)=>a-b)]];
@@ -4772,7 +4823,7 @@ S.trie=({words,query})=>{let id=0;const root={id:id++,v:'∘',c:[]};const path={
   f.push({tv:[...vis],th:[0],note:'A trie stores words letter by letter; shared prefixes share nodes.'});
   for(const w of words){path[w].forEach(i=>vis.add(i));const e=path[w][path[w].length-1];ends.push(e);f.push({tv:[...vis],th:path[w],tg:[...ends],note:`Insert "${w}": follow existing letters, create missing ones, mark the last node as a word end.`});}
   if(query){const pre=[0];let n=root,ok=true;for(const ch of query){const c=n.c.find(x=>x.v===ch);if(!c){ok=false;break;}n=c;pre.push(n.id);}
-    f.push({tv:[...vis],th:pre,tg:[...ends],note:ok?`Prefix "${query}" exists after ${query.length} steps — cost depends only on its length, not on how many words are stored.`:`"${query}" falls off the trie → no such prefix.`});}
+    f.push({tv:[...vis],th:pre,tg:[...ends],note:ok?`Prefix "${query}" exists after ${query.length} steps, cost depends only on its length, not on how many words are stored.`:`"${query}" falls off the trie → no such prefix.`});}
   return {frames:f,trie:root};};
 
 // backtracking tree. spec: expand(path)->child paths, label(path), good(path), dead(path), max
@@ -4782,7 +4833,7 @@ S.bt=v=>{let id=0;const nodes=[],max=v.max||40;
   const f=[],vis=new Set(),goods=[],deads=[];
   f.push({tv:[0],th:[0],note:v.start_note||'Backtracking explores a tree of choices: choose → explore → un-choose. Each node is a partial answer.'});
   nodes.forEach(n=>{vis.add(n.id);const g=v.good&&v.good(n.p),d=v.dead&&v.dead(n.p);if(g)goods.push(n.id);
-    f.push({tv:[...vis],th:[n.id],tg:[...goods],note:g?`${n.v} is a complete answer ✓ — record it.`:d?`${n.v} breaks the rule → prune: do not explore below it.`:`Partial: ${n.v}. Try the next choices from here.`});});
+    f.push({tv:[...vis],th:[n.id],tg:[...goods],note:g?`${n.v} is a complete answer ✓, record it.`:d?`${n.v} breaks the rule → prune: do not explore below it.`:`Partial: ${n.v}. Try the next choices from here.`});});
   f.push({tv:[...vis],tg:[...goods],note:`Finished: ${goods.length} answer(s) found.`});return {frames:f,trie:root};};
 
 window.SIMS={S,buildTree,run(spec){
@@ -4793,7 +4844,7 @@ window.SIMS={S,buildTree,run(spec){
 
 </script>
 <script>
-/* viz.js — animated trace player, code renderer, morph diff and complexity race */
+/* viz.js, animated trace player, code renderer, morph diff and complexity race */
 (function(){
 const $=(s,r=document)=>r.querySelector(s);
 const h=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;};
@@ -4959,7 +5010,7 @@ function morph(el,pb,po,lang){
 /* ---------- complexity race ---------- */
 const fmt=x=>x>=1e12?'10¹²+':x>=1e9?(x/1e9).toFixed(1)+'B':x>=1e6?(x/1e6).toFixed(1)+'M':x>=1e3?(x/1e3).toFixed(1)+'K':String(Math.round(x));
 function race(el,p){
-  el.innerHTML='<div class="nrow"><span>Input size n =</span><b class="mono nv">1,000</b><input type="range" min="1" max="5" step="0.1" value="3"><button class="btn small go">Run race ▶</button></div><div class="race"><div class="rbar a"><span>Variant 1<br><b class="mono">'+E(p.bt)+'</b></span><div class="tr"><div class="fl"></div></div><span class="v"></span></div><div class="rbar b"><span>Variant 2<br><b class="mono">'+E(p.ot)+'</b></span><div class="tr"><div class="fl"></div></div><span class="v"></span></div></div><p class="small" style="margin-top:12px">Bars use a log scale — every step to the right is 10× more work. Space: V1 '+E(p.bs)+' · V2 '+E(p.os)+'.</p>';
+  el.innerHTML='<div class="nrow"><span>Input size n =</span><b class="mono nv">1,000</b><input type="range" min="1" max="5" step="0.1" value="3"><button class="btn small go">Run race ▶</button></div><div class="race"><div class="rbar a"><span>Variant 1<br><b class="mono">'+E(p.bt)+'</b></span><div class="tr"><div class="fl"></div></div><span class="v"></span></div><div class="rbar b"><span>Variant 2<br><b class="mono">'+E(p.ot)+'</b></span><div class="tr"><div class="fl"></div></div><span class="v"></span></div></div><p class="small" style="margin-top:12px">Bars use a log scale, every step to the right is 10× more work. Space: V1 '+E(p.bs)+' · V2 '+E(p.os)+'.</p>';
   const rg=$('input',el),nv=$('.nv',el),fl=[...el.querySelectorAll('.fl')],vs=[...el.querySelectorAll('.v')];
   function upd(anim){const n=Math.round(Math.pow(10,+rg.value));nv.textContent=n.toLocaleString();const a=HL.ops(p.bt,n),b=HL.ops(p.ot,n),mx=Math.max(a,b,10);
     [a,b].forEach((x,k)=>{const w=Math.max(2,Math.log10(1+x)/Math.log10(1+mx)*100);if(anim){fl[k].style.transition='none';fl[k].style.width='0%';void fl[k].offsetWidth;fl[k].style.transition='';}
@@ -4972,7 +5023,7 @@ window.Viz={mount,codeHTML,morph,race};
 
 </script>
 <script>
-/* anki.js — build Anki cards: TSV download (File → Import) and AnkiConnect push */
+/* anki.js, build Anki cards: TSV download (File → Import) and AnkiConnect push */
 (function(){
 const E=HL.esc;
 const url=p=>'https://leetcode.com/problems/'+p.id+'/';
@@ -5009,7 +5060,7 @@ window.Anki={cards,tsv,download,push};
 
 </script>
 <script>
-/* ai.js — generate a new problem page with any OpenAI-compatible endpoint (or Anthropic). Keys stay in localStorage. */
+/* ai.js, generate a new problem page with any OpenAI-compatible endpoint (or Anthropic). Keys stay in localStorage. */
 (function(){
 const PROV={
   groq:{n:'Groq',base:'https://api.groq.com/openai/v1',model:'llama-3.3-70b-versatile',get:'https://console.groq.com/keys',tag:'free tier',blurb:'Very fast Llama / GPT-OSS models. Sign in, create a key, done.'},
@@ -5051,7 +5102,7 @@ async function chat(c,sys,user){
     }
   }catch(e){throw new Error(e.name==='AbortError'?'The provider took too long (2 min).':'Could not reach '+base+'. Either you are offline, the key/URL is wrong, or this provider blocks calls from browsers (CORS). Try Groq, Gemini or OpenRouter.');}
   txt=await r.text();
-  if(!r.ok){let m=txt.slice(0,300);throw new Error(r.status+(r.status===401||r.status===403?' — key rejected or missing. ':r.status===429?' — rate limit hit, wait a minute or switch provider. ':' — ')+m);}
+  if(!r.ok){let m=txt.slice(0,300);throw new Error(r.status+(r.status===401||r.status===403?', key rejected or missing. ':r.status===429?', rate limit hit, wait a minute or switch provider. ':', ')+m);}
   let j;try{j=JSON.parse(txt);}catch(e){throw new Error('Provider returned non-JSON: '+txt.slice(0,160));}
   return c.prov==='anthropic'?(j.content||[]).map(x=>x.text||'').join(''):(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
 }
@@ -5071,7 +5122,7 @@ const SYS=`You are an expert algorithms coach. Given a LeetCode problem, reply w
 "trick":"ONE memorable mnemonic in the form 'CUE -> PATTERN: vivid hook' (<=200 chars)",
 "real":"one sentence on where this idea shows up in real systems",
 "flow":[ 8 to 14 animation frames tracing the OPTIMAL algorithm on a tiny example (array of <=10 items) ]}
-Each frame is an object: {"note":"what happens, one sentence","a":[cells as strings or numbers],"h":[highlighted indexes],"g":[green/done indexes],"x":[dimmed indexes],"p":{"pointerName":index},"w":[left,right] for a window,"aux":[["label","item1","item2"]]} — aux rows show hash maps, stacks, queues, heaps, results as chips. Every frame should repeat the full state (a, p, aux). Use only these keys. Escape newlines inside JSON strings as \\n.`;
+Each frame is an object: {"note":"what happens, one sentence","a":[cells as strings or numbers],"h":[highlighted indexes],"g":[green/done indexes],"x":[dimmed indexes],"p":{"pointerName":index},"w":[left,right] for a window,"aux":[["label","item1","item2"]]}, aux rows show hash maps, stacks, queues, heaps, results as chips. Every frame should repeat the full state (a, p, aux). Use only these keys. Escape newlines inside JSON strings as \\n.`;
 
 function extractJSON(s){
   s=String(s||'').replace(/```(?:json)?/gi,'');const a=s.indexOf('{'),b=s.lastIndexOf('}');if(a<0||b<=a)throw new Error('No JSON found in the model reply.');
@@ -5109,12 +5160,12 @@ async function generate(slug,statement,status){
   const c=current();if(!ready())throw new Error('NOKEY');
   status('Looking for the problem statement…');
   const text=statement||await fetchStatement(slug);
-  status('Asking '+(PROV[c.prov]||PROV.custom).n+' ('+c.model+')… this takes 20–60 seconds.');
-  const user='LeetCode problem slug: '+slug+' (https://leetcode.com/problems/'+slug+'/)\n'+(text?'Problem statement:\n'+text:'No statement was available — use your own knowledge of this problem.');
+  status('Asking '+(PROV[c.prov]||PROV.custom).n+' ('+c.model+')… this takes 20-60 seconds.');
+  const user='LeetCode problem slug: '+slug+' (https://leetcode.com/problems/'+slug+'/)\n'+(text?'Problem statement:\n'+text:'No statement was available, use your own knowledge of this problem.');
   let out,j;
   for(let attempt=0;attempt<2;attempt++){
     out=await chat(c,SYS,attempt?user+'\n\nYour previous reply was not valid JSON. Reply with ONLY the JSON object.':user);
-    try{j=extractJSON(out);break;}catch(e){if(attempt)throw new Error('The model did not return valid JSON. Try a stronger model.');status('Reply was not valid JSON — retrying once…');}
+    try{j=extractJSON(out);break;}catch(e){if(attempt)throw new Error('The model did not return valid JSON. Try a stronger model.');status('Reply was not valid JSON, retrying once…');}
   }
   return normalize(slug,j);
 }
@@ -5124,7 +5175,7 @@ window.AI={PROV,get,cfgFor,current,save,ready,mine,saveMine,delMine,generate,lis
 
 </script>
 <script>
-/* app.js — router, pages, settings. */
+/* app.js, router, pages, settings. */
 (function(){
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -5141,15 +5192,18 @@ const killLive=()=>{live.forEach(x=>x&&x.destroy&&x.destroy());live=[];};
 /* ---------- pixel art ---------- */
 function pix(rows,fill){const R=rows.length,C=rows[0].length;let s='';rows.forEach((r,y)=>[...r].forEach((c,x)=>{if(c==='#')s+='<rect x="'+x+'" y="'+y+'" width="1" height="1"/>';}));
   return '<svg viewBox="0 0 '+C+' '+R+'" fill="'+(fill||'currentColor')+'" shape-rendering="crispEdges" aria-hidden="true">'+s+'</svg>';}
-const ICON={
-  trace:['##......','##......','.##.....','..##....','...###..','.....###','......##','......##'],
-  two:['#######.','#.....#.','#.##..#.','#.##.###','#####.#.','...#..#.','...#####','........'],
-  diff:['...##...','...##...','########','########','...##...','...##...','........','########'],
-  race:['........','#.......','#...#...','##..#...','##.##...','##.##.#.','##.####.','########'],
-  bulb:['..####..','.######.','.######.','.######.','..####..','...##...','..####..','...##...'],
-  card:['.#######','.#.....#','##.....#','#.####.#','#.#..#.#','#.####.#','#.....##','#######.'],
-  globe:['..####..','.#.##.#.','#..##..#','########','########','#..##..#','.#.##.#.','..####..']
+const LUCIDE={
+  trace:'<polygon points="6 3 20 12 6 21 6 3"/>',
+  two:'<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
+  diff:'<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
+  race:'<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+  bulb:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+  card:'<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
+  globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  arrow:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
 };
+function lucide(n,cls){return '<svg class="lucide '+(cls||'')+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+LUCIDE[n]+'</svg>';}
 const BUGS=[
   ['#.#..#.#','.######.','##.##.##','########','.######.','#.####.#','#......#','.#....#.'],
   ['..####..','.######.','##.##.##','########','.######.','..#..#..','.#.##.#.','#......#'],
@@ -5195,12 +5249,12 @@ function initHome(){
     ['bulb','Memory trick','One vivid line per problem so the pattern comes back when you need it.'],
     ['card','Anki cards','Download a deck, or push cards straight into Anki through AnkiConnect.'],
     ['globe','Any LeetCode URL','Not in the library? Bring any LLM key and generate the full page in seconds.']];
-  const card=x=>'<div class="card feat">'+pix(ICON[x[0]])+'<h3>'+x[1]+'</h3><p>'+x[2]+'</p></div>';
+  const card=x=>'<div class="card feat">'+lucide(x[0])+'<h3>'+x[1]+'</h3><p>'+x[2]+'</p></div>';
   $('#feat1').innerHTML=F.slice(0,4).map(card).join('');$('#feat2').innerHTML=F.slice(4).map(card).join('');
   const slots=DR.T.reduce((s,x)=>s+x.ids.length,0),uniq=Object.keys(DR.P).length;
-  $('#trackgrid').innerHTML=DR.T.map(x=>'<a class="card track" href="#/t/'+x.id+'"><div class="n">'+x.ids.length+'</div><h3>'+E(x.name)+'</h3><p>'+E(x.blurb)+'</p><div class="go">Open track →</div></a>').join('');
+  $('#trackgrid').innerHTML=DR.T.map(x=>'<a class="card track" href="#/t/'+x.id+'"><div class="n">'+x.ids.length+'</div><h3>'+E(x.name)+'</h3><p>'+E(x.blurb)+'</p><div class="go">Open track '+lucide('arrow')+'</div></a>').join('');
   $('#stats').innerHTML=[[slots,'curated drills across 8 role tracks'],[uniq,'unique problems, each in 2 variants'],[0,'servers, builds or dependencies']].map(x=>'<div class="stat"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('');
-  $('#prov').innerHTML=['groq','gemini','openrouter','cerebras','mistral','nvidia'].map(k=>{const p=AI.PROV[k];return '<a class="card" href="'+p.get+'" target="_blank" rel="noopener"><h3>'+p.n+'<em>'+p.tag+'</em></h3><p>'+p.blurb+'</p><p style="color:var(--acc)">Get a key →</p></a>';}).join('');
+  $('#prov').innerHTML=['groq','gemini','openrouter','cerebras','mistral','nvidia'].map(k=>{const p=AI.PROV[k];return '<a class="card" href="'+p.get+'" target="_blank" rel="noopener"><h3>'+p.n+'<em>'+p.tag+'</em></h3><p>'+p.blurb+'</p><p class="get" style="color:var(--acc)">Get a key '+lucide('arrow')+'</p></a>';}).join('');
   $('#sprites').innerHTML=BUGS.map(b=>pix(b)).join('');
   $$('canvas.dots').forEach(dots);
   $$('.try a').forEach(a=>a.onclick=()=>{$('#url').value='https://leetcode.com/problems/'+a.dataset.slug+'/';$('#urlform').requestSubmit();});
@@ -5272,14 +5326,14 @@ function problem(id,query){
 function gen(slug){
   killLive();setView('gen');const v=$('#v-gen');
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / New problem</div><h1 class="ptitle">Not in the library yet</h1><p class="brief">We will ask an LLM to produce the beginner solution, the optimal one, the trace and the memory trick for <b class="mono">'+E(slug)+'</b>. Results are saved in this browser only.</p>'+
-    '<div class="field"><label>Problem statement (optional — paste it for better accuracy)</label><textarea id="gs" placeholder="Paste the problem description here, or leave empty…"></textarea></div>'+
+    '<div class="field"><label>Problem statement (optional, paste it for better accuracy)</label><textarea id="gs" placeholder="Paste the problem description here, or leave empty…"></textarea></div>'+
     '<div class="toolbar"><button class="btn" id="gg">Generate</button><button class="btn ghost" id="gk">AI settings</button></div><div class="status" id="gst" hidden></div>');
   const st=$('#gst',v);let busy=false;
   async function run(){if(busy)return;busy=true;st.hidden=false;st.className='status';
     const say=m=>{st.innerHTML='<span class="spin"></span>'+E(m);};
     try{const p=await AI.generate(slug,$('#gs',v).value.trim(),say);AI.saveMine(p);location.hash='#/p/'+slug;}
     catch(e){st.className='status err';
-      if(e.message==='NOKEY'){st.innerHTML='No AI provider is configured yet. Pick one and paste a key — Groq, Gemini and OpenRouter all have free tiers. Then press Generate again.';}
+      if(e.message==='NOKEY'){st.innerHTML='No AI provider is configured yet. Pick one and paste a key, Groq, Gemini and OpenRouter all have free tiers. Then press Generate again.';}
       else st.textContent=e.message;}
     busy=false;}
   $('#gg',v).onclick=run;$('#gk',v).onclick=openKeys;
@@ -5302,22 +5356,24 @@ function notFound(){killLive();setView('gen');$('#v-gen').innerHTML=pageShell('<
 /* ---------- AI settings dialog ---------- */
 function openKeys(){
   const dlg=$('#dlg-keys'),cur=AI.get();
-  const opts=Object.entries(AI.PROV).map(([k,p])=>'<option value="'+k+'">'+E(p.n)+' — '+E(p.tag)+'</option>').join('');
-  dlg.innerHTML='<div class="dbody"><h3>AI settings</h3><p class="small">Only needed for problems outside the built-in library. Your key is stored in this browser and sent only to the provider you choose.</p>'+
+  const opts=Object.entries(AI.PROV).map(([k,p])=>'<option value="'+k+'">'+E(p.n)+', '+E(p.tag)+'</option>').join('');
+  dlg.innerHTML='<div class="dbody"><div class="dlg-head"><div><h3>AI settings</h3><p class="small">Only needed for problems outside the built-in library. Your key is stored in this browser and sent only to the provider you choose.</p></div><button class="dlg-x" id="k-x-top" aria-label="Close settings">'+lucide('x')+'</button></div>'+
    '<div class="field"><label>Provider</label><select id="k-p">'+opts+'</select></div><p class="small" id="k-blurb" style="margin-top:8px"></p>'+
    '<div class="field"><label>Base URL (OpenAI-compatible)</label><input id="k-b" spellcheck="false"></div>'+
    '<div class="field"><label>Model</label><input id="k-m" list="k-ml" spellcheck="false"><datalist id="k-ml"></datalist></div>'+
    '<div class="field"><label>API key</label><input id="k-k" type="password" autocomplete="off" placeholder="paste key"></div>'+
    '<div class="toolbar"><button class="btn small" id="k-s">Save</button><button class="btn small ghost" id="k-l">List models</button><a class="btn small ghost" id="k-g" target="_blank" rel="noopener">Get a key ↗</a><button class="btn small ghost" id="k-x">Close</button></div><div class="status" id="k-st" hidden></div>'+
-   '<div class="free"><b style="margin-top:20px;font-size:13px">Free-tier providers</b>'+['groq','gemini','openrouter','cerebras','mistral','nvidia','huggingface'].map(k=>'<span>• <a href="'+AI.PROV[k].get+'" target="_blank" rel="noopener">'+AI.PROV[k].n+'</a> — '+AI.PROV[k].blurb+'</span>').join('')+'<span class="small" style="margin-top:10px">Free tiers and model names change often; edit the Model field or press “List models”. Limits are per provider.</span></div>'+
+   '<div class="free"><b style="margin-top:20px;font-size:13px">Free-tier providers</b>'+['groq','gemini','openrouter','cerebras','mistral','nvidia','huggingface'].map(k=>'<span>• <a href="'+AI.PROV[k].get+'" target="_blank" rel="noopener">'+AI.PROV[k].n+'</a>, '+AI.PROV[k].blurb+'</span>').join('')+'<span class="small" style="margin-top:10px">Free tiers and model names change often; edit the Model field or press “List models”. Limits are per provider.</span></div>'+
    '<div class="toolbar"><button class="btn small ghost" id="k-c">Erase saved keys &amp; generated problems</button></div></div>';
   const P=$('#k-p',dlg);P.value=cur.prov;
   function fill(){const k=P.value,c=AI.cfgFor(k),d=AI.PROV[k];$('#k-b',dlg).value=c.base;$('#k-m',dlg).value=c.model;$('#k-k',dlg).value=c.key;$('#k-blurb',dlg).textContent=d.blurb;const g=$('#k-g',dlg);g.hidden=!d.get;g.href=d.get||'#';}
   P.onchange=fill;fill();
   const st=$('#k-st',dlg),val=()=>({prov:P.value,base:$('#k-b',dlg).value.trim(),model:$('#k-m',dlg).value.trim(),key:$('#k-k',dlg).value.trim()});
   $('#k-s',dlg).onclick=()=>{const c=val();AI.save(c.prov,c);st.hidden=false;st.className='status';st.textContent='Saved ✓';};
-  $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.textContent='Loading models…';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found — click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
+  $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.textContent='Loading models…';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found, click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
   $('#k-x',dlg).onclick=()=>dlg.close();
+  $('#k-x-top',dlg).onclick=()=>dlg.close();
+  dlg.onclick=e=>{if(e.target===dlg)dlg.close();};
   $('#k-c',dlg).onclick=()=>{if(confirm('Erase saved API keys and generated problems from this browser?')){['dr-ai','dr-mine'].forEach(k=>localStorage.removeItem(k));fill();st.hidden=false;st.className='status';st.textContent='Erased.';}};
   if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');
 }

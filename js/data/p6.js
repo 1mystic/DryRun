@@ -1,4 +1,4 @@
-/* p6 — system-design style classes, sampling, string/stack utilities */
+/* p6, system-design style classes, sampling, string/stack utilities */
 (function(){const r=String.raw,f=DR.f;
 const gr=(rows,cur)=>({grid:{v:rows.map(x=>x.map(String)),c:rows.map((x,i)=>x.map((v,j)=>cur&&cur[0]===i&&cur[1]===j?'on':v===2?'i1':''))}});
 
@@ -280,7 +280,7 @@ trick:'Array = random access, dict = fast lookup. To delete from the middle in O
 real:'Random sampling from a dynamic pool: negative sampling, work stealing, A/B bucket picks.',
 viz:{flow:[f('Array [10,20,30,40] with a dict value → index. Remove 20 (index 1).',[10,20,30,40],{h:[1],aux:[['remove',20]]}),
  f('Copy the LAST element (40) into the hole and update its index in the dict.',[10,40,30,40],{h:[1],x:[3],aux:[['pos[40]',1]]}),
- f('Pop the end of the array — O(1), nothing shifts.',[10,40,30],{g:[1],aux:[['removed',20]]})]},
+ f('Pop the end of the array, O(1), nothing shifts.',[10,40,30],{g:[1],aux:[['removed',20]]})]},
 test:`s=RandomizedSet();r=[s.insert(1),s.remove(2),s.insert(2),s.getRandom() in (1,2),s.remove(1),s.insert(2),s.getRandom()];res=r`,exp:`[True,False,True,True,True,False,2]`},
 
 {id:'maximum-frequency-stack',n:895,t:'Maximum Frequency Stack',d:'H',tg:['Design','Stack','Hash Map'],pat:'Stack Per Frequency',
@@ -317,7 +317,7 @@ o:r`class FreqStack:
         if not self.group[self.mx]:
             self.mx -= 1
         return val`,
-trick:'A value pushed for the 3rd time lives on level 3 (and still on levels 1 and 2). Pop from the top level — recency is automatic because each level is a stack.',
+trick:'A value pushed for the 3rd time lives on level 3 (and still on levels 1 and 2). Pop from the top level, recency is automatic because each level is a stack.',
 real:'Priority by popularity then recency: hot-item eviction, trending queues.',
 viz:{flow:[f('Push 5,7,5,7,4,5. Level f keeps values in the order they reached count f.',[5,7,5,7,4,5],{aux:[['level 1',5,7,4],['level 2',5,7],['level 3',5]]}),
  f('pop() → top level (3) holds only 5.',[5,7,5,7,4,5],{h:[5],aux:[['level 1',5,7,4],['level 2',5,7],['level 3']]}),
@@ -426,12 +426,12 @@ o:r`class Twitter:
 
     def unfollow(self, followerId: int, followeeId: int) -> None:
         self.f[followerId].discard(followeeId)`,
-trick:'Each user’s tweets are already time-ordered. The feed is "merge k sorted lists, stop after 10" — a heap of each followee’s newest tweet.',
+trick:'Each user’s tweets are already time-ordered. The feed is "merge k sorted lists, stop after 10", a heap of each followee’s newest tweet.',
 real:'Timeline fan-in for social feeds, activity streams and log aggregation.',
 viz:{flow:[f('You follow A and B. Each has their own newest-first list.',['A: 9','A: 6','A: 2'],{aux:[['B',8,5,3]]}),
  f('Heap starts with each person’s newest: 9 (A) and 8 (B). Pop the largest → 9.',['A: 9','A: 6','A: 2'],{h:[0],aux:[['feed',9],['heap',8,6]]}),
  f('Push A’s next (6). Heap [8,6]. Pop → 8.',['A: 9','A: 6','A: 2'],{h:[1],aux:[['feed',9,8],['heap',6,5]]}),
- f('We never touch older tweets than we need — 10 pops at most.',['A: 9','A: 6','A: 2'],{g:[0,1],aux:[['feed',9,8,6,5,'…']]})]},
+ f('We never touch older tweets than we need, 10 pops at most.',['A: 9','A: 6','A: 2'],{g:[0,1],aux:[['feed',9,8,6,5,'…']]})]},
 test:`tw=Twitter();tw.postTweet(1,5);r=[tw.getNewsFeed(1)];tw.follow(1,2);tw.postTweet(2,6);r+=[tw.getNewsFeed(1)];tw.unfollow(1,2);r+=[tw.getNewsFeed(1)];res=r`,exp:`[[5],[6,5],[5]]`},
 
 {id:'design-hashmap',n:706,t:'Design HashMap',d:'E',tg:['Design','Hash Table'],pat:'Bucket Chaining',
@@ -529,7 +529,7 @@ o:r`class MyCircularQueue:
     def deQueue(self) -> bool:
         if self.n == 0:
             return False
-        self.h = (self.h + 1) % self.k  #! just advance the head — nothing shifts
+        self.h = (self.h + 1) % self.k  #! just advance the head, nothing shifts
         self.n -= 1
         return True
 
@@ -598,7 +598,7 @@ o:r`class MyQueue:
 
     def empty(self) -> bool:
         return not self.inp and not self.out`,
-trick:'Reversing a stack twice restores order. Push into "in", and only when "out" runs dry pour "in" into it — every element moves at most once.',
+trick:'Reversing a stack twice restores order. Push into "in", and only when "out" runs dry pour "in" into it, every element moves at most once.',
 real:'Amortised analysis made visible; the same trick builds queues in functional languages.',
 viz:{flow:[f('push(1), push(2), push(3): they pile up in the IN stack (top is the right).',['in: 1','in: 2','in: 3'],{aux:[['in',1,2,3],['out']]}),
  f('pop(): OUT is empty → pour IN into OUT. The order flips: 3 at the bottom, 1 on top.',['out: 3','out: 2','out: 1'],{aux:[['in'],['out',3,2,1]]}),
@@ -637,7 +637,7 @@ o:r`class BrowserHistory:
         if self.i == len(self.h):
             self.h.append(url)
         else:
-            self.h[self.i] = url  #! overwrite the old "forward" page — no slicing
+            self.h[self.i] = url  #! overwrite the old "forward" page, no slicing
         self.n = self.i + 1  #! moving the end marker forgets the forward history
 
     def back(self, steps: int) -> str:
@@ -677,7 +677,7 @@ class Solution:
     def pickIndex(self) -> int:
         r = random.randint(1, self.total)
         return bisect_left(self.pre, r)  #! the bucket that r falls into`,
-trick:'Lay the weights end to end on a number line. A uniform random point lands in index i’s segment with probability w[i]/total — find the segment with binary search.',
+trick:'Lay the weights end to end on a number line. A uniform random point lands in index i’s segment with probability w[i]/total, find the segment with binary search.',
 real:'Weighted sampling: sampling tokens from a distribution (temperature/top-p), load balancing, reservoir mixes.',
 viz:{flow:[f('Weights [1,3,2] → prefix sums [1,4,6]. Think of a line from 1 to 6 split into segments 1 | 2-4 | 5-6.',[1,3,2],{aux:[['prefix',1,4,6]]}),
  f('Draw r = 5 uniformly from 1..6.',[1,3,2],{aux:[['prefix',1,4,6],['r',5]]}),
@@ -685,7 +685,7 @@ viz:{flow:[f('Weights [1,3,2] → prefix sums [1,4,6]. Think of a line from 1 to
  f('Index 1 owns 3 of the 6 points → picked 50% of the time, as required.',[1,3,2],{g:[1],aux:[['P(index 1)','3/6']]})]},
 test:`random.seed(1)\ns=Solution([1,3])\nc=Counter(s.pickIndex() for _ in range(4000))\nres=[700<c[0]<1300,2700<c[1]<3300,Solution([5]).pickIndex()]`,exp:`[True,True,0]`},
 
-{id:'shuffle-an-array',n:384,t:'Shuffle an Array',d:'M',tg:['Math','Randomized'],pat:'Fisher–Yates',
+{id:'shuffle-an-array',n:384,t:'Shuffle an Array',d:'M',tg:['Math','Randomized'],pat:'Fisher-Yates',
 br:'Return a uniformly random permutation, and support reset().',
 bt:'O(n²)',bs:'O(n)',ot:'O(n)',os:'O(n)',
 b:r`import random
@@ -754,7 +754,7 @@ class Solution:
         return res`,
 trick:'Reservoir sampling: the k-th match replaces the current pick with probability 1/k. Every match ends up equally likely, with O(1) memory.',
 real:'Sampling from a stream of unknown length: log sampling, telemetry, mini-batch selection.',
-viz:{flow:[f('nums = [1,2,3,3,3], target 3. Matches are at indices 2, 3, 4.',[1,2,3,3,3],{aux:[['pick','—']]}),
+viz:{flow:[f('nums = [1,2,3,3,3], target 3. Matches are at indices 2, 3, 4.',[1,2,3,3,3],{aux:[['pick','-']]}),
  f('Index 2 is the 1st match: keep it with probability 1/1 = 100%.',[1,2,3,3,3],{h:[2],aux:[['pick',2],['seen',1]]}),
  f('Index 3 is the 2nd match: replace with probability 1/2.',[1,2,3,3,3],{h:[3],aux:[['pick','2 or 3'],['seen',2]]}),
  f('Index 4 is the 3rd match: replace with probability 1/3 → every match has ended with exactly 1/3.',[1,2,3,3,3],{g:[2,3,4],aux:[['each index','1/3'],['seen',3]]})]},

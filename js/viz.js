@@ -1,4 +1,4 @@
-/* viz.js — animated trace player, code renderer, morph diff and complexity race */
+/* viz.js, animated trace player, code renderer, morph diff and complexity race */
 (function(){
 const $=(s,r=document)=>r.querySelector(s);
 const h=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;};
@@ -164,7 +164,7 @@ function morph(el,pb,po,lang){
 /* ---------- complexity race ---------- */
 const fmt=x=>x>=1e12?'10¹²+':x>=1e9?(x/1e9).toFixed(1)+'B':x>=1e6?(x/1e6).toFixed(1)+'M':x>=1e3?(x/1e3).toFixed(1)+'K':String(Math.round(x));
 function race(el,p){
-  el.innerHTML='<div class="nrow"><span>Input size n =</span><b class="mono nv">1,000</b><input type="range" min="1" max="5" step="0.1" value="3"><button class="btn small go">Run race ▶</button></div><div class="race"><div class="rbar a"><span>Variant 1<br><b class="mono">'+E(p.bt)+'</b></span><div class="tr"><div class="fl"></div></div><span class="v"></span></div><div class="rbar b"><span>Variant 2<br><b class="mono">'+E(p.ot)+'</b></span><div class="tr"><div class="fl"></div></div><span class="v"></span></div></div><p class="small" style="margin-top:12px">Bars use a log scale — every step to the right is 10× more work. Space: V1 '+E(p.bs)+' · V2 '+E(p.os)+'.</p>';
+  el.innerHTML='<div class="nrow"><span>Input size n =</span><b class="mono nv">1,000</b><input type="range" min="1" max="5" step="0.1" value="3"><button class="btn small go">Run race ▶</button></div><div class="race"><div class="rbar a"><span>Variant 1<br><b class="mono">'+E(p.bt)+'</b></span><div class="tr"><div class="fl"></div></div><span class="v"></span></div><div class="rbar b"><span>Variant 2<br><b class="mono">'+E(p.ot)+'</b></span><div class="tr"><div class="fl"></div></div><span class="v"></span></div></div><p class="small" style="margin-top:12px">Bars use a log scale, every step to the right is 10× more work. Space: V1 '+E(p.bs)+' · V2 '+E(p.os)+'.</p>';
   const rg=$('input',el),nv=$('.nv',el),fl=[...el.querySelectorAll('.fl')],vs=[...el.querySelectorAll('.v')];
   function upd(anim){const n=Math.round(Math.pow(10,+rg.value));nv.textContent=n.toLocaleString();const a=HL.ops(p.bt,n),b=HL.ops(p.ot,n),mx=Math.max(a,b,10);
     [a,b].forEach((x,k)=>{const w=Math.max(2,Math.log10(1+x)/Math.log10(1+mx)*100);if(anim){fl[k].style.transition='none';fl[k].style.width='0%';void fl[k].offsetWidth;fl[k].style.transition='';}

@@ -1,4 +1,4 @@
-/* boot.js — data registry and tiny helpers used by every data file.
+/* boot.js, data registry and tiny helpers used by every data file.
    Problem record keys: id (LeetCode slug), n (number), t (title), d (E|M|H), tg (tags), pat (pattern),
    br (brief), b (beginner code), o (optimal code), bt/bs/ot/os (time/space), trick, real,
    viz ({sim:..} | {flow:[frames]}), lang ('py'|'js'), test (python snippet setting res), exp (python literal).

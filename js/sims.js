@@ -1,4 +1,4 @@
-/* sims.js — pattern simulators. Each takes a spec and returns frames (or {frames, ...static structure}).
+/* sims.js, pattern simulators. Each takes a spec and returns frames (or {frames, ...static structure}).
    Frame fields: a (cells; primitives or {k,v,c}), h/g/x (highlight/good/dim idx), p (pointers {name:idx}), w ([l,r] window),
    aux ([[label,...items]]), note, grid {v,c}, tree (level-order override), th/tg/tv (tree node ids: current/done/visible),
    gh/gv (graph nodes current/visited), ge/gb (edges accepted/rejected), gl ({node:label}). */
@@ -55,7 +55,7 @@ S.swmax=({arr,k})=>{const dq=[],out=[],f=[];
   return f;};
 
 S.minwin=({s,t})=>{const a=[...s],need={};for(const c of t)need[c]=(need[c]||0)+1;let miss=t.length,l=0,bl=-1,br=-1;const f=[];
-  const A=()=>[['still missing',miss],['best',bl<0?'—':s.slice(bl,br+1)]];
+  const A=()=>[['still missing',miss],['best',bl<0?'-':s.slice(bl,br+1)]];
   f.push({a,aux:A(),note:`Need all letters of "${t}". Expand r until the window is valid, then shrink l as far as possible.`});
   for(let r=0;r<a.length;r++){
     if(need[a[r]]>0)miss--;need[a[r]]=(need[a[r]]||0)-1;
@@ -87,7 +87,7 @@ S.stackMono=({arr})=>{const st=[],res=arr.map(()=>0),f=[];
   f.push({a:arr,aux:A(),note:'Keep a stack of days still waiting for a warmer day (decreasing temps).'});
   for(let i=0;i<arr.length;i++){
     while(st.length&&arr[st[st.length-1]]<arr[i]){const j=st.pop();res[j]=i-j;f.push({a:arr,p:{i},g:[j],h:[i],aux:A(),note:`${arr[i]} > ${arr[j]}: day ${j} waited ${i-j} day(s). Pop it.`});}
-    st.push(i);f.push({a:arr,p:{i},h:[i],aux:A(),note:`Push day ${i} (${arr[i]}) — it now waits.`});}
+    st.push(i);f.push({a:arr,p:{i},h:[i],aux:A(),note:`Push day ${i} (${arr[i]}), it now waits.`});}
   return f;};
 
 S.parens=({s})=>{const a=[...s],st=[],f=[],pair={')':'(',']':'[','}':'{'};
@@ -164,7 +164,7 @@ S.dijkstra=v=>{const n=v.nodes.length,d=Array(n).fill(Infinity),done=new Set(),f
   f.push({gh:[v.start],gv:[],gl:L(),note:`Dijkstra: always finalise the unvisited node with the smallest known distance. dist[${v.start}] = 0.`});
   for(let k=0;k<n;k++){let u=-1;for(let i=0;i<n;i++)if(!done.has(i)&&d[i]<Infinity&&(u<0||d[i]<d[u]))u=i;if(u<0)break;done.add(u);const es=[];
     v.edges.forEach(([a,b,w],ei)=>{const x=v.dir?[[a,b]]:[[a,b],[b,a]];x.forEach(([p,q])=>{if(p===u&&!done.has(q)&&d[u]+w<d[q]){d[q]=d[u]+w;es.push(ei);}});});
-    f.push({gh:[u],gv:[...done],ge:es,gl:L(),note:`Finalise ${u} (dist ${d[u]}). Relax its edges${es.length?': shorter routes found.':' — nothing improved.'}`});}
+    f.push({gh:[u],gv:[...done],ge:es,gl:L(),note:`Finalise ${u} (dist ${d[u]}). Relax its edges${es.length?': shorter routes found.':', nothing improved.'}`});}
   f.push({gv:[...done],gl:L(),note:`Done. Answer = ${v.answer!==undefined?v.answer:Math.max(...d)}.`});return f;};
 
 S.bellman=v=>{const n=v.nodes.length;let d=Array(n).fill(Infinity);d[v.src]=0;const f=[];const L=a=>{const o={};a.forEach((x,i)=>o[i]=x===Infinity?'∞':x);return o;};
@@ -178,8 +178,8 @@ S.uf=v=>{const n=v.nodes.length,p=[...Array(n).keys()],find=x=>p[x]===x?x:(p[x]=
   const comps=()=>{const m={};for(let i=0;i<n;i++){(m[find(i)]=m[find(i)]||[]).push(i);}return Object.values(m).map(c=>'{'+c.join(',')+'}');};
   f.push({ge:[],gb:[],aux:[['components',...comps()]],note:v.mode==='mst'?'Kruskal: take the cheapest edges first, skip any edge that closes a cycle (union-find tells us).':'Add edges one by one. An edge whose ends are already connected is the redundant one.'});
   for(const ei of order){const [a,b,w]=v.edges[ei],ra=find(a),rb=find(b);
-    if(ra===rb){rej.push(ei);f.push({ge:[...acc],gb:[...rej],gh:[a,b],aux:[['components',...comps()]],note:`Edge ${a}–${b}${w!=null?' (cost '+w+')':''}: already connected → skip (it would form a cycle).`});if(v.mode!=='mst')return f;}
-    else{p[ra]=rb;acc.push(ei);f.push({ge:[...acc],gb:[...rej],gh:[a,b],aux:[['components',...comps()]],note:`Edge ${a}–${b}${w!=null?' (cost '+w+')':''}: joins two components → keep.`});}}
+    if(ra===rb){rej.push(ei);f.push({ge:[...acc],gb:[...rej],gh:[a,b],aux:[['components',...comps()]],note:`Edge ${a}-${b}${w!=null?' (cost '+w+')':''}: already connected → skip (it would form a cycle).`});if(v.mode!=='mst')return f;}
+    else{p[ra]=rb;acc.push(ei);f.push({ge:[...acc],gb:[...rej],gh:[a,b],aux:[['components',...comps()]],note:`Edge ${a}-${b}${w!=null?' (cost '+w+')':''}: joins two components → keep.`});}}
   f.push({ge:[...acc],gb:[...rej],aux:[['components',...comps()]],note:v.mode==='mst'?`Tree complete. Total cost = ${acc.reduce((s,e)=>s+v.edges[e][2],0)}.`:'No redundant edge.'});return f;};
 
 S.heapk=({arr,k})=>{const h=[],f=[];const A=()=>[['min-heap (size ≤ '+k+')',...[...h].sort((a,b)=>a-b)]];
@@ -247,7 +247,7 @@ S.trie=({words,query})=>{let id=0;const root={id:id++,v:'∘',c:[]};const path={
   f.push({tv:[...vis],th:[0],note:'A trie stores words letter by letter; shared prefixes share nodes.'});
   for(const w of words){path[w].forEach(i=>vis.add(i));const e=path[w][path[w].length-1];ends.push(e);f.push({tv:[...vis],th:path[w],tg:[...ends],note:`Insert "${w}": follow existing letters, create missing ones, mark the last node as a word end.`});}
   if(query){const pre=[0];let n=root,ok=true;for(const ch of query){const c=n.c.find(x=>x.v===ch);if(!c){ok=false;break;}n=c;pre.push(n.id);}
-    f.push({tv:[...vis],th:pre,tg:[...ends],note:ok?`Prefix "${query}" exists after ${query.length} steps — cost depends only on its length, not on how many words are stored.`:`"${query}" falls off the trie → no such prefix.`});}
+    f.push({tv:[...vis],th:pre,tg:[...ends],note:ok?`Prefix "${query}" exists after ${query.length} steps, cost depends only on its length, not on how many words are stored.`:`"${query}" falls off the trie → no such prefix.`});}
   return {frames:f,trie:root};};
 
 // backtracking tree. spec: expand(path)->child paths, label(path), good(path), dead(path), max
@@ -257,7 +257,7 @@ S.bt=v=>{let id=0;const nodes=[],max=v.max||40;
   const f=[],vis=new Set(),goods=[],deads=[];
   f.push({tv:[0],th:[0],note:v.start_note||'Backtracking explores a tree of choices: choose → explore → un-choose. Each node is a partial answer.'});
   nodes.forEach(n=>{vis.add(n.id);const g=v.good&&v.good(n.p),d=v.dead&&v.dead(n.p);if(g)goods.push(n.id);
-    f.push({tv:[...vis],th:[n.id],tg:[...goods],note:g?`${n.v} is a complete answer ✓ — record it.`:d?`${n.v} breaks the rule → prune: do not explore below it.`:`Partial: ${n.v}. Try the next choices from here.`});});
+    f.push({tv:[...vis],th:[n.id],tg:[...goods],note:g?`${n.v} is a complete answer ✓, record it.`:d?`${n.v} breaks the rule → prune: do not explore below it.`:`Partial: ${n.v}. Try the next choices from here.`});});
   f.push({tv:[...vis],tg:[...goods],note:`Finished: ${goods.length} answer(s) found.`});return {frames:f,trie:root};};
 
 window.SIMS={S,buildTree,run(spec){

@@ -1,4 +1,4 @@
-/* p1 — arrays, hashing, two pointers, sliding window, prefix tricks */
+/* p1, arrays, hashing, two pointers, sliding window, prefix tricks */
 (function(){const r=String.raw,f=DR.f;
 DR.add(
 {id:'two-sum',n:1,t:'Two Sum',d:'E',tg:['Array','Hash Map'],pat:'Hash Map Complement',
@@ -126,7 +126,7 @@ o:r`class Solution:
                 res.append(x)
                 if len(res) == k:
                     return res`,
-trick:'"Top-k by count" → counts are bounded by n, so use the count itself as an array index (bucket sort) — no sorting needed.',
+trick:'"Top-k by count" → counts are bounded by n, so use the count itself as an array index (bucket sort), no sorting needed.',
 real:'Most frequent tokens for vocabulary building; top queries in logs.',
 viz:{flow:[f('Step 1: count each value.',[1,1,1,2,2,3],{aux:[['count']]}),
  f('Counts: 1→3, 2→2, 3→1.',[1,1,1,2,2,3],{aux:[['count','1→3','2→2','3→1']]}),
@@ -135,7 +135,7 @@ viz:{flow:[f('Step 1: count each value.',[1,1,1,2,2,3],{aux:[['count']]}),
 test:`res=sorted(Solution().topKFrequent([1,1,1,2,2,3],2))`,exp:`[1,2]`},
 
 {id:'product-of-array-except-self',n:238,t:'Product of Array Except Self',d:'M',tg:['Array','Prefix Sum'],pat:'Prefix × Suffix',
-br:'For each position, the product of all other numbers — without division.',
+br:'For each position, the product of all other numbers, without division.',
 bt:'O(n²)',bs:'O(1)',ot:'O(n)',os:'O(1)',
 b:r`class Solution:
     def productExceptSelf(self, nums: List[int]) -> List[int]:
@@ -196,7 +196,7 @@ real:'Windowed aggregates over time series; anomaly detection on cumulative metr
 viz:{flow:[f('Running total = prefix sum. A subarray ending here sums to k if some earlier prefix equals total − k. k = 2.',[1,1,1],{aux:[['prefix counts','0→1'],['count',0]]}),
  f('total = 1. Need an earlier prefix of 1−2 = −1 → none. Record prefix 1.',[1,1,1],{p:{i:0},h:[0],aux:[['prefix counts','0→1','1→1'],['count',0]]}),
  f('total = 2. Need prefix 0 → seen once ⇒ subarray [1,1] ✓.',[1,1,1],{p:{i:1},h:[1],w:[0,1],aux:[['prefix counts','0→1','1→1','2→1'],['count',1]]}),
- f('total = 3. Need prefix 1 → seen once ⇒ subarray [1,1] (positions 2–3) ✓.',[1,1,1],{p:{i:2},h:[2],w:[1,2],aux:[['prefix counts','0→1','1→1','2→1','3→1'],['count',2]]})]},
+ f('total = 3. Need prefix 1 → seen once ⇒ subarray [1,1] (positions 2-3) ✓.',[1,1,1],{p:{i:2},h:[2],w:[1,2],aux:[['prefix counts','0→1','1→1','2→1','3→1'],['count',2]]})]},
 test:`res=Solution().subarraySum([1,1,1],2)`,exp:`2`},
 
 {id:'longest-consecutive-sequence',n:128,t:'Longest Consecutive Sequence',d:'M',tg:['Array','Hash Set'],pat:'Set + Run Starts',
@@ -254,7 +254,7 @@ o:r`class Solution:
         return best`,
 trick:'"Best buy then sell" → at each day, assume you bought at the lowest price seen so far.',
 real:'Max drawdown / max run-up on a metric time series.',
-viz:{flow:(()=>{const a=[7,1,5,3,6,4];let low=1e9,best=0;const o=[f('Track the lowest price so far and the best profit if we sold today.',a,{aux:[['lowest','—'],['best profit',0]]})];a.forEach((p,i)=>{low=Math.min(low,p);best=Math.max(best,p-low);o.push(f('Price '+p+'. Lowest so far = '+low+'; selling now earns '+(p-low)+'. Best = '+best+'.',a,{p:{i},h:[i],aux:[['lowest',low],['best profit',best]]}));});return o;})()},
+viz:{flow:(()=>{const a=[7,1,5,3,6,4];let low=1e9,best=0;const o=[f('Track the lowest price so far and the best profit if we sold today.',a,{aux:[['lowest','-'],['best profit',0]]})];a.forEach((p,i)=>{low=Math.min(low,p);best=Math.max(best,p-low);o.push(f('Price '+p+'. Lowest so far = '+low+'; selling now earns '+(p-low)+'. Best = '+best+'.',a,{p:{i},h:[i],aux:[['lowest',low],['best profit',best]]}));});return o;})()},
 test:`res=Solution().maxProfit([7,1,5,3,6,4])`,exp:`5`},
 
 {id:'maximum-subarray',n:53,t:'Maximum Subarray',d:'M',tg:['Array','DP','Kadane'],pat:"Kadane's Algorithm",
@@ -398,7 +398,7 @@ o:r`class Solution:
                 water += rmax - height[r]
                 r -= 1
         return water`,
-trick:'"Water on a bar" = min(tallest left, tallest right) − bar. Process the LOWER side first — its limit is already known.',
+trick:'"Water on a bar" = min(tallest left, tallest right) − bar. Process the LOWER side first, its limit is already known.',
 real:'Capacity / buffer-fill calculations between peaks.',
 viz:{sim:'rain',arr:[0,1,0,2,1,0,1,3,2,1,2,1]},
 test:`res=Solution().trap([0,1,0,2,1,0,1,3,2,1,2,1])`,exp:`6`},
@@ -413,7 +413,7 @@ b:r`class Solution:
 o:r`class Solution:
     def isPalindrome(self, s: str) -> bool:
         l, r = 0, len(s) - 1
-        while l < r:  #! two pointers walk inward — no copy needed
+        while l < r:  #! two pointers walk inward, no copy needed
             while l < r and not s[l].isalnum():
                 l += 1
             while l < r and not s[r].isalnum():

@@ -1,4 +1,4 @@
-/* p5 — dynamic programming, bit tricks, math */
+/* p5, dynamic programming, bit tricks, math */
 (function(){const r=String.raw,f=DR.f;
 const B=(v,w=8)=>v.toString(2).padStart(w,'0').split('');
 
@@ -8,13 +8,13 @@ const lisFlow=(()=>{const a=[10,9,2,5,3,7,101,18],tails=[];
   a.forEach((x,i)=>{let lo=0,hi=tails.length;while(lo<hi){const m=(lo+hi)>>1;if(tails[m]<x)lo=m+1;else hi=m;}
     const grow=lo===tails.length;if(grow)tails.push(x);else tails[lo]=x;
     fr.push(f(grow?`${x} is bigger than every tail → extend: length is now ${tails.length}.`:`${x} replaces the first tail ≥ it (slot ${lo}): same length, smaller tail.`,a,{p:{i},h:[i],aux:[['tails',...tails]]}));});
-  fr.push(f(`Answer = len(tails) = ${tails.length}. (tails is not itself a real subsequence — only its length is meaningful.)`,a,{aux:[['length',tails.length]]}));return fr;})();
+  fr.push(f(`Answer = len(tails) = ${tails.length}. (tails is not itself a real subsequence, only its length is meaningful.)`,a,{aux:[['length',tails.length]]}));return fr;})();
 
 const popFlow=(()=>{let n=11,c=0;const fr=[f('n = 11 → 00001011. Each loop removes exactly the lowest 1-bit, so we loop once per 1-bit, not once per position.',B(n),{g:[4,6,7],aux:[['count',0]]})];
   while(n){const low=Math.log2(n&-n),prev=n;n&=n-1;c++;fr.push(f(`n & (n−1) clears the lowest 1 (bit ${low}): ${prev} → ${n}. count = ${c}.`,B(prev),{x:[7-low],aux:[['count',c],['next n',n]]}));}
   fr.push(f(`n is 0 → no bits left. Answer ${c}.`,B(0),{aux:[['count',c]]}));return fr;})();
 
-const xorFlow=(()=>{const a=[4,1,2,1,2];let x=0;const fr=[f('XOR rules: a ^ a = 0 and a ^ 0 = a. Pairs cancel out, the loner survives — order does not matter.',a,{aux:[['xor',0]]})];
+const xorFlow=(()=>{const a=[4,1,2,1,2];let x=0;const fr=[f('XOR rules: a ^ a = 0 and a ^ 0 = a. Pairs cancel out, the loner survives, order does not matter.',a,{aux:[['xor',0]]})];
   a.forEach((v,i)=>{const p=x;x^=v;fr.push(f(`${p} ^ ${v} = ${x}`,a,{h:[i],w:[0,i],aux:[['xor',x]]}));});
   fr.push(f(`Every pair vanished. Answer ${x}.`,a,{g:[0],aux:[['xor',x]]}));return fr;})();
 
@@ -25,7 +25,7 @@ const sumFlow=(()=>{let a=5,b=3;const fr=[f('No "+" allowed. XOR adds without ca
 const revFlow=(()=>{let n=0b00010110;const fr=[f('Reverse 8 bits by swapping halves, then quarters, then pairs: log₂(8) = 3 swaps instead of 8 single-bit moves.',B(n),{})];
   const steps=[['swap the two nibbles',0xF0,0x0F,4],['swap pairs inside each nibble',0xCC,0x33,2],['swap neighbouring bits',0xAA,0x55,1]];
   for(const [name,hi,lo,s] of steps){n=((n&hi)>>s)|((n&lo)<<s);fr.push(f(`${name} → ${B(n).join('')}`,B(n),{}));}
-  fr.push(f('00010110 is now 01101000 — exactly the mirror image. 32-bit works the same with 5 swaps.',B(n),{g:[1,2,4]}));return fr;})();
+  fr.push(f('00010110 is now 01101000, exactly the mirror image. 32-bit works the same with 5 swaps.',B(n),{g:[1,2,4]}));return fr;})();
 
 const powFlow=(()=>{let x=2,n=10,res=1;const fr=[f('2^10: write 10 in binary (1010). Square the base each step; multiply it into the result only where the exponent has a 1.',B(n,4),{aux:[['x',x],['result',res]]})];
   while(n){const bit=n&1;let t=bit?`bit is 1 → result = ${res} × ${x} = ${res*x}.`:'bit is 0 → skip.';if(bit)res*=x;x*=x;const prev=n;n>>=1;
@@ -35,14 +35,14 @@ const powFlow=(()=>{let x=2,n=10,res=1;const fr=[f('2^10: write 10 in binary (10
 const sieveFlow=(()=>{const N=30,a=[];for(let i=2;i<=N;i++)a.push(i);const dead=new Set();
   const fr=[f('List 2..30. Every prime crosses out all of its multiples. What is never crossed out is prime.',a,{})];
   for(let p=2;p*p<=N;p++){if(dead.has(p))continue;for(let m=p*p;m<=N;m+=p)dead.add(m);
-    fr.push(f(`${p} is prime → cross out ${p*p}, ${p*p+p}, … (start at ${p}² — smaller multiples were already crossed by smaller primes).`,a,{h:[p-2],x:[...dead].map(v=>v-2)}));}
+    fr.push(f(`${p} is prime → cross out ${p*p}, ${p*p+p}, … (start at ${p}², smaller multiples were already crossed by smaller primes).`,a,{h:[p-2],x:[...dead].map(v=>v-2)}));}
   const pr=a.map((v,i)=>dead.has(v)?-1:i).filter(i=>i>=0);
   fr.push(f(`Next candidate 7: 7² = 49 > 30, so we can stop. ${pr.length} numbers survive → ${pr.length} primes up to 30.`,a,{x:[...dead].map(v=>v-2),g:pr}));return fr;})();
 
 const A5=[1,3,8,9,15],B6=[7,11,18,19,21,25];
 const medFlow=[
  f('A = [1,3,8,9,15], B = [7,11,18,19,21,25]. Total 11 → the left half holds 6 values. We only choose how many come from A (i); B supplies 6 − i.',A5,{aux:[['B',...B6]],w:[0,4]}),
- f('Try i = 2: left of A = [1,3], so j = 4 and left of B = [7,11,18,19]. Check 19 ≤ A[2] = 8? No — B’s left side is too big. Take more from A.',A5,{w:[0,1],p:{cut:2},aux:[['B left',7,11,18,19],['B right',21,25]],x:[2]}),
+ f('Try i = 2: left of A = [1,3], so j = 4 and left of B = [7,11,18,19]. Check 19 ≤ A[2] = 8? No, B’s left side is too big. Take more from A.',A5,{w:[0,1],p:{cut:2},aux:[['B left',7,11,18,19],['B right',21,25]],x:[2]}),
  f('Search moves right: i = 4, j = 2. Left of A = [1,3,8,9], left of B = [7,11].',A5,{w:[0,3],p:{cut:4},aux:[['B left',7,11],['B right',18,19,21,25]]}),
  f('Check both borders: 9 ≤ 18 ✓ and 11 ≤ 15 ✓. Every left value ≤ every right value → this is the true cut.',A5,{w:[0,3],g:[3,4],p:{cut:4},aux:[['B left',7,11],['B right',18,19,21,25],['borders','9 ≤ 18','11 ≤ 15']]}),
  f('Total is odd → median = max(left side) = max(9, 11) = 11. Only ~log(min(m,n)) cuts were tried.',A5,{g:[3],aux:[['median',11]]})];
@@ -208,7 +208,7 @@ b:r`class Solution:
 o:r`class Solution:
     def minDistance(self, word1: str, word2: str) -> int:
         if len(word1) < len(word2):
-            word1, word2 = word2, word1  #! distance is symmetric — keep the row short
+            word1, word2 = word2, word1  #! distance is symmetric, keep the row short
         prev = list(range(len(word2) + 1))
         for i, a in enumerate(word1, 1):
             cur = [i]
@@ -260,7 +260,7 @@ o:r`class Solution:
                     break
         return dp[-1]`,
 trick:'dp[i] = "the first i letters can be built". It is true if some earlier True cell plus one dictionary word lands on i.',
-real:'Tokenisation and word segmentation — the same idea as splitting text into vocabulary pieces.',
+real:'Tokenisation and word segmentation, the same idea as splitting text into vocabulary pieces.',
 viz:(()=>{const s='leetcode',dict=['leet','code'];const ok=i=>i===0||[...Array(i).keys()].some(j=>ok(j)&&dict.includes(s.slice(j,i)));
   return {sim:'dp1',n:9,init:[true],f:(dp,i)=>ok(i),deps:i=>ok(i)?[...Array(i).keys()].filter(j=>ok(j)&&dict.includes(s.slice(j,i))):[],rule:'dp[i] = some True cell j where s[j:i] is a word',start:'s = "leetcode", words {leet, code}. dp[0] = True (empty prefix).'};})(),
 test:`res=[Solution().wordBreak("leetcode",["leet","code"]),Solution().wordBreak("applepenapple",["apple","pen"]),Solution().wordBreak("catsandog",["cats","dog","sand","and","cat"])]`,exp:`[True,True,False]`},
@@ -295,7 +295,7 @@ o:r`class Solution:
                     dp[l][r] = max(dp[l][r], dp[l][k] + a[l] * a[k] * a[r] + dp[k][r])  #! k is popped last, so its neighbours are exactly l and r
         return dp[0][n - 1]`,
 trick:'Think backwards: pick the LAST balloon k to burst in a gap. Its neighbours are then the fixed borders, and the two sides become independent.',
-real:'Interval DP: matrix-chain ordering, optimal BST, parsing — "choose the split point last".',
+real:'Interval DP: matrix-chain ordering, optimal BST, parsing, "choose the split point last".',
 viz:(()=>{const a=[1,3,1,5,8,1];return {sim:'dp2',R:6,C:6,init:(i,j)=>j-i===1?0:undefined,
   order:()=>{const o=[];for(let L=2;L<=5;L++)for(let i=0;i+L<=5;i++)o.push([i,i+L]);return o;},
   f:(dp,i,j)=>{let b=0;for(let k=i+1;k<j;k++)b=Math.max(b,dp[i][k]+a[i]*a[k]*a[j]+dp[k][j]);return b;},
@@ -368,14 +368,14 @@ o:r`class Solution:
             memo[(r, c)] = best
             return best
         return max(dfs(r, c) for r in range(R) for c in range(C))`,
-trick:'"Strictly increasing" means the grid is a DAG — no cycles. So longest path from a cell is a fixed number: compute it once and cache it.',
+trick:'"Strictly increasing" means the grid is a DAG, no cycles. So longest path from a cell is a fixed number: compute it once and cache it.',
 real:'Longest path in a DAG: build-dependency depth, critical-path analysis.',
 viz:(()=>{const M=[[9,9,4],[6,6,8],[2,1,1]],D=[[1,0],[-1,0],[0,1],[0,-1]];
   const sm=(i,j)=>D.map(([a,b])=>[i+a,j+b]).filter(([x,y])=>x>=0&&y>=0&&x<3&&y<3&&M[x][y]<M[i][j]);
   return {sim:'dp2',R:3,C:3,order:()=>{const c=[];for(let i=0;i<3;i++)for(let j=0;j<3;j++)c.push([i,j]);return c.sort((a,b)=>M[a[0]][a[1]]-M[b[0]][b[1]]);},
   f:(dp,i,j)=>1+Math.max(0,...sm(i,j).map(([x,y])=>dp[x][y])),deps:(i,j)=>sm(i,j),
   rule:(i,j)=>`value ${M[i][j]}: 1 + best path among strictly smaller neighbours`,ans:[0,0],
-  start:'Matrix [[9,9,4],[6,6,8],[2,1,1]]. Cells are visited from smallest value up, which is the order memoised DFS settles them — each cell is solved once.'};})(),
+  start:'Matrix [[9,9,4],[6,6,8],[2,1,1]]. Cells are visited from smallest value up, which is the order memoised DFS settles them, each cell is solved once.'};})(),
 test:`res=[Solution().longestIncreasingPath([[9,9,4],[6,6,8],[2,1,1]]),Solution().longestIncreasingPath([[3,4,5],[3,2,6],[2,2,1]]),Solution().longestIncreasingPath([[1]])]`,exp:`[4,4,1]`},
 
 {id:'number-of-1-bits',n:191,t:'Number of 1 Bits',d:'E',tg:['Bit Manipulation'],pat:'Clear the Lowest Set Bit',
@@ -421,11 +421,11 @@ o:r`class Solution:
         return res`,
 trick:'i is just (i >> 1) with one more bit on the end, so bits(i) = bits(i >> 1) + (i & 1).',
 real:'Building popcount lookup tables; classic example of DP on binary structure.',
-viz:{sim:'dp1',n:9,init:[0],f:(dp,i)=>dp[i>>1]+(i&1),deps:i=>[i>>1],rule:'bits(i) = bits(i >> 1) + (i & 1)',start:'bits(0) = 0. Each number reuses the answer for its half.',end:'The whole array is the answer: [0,1,1,2,1,2,2,3,1] — built in O(n), one step per number.'},
+viz:{sim:'dp1',n:9,init:[0],f:(dp,i)=>dp[i>>1]+(i&1),deps:i=>[i>>1],rule:'bits(i) = bits(i >> 1) + (i & 1)',start:'bits(0) = 0. Each number reuses the answer for its half.',end:'The whole array is the answer: [0,1,1,2,1,2,2,3,1], built in O(n), one step per number.'},
 test:`res=[Solution().countBits(2),Solution().countBits(5)]`,exp:`[[0,1,1],[0,1,1,2,1,2]]`},
 
 {id:'single-number',n:136,t:'Single Number',d:'E',tg:['Bit Manipulation','Array'],pat:'XOR Cancels Pairs',
-br:'Every number appears twice except one — find it in O(1) space.',
+br:'Every number appears twice except one, find it in O(1) space.',
 bt:'O(n)',bs:'O(n)',ot:'O(n)',os:'O(1)',
 b:r`class Solution:
     def singleNumber(self, nums: List[int]) -> int:
@@ -439,7 +439,7 @@ o:r`class Solution:
         for n in nums:
             x ^= n  #! pairs cancel (a^a = 0), the loner is left
         return x`,
-trick:'a ^ a = 0 and a ^ 0 = a. XOR everything — duplicates annihilate.',
+trick:'a ^ a = 0 and a ^ 0 = a. XOR everything, duplicates annihilate.',
 real:'Parity/checksum tricks; RAID parity and error detection use the same XOR cancellation.',
 viz:{flow:xorFlow},
 test:`res=[Solution().singleNumber([2,2,1]),Solution().singleNumber([4,1,2,1,2]),Solution().singleNumber([1])]`,exp:`[1,4,1]`},
@@ -462,7 +462,7 @@ o:r`class Solution:
             a, b = (a ^ b) & mask, ((a & b) << 1) & mask  #! XOR = sum without carry, AND<<1 = the carries
         return a if a <= 0x7FFFFFFF else ~(a ^ mask)  #! undo Python's unbounded ints (32-bit sign)`,
 trick:'XOR adds without carrying; (a & b) << 1 is the carry. Repeat until the carry dies. Mask to 32 bits in Python.',
-real:'How an ALU adder works — half-adders chained into a full adder.',
+real:'How an ALU adder works, half-adders chained into a full adder.',
 viz:{flow:sumFlow},
 test:`res=[Solution().getSum(1,2),Solution().getSum(2,3),Solution().getSum(-2,3),Solution().getSum(-5,-7),Solution().getSum(5,3)]`,exp:`[3,5,1,-12,8]`},
 
@@ -494,7 +494,7 @@ b:r`class Solution:
         if n < 0:
             x, n = 1 / x, -n
         res = 1.0
-        for _ in range(n):  #? n multiplications — billions for a big n
+        for _ in range(n):  #? n multiplications, billions for a big n
             res *= x
         return res`,
 o:r`class Solution:
@@ -538,7 +538,7 @@ o:r`class Solution:
             if sieve[i]:
                 sieve[i * i::i] = bytearray(len(range(i * i, n, i)))  #! cross out every multiple, starting at i²
         return sum(sieve)`,
-trick:'Do not test each number — let every prime cross out its multiples. Start at p² and stop at √n.',
+trick:'Do not test each number, let every prime cross out its multiples. Start at p² and stop at √n.',
 real:'Hashing/crypto parameter generation, number-theoretic precomputation.',
 viz:{flow:sieveFlow},
 test:`res=[Solution().countPrimes(10),Solution().countPrimes(0),Solution().countPrimes(1),Solution().countPrimes(2),Solution().countPrimes(100),Solution().countPrimes(1000)]`,exp:`[4,0,0,0,25,168]`},
@@ -578,7 +578,7 @@ o:r`class Solution:
             else:
                 lo = i + 1`,
 trick:'Don’t merge. Binary-search how many elements of the shorter array sit in the left half; the rest is forced. A cut is right when each left border ≤ the opposite right border.',
-real:'Order statistics across sharded sorted data — percentiles from several sorted partitions.',
+real:'Order statistics across sharded sorted data, percentiles from several sorted partitions.',
 viz:{flow:medFlow},
 test:`res=[Solution().findMedianSortedArrays([1,3],[2]),Solution().findMedianSortedArrays([1,2],[3,4]),Solution().findMedianSortedArrays([],[1]),Solution().findMedianSortedArrays([0,0],[0,0]),Solution().findMedianSortedArrays([1,3,5,7],[2,4,6,8,10]),Solution().findMedianSortedArrays([1,3,8,9,15],[7,11,18,19,21,25])]`,exp:`[2.0,2.5,1.0,0.0,5.0,11.0]`}
 );

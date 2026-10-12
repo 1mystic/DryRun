@@ -1,4 +1,4 @@
-/* ai.js — generate a new problem page with any OpenAI-compatible endpoint (or Anthropic). Keys stay in localStorage. */
+/* ai.js, generate a new problem page with any OpenAI-compatible endpoint (or Anthropic). Keys stay in localStorage. */
 (function(){
 const PROV={
   groq:{n:'Groq',base:'https://api.groq.com/openai/v1',model:'llama-3.3-70b-versatile',get:'https://console.groq.com/keys',tag:'free tier',blurb:'Very fast Llama / GPT-OSS models. Sign in, create a key, done.'},
@@ -40,7 +40,7 @@ async function chat(c,sys,user){
     }
   }catch(e){throw new Error(e.name==='AbortError'?'The provider took too long (2 min).':'Could not reach '+base+'. Either you are offline, the key/URL is wrong, or this provider blocks calls from browsers (CORS). Try Groq, Gemini or OpenRouter.');}
   txt=await r.text();
-  if(!r.ok){let m=txt.slice(0,300);throw new Error(r.status+(r.status===401||r.status===403?' — key rejected or missing. ':r.status===429?' — rate limit hit, wait a minute or switch provider. ':' — ')+m);}
+  if(!r.ok){let m=txt.slice(0,300);throw new Error(r.status+(r.status===401||r.status===403?', key rejected or missing. ':r.status===429?', rate limit hit, wait a minute or switch provider. ':', ')+m);}
   let j;try{j=JSON.parse(txt);}catch(e){throw new Error('Provider returned non-JSON: '+txt.slice(0,160));}
   return c.prov==='anthropic'?(j.content||[]).map(x=>x.text||'').join(''):(j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content)||'';
 }
@@ -60,7 +60,7 @@ const SYS=`You are an expert algorithms coach. Given a LeetCode problem, reply w
 "trick":"ONE memorable mnemonic in the form 'CUE -> PATTERN: vivid hook' (<=200 chars)",
 "real":"one sentence on where this idea shows up in real systems",
 "flow":[ 8 to 14 animation frames tracing the OPTIMAL algorithm on a tiny example (array of <=10 items) ]}
-Each frame is an object: {"note":"what happens, one sentence","a":[cells as strings or numbers],"h":[highlighted indexes],"g":[green/done indexes],"x":[dimmed indexes],"p":{"pointerName":index},"w":[left,right] for a window,"aux":[["label","item1","item2"]]} — aux rows show hash maps, stacks, queues, heaps, results as chips. Every frame should repeat the full state (a, p, aux). Use only these keys. Escape newlines inside JSON strings as \\n.`;
+Each frame is an object: {"note":"what happens, one sentence","a":[cells as strings or numbers],"h":[highlighted indexes],"g":[green/done indexes],"x":[dimmed indexes],"p":{"pointerName":index},"w":[left,right] for a window,"aux":[["label","item1","item2"]]}, aux rows show hash maps, stacks, queues, heaps, results as chips. Every frame should repeat the full state (a, p, aux). Use only these keys. Escape newlines inside JSON strings as \\n.`;
 
 function extractJSON(s){
   s=String(s||'').replace(/```(?:json)?/gi,'');const a=s.indexOf('{'),b=s.lastIndexOf('}');if(a<0||b<=a)throw new Error('No JSON found in the model reply.');
@@ -98,12 +98,12 @@ async function generate(slug,statement,status){
   const c=current();if(!ready())throw new Error('NOKEY');
   status('Looking for the problem statement…');
   const text=statement||await fetchStatement(slug);
-  status('Asking '+(PROV[c.prov]||PROV.custom).n+' ('+c.model+')… this takes 20–60 seconds.');
-  const user='LeetCode problem slug: '+slug+' (https://leetcode.com/problems/'+slug+'/)\n'+(text?'Problem statement:\n'+text:'No statement was available — use your own knowledge of this problem.');
+  status('Asking '+(PROV[c.prov]||PROV.custom).n+' ('+c.model+')… this takes 20-60 seconds.');
+  const user='LeetCode problem slug: '+slug+' (https://leetcode.com/problems/'+slug+'/)\n'+(text?'Problem statement:\n'+text:'No statement was available, use your own knowledge of this problem.');
   let out,j;
   for(let attempt=0;attempt<2;attempt++){
     out=await chat(c,SYS,attempt?user+'\n\nYour previous reply was not valid JSON. Reply with ONLY the JSON object.':user);
-    try{j=extractJSON(out);break;}catch(e){if(attempt)throw new Error('The model did not return valid JSON. Try a stronger model.');status('Reply was not valid JSON — retrying once…');}
+    try{j=extractJSON(out);break;}catch(e){if(attempt)throw new Error('The model did not return valid JSON. Try a stronger model.');status('Reply was not valid JSON, retrying once…');}
   }
   return normalize(slug,j);
 }

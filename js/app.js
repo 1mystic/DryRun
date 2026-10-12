@@ -1,4 +1,4 @@
-/* app.js — router, pages, settings. */
+/* app.js, router, pages, settings. */
 (function(){
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -15,15 +15,18 @@ const killLive=()=>{live.forEach(x=>x&&x.destroy&&x.destroy());live=[];};
 /* ---------- pixel art ---------- */
 function pix(rows,fill){const R=rows.length,C=rows[0].length;let s='';rows.forEach((r,y)=>[...r].forEach((c,x)=>{if(c==='#')s+='<rect x="'+x+'" y="'+y+'" width="1" height="1"/>';}));
   return '<svg viewBox="0 0 '+C+' '+R+'" fill="'+(fill||'currentColor')+'" shape-rendering="crispEdges" aria-hidden="true">'+s+'</svg>';}
-const ICON={
-  trace:['##......','##......','.##.....','..##....','...###..','.....###','......##','......##'],
-  two:['#######.','#.....#.','#.##..#.','#.##.###','#####.#.','...#..#.','...#####','........'],
-  diff:['...##...','...##...','########','########','...##...','...##...','........','########'],
-  race:['........','#.......','#...#...','##..#...','##.##...','##.##.#.','##.####.','########'],
-  bulb:['..####..','.######.','.######.','.######.','..####..','...##...','..####..','...##...'],
-  card:['.#######','.#.....#','##.....#','#.####.#','#.#..#.#','#.####.#','#.....##','#######.'],
-  globe:['..####..','.#.##.#.','#..##..#','########','########','#..##..#','.#.##.#.','..####..']
+const LUCIDE={
+  trace:'<polygon points="6 3 20 12 6 21 6 3"/>',
+  two:'<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
+  diff:'<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
+  race:'<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+  bulb:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+  card:'<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
+  globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+  arrow:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
 };
+function lucide(n,cls){return '<svg class="lucide '+(cls||'')+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+LUCIDE[n]+'</svg>';}
 const BUGS=[
   ['#.#..#.#','.######.','##.##.##','########','.######.','#.####.#','#......#','.#....#.'],
   ['..####..','.######.','##.##.##','########','.######.','..#..#..','.#.##.#.','#......#'],
@@ -69,12 +72,12 @@ function initHome(){
     ['bulb','Memory trick','One vivid line per problem so the pattern comes back when you need it.'],
     ['card','Anki cards','Download a deck, or push cards straight into Anki through AnkiConnect.'],
     ['globe','Any LeetCode URL','Not in the library? Bring any LLM key and generate the full page in seconds.']];
-  const card=x=>'<div class="card feat">'+pix(ICON[x[0]])+'<h3>'+x[1]+'</h3><p>'+x[2]+'</p></div>';
+  const card=x=>'<div class="card feat">'+lucide(x[0])+'<h3>'+x[1]+'</h3><p>'+x[2]+'</p></div>';
   $('#feat1').innerHTML=F.slice(0,4).map(card).join('');$('#feat2').innerHTML=F.slice(4).map(card).join('');
   const slots=DR.T.reduce((s,x)=>s+x.ids.length,0),uniq=Object.keys(DR.P).length;
-  $('#trackgrid').innerHTML=DR.T.map(x=>'<a class="card track" href="#/t/'+x.id+'"><div class="n">'+x.ids.length+'</div><h3>'+E(x.name)+'</h3><p>'+E(x.blurb)+'</p><div class="go">Open track →</div></a>').join('');
+  $('#trackgrid').innerHTML=DR.T.map(x=>'<a class="card track" href="#/t/'+x.id+'"><div class="n">'+x.ids.length+'</div><h3>'+E(x.name)+'</h3><p>'+E(x.blurb)+'</p><div class="go">Open track '+lucide('arrow')+'</div></a>').join('');
   $('#stats').innerHTML=[[slots,'curated drills across 8 role tracks'],[uniq,'unique problems, each in 2 variants'],[0,'servers, builds or dependencies']].map(x=>'<div class="stat"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join('');
-  $('#prov').innerHTML=['groq','gemini','openrouter','cerebras','mistral','nvidia'].map(k=>{const p=AI.PROV[k];return '<a class="card" href="'+p.get+'" target="_blank" rel="noopener"><h3>'+p.n+'<em>'+p.tag+'</em></h3><p>'+p.blurb+'</p><p style="color:var(--acc)">Get a key →</p></a>';}).join('');
+  $('#prov').innerHTML=['groq','gemini','openrouter','cerebras','mistral','nvidia'].map(k=>{const p=AI.PROV[k];return '<a class="card" href="'+p.get+'" target="_blank" rel="noopener"><h3>'+p.n+'<em>'+p.tag+'</em></h3><p>'+p.blurb+'</p><p class="get" style="color:var(--acc)">Get a key '+lucide('arrow')+'</p></a>';}).join('');
   $('#sprites').innerHTML=BUGS.map(b=>pix(b)).join('');
   $$('canvas.dots').forEach(dots);
   $$('.try a').forEach(a=>a.onclick=()=>{$('#url').value='https://leetcode.com/problems/'+a.dataset.slug+'/';$('#urlform').requestSubmit();});
@@ -146,14 +149,14 @@ function problem(id,query){
 function gen(slug){
   killLive();setView('gen');const v=$('#v-gen');
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / New problem</div><h1 class="ptitle">Not in the library yet</h1><p class="brief">We will ask an LLM to produce the beginner solution, the optimal one, the trace and the memory trick for <b class="mono">'+E(slug)+'</b>. Results are saved in this browser only.</p>'+
-    '<div class="field"><label>Problem statement (optional — paste it for better accuracy)</label><textarea id="gs" placeholder="Paste the problem description here, or leave empty…"></textarea></div>'+
+    '<div class="field"><label>Problem statement (optional, paste it for better accuracy)</label><textarea id="gs" placeholder="Paste the problem description here, or leave empty…"></textarea></div>'+
     '<div class="toolbar"><button class="btn" id="gg">Generate</button><button class="btn ghost" id="gk">AI settings</button></div><div class="status" id="gst" hidden></div>');
   const st=$('#gst',v);let busy=false;
   async function run(){if(busy)return;busy=true;st.hidden=false;st.className='status';
     const say=m=>{st.innerHTML='<span class="spin"></span>'+E(m);};
     try{const p=await AI.generate(slug,$('#gs',v).value.trim(),say);AI.saveMine(p);location.hash='#/p/'+slug;}
     catch(e){st.className='status err';
-      if(e.message==='NOKEY'){st.innerHTML='No AI provider is configured yet. Pick one and paste a key — Groq, Gemini and OpenRouter all have free tiers. Then press Generate again.';}
+      if(e.message==='NOKEY'){st.innerHTML='No AI provider is configured yet. Pick one and paste a key, Groq, Gemini and OpenRouter all have free tiers. Then press Generate again.';}
       else st.textContent=e.message;}
     busy=false;}
   $('#gg',v).onclick=run;$('#gk',v).onclick=openKeys;
@@ -176,22 +179,24 @@ function notFound(){killLive();setView('gen');$('#v-gen').innerHTML=pageShell('<
 /* ---------- AI settings dialog ---------- */
 function openKeys(){
   const dlg=$('#dlg-keys'),cur=AI.get();
-  const opts=Object.entries(AI.PROV).map(([k,p])=>'<option value="'+k+'">'+E(p.n)+' — '+E(p.tag)+'</option>').join('');
-  dlg.innerHTML='<div class="dbody"><h3>AI settings</h3><p class="small">Only needed for problems outside the built-in library. Your key is stored in this browser and sent only to the provider you choose.</p>'+
+  const opts=Object.entries(AI.PROV).map(([k,p])=>'<option value="'+k+'">'+E(p.n)+', '+E(p.tag)+'</option>').join('');
+  dlg.innerHTML='<div class="dbody"><div class="dlg-head"><div><h3>AI settings</h3><p class="small">Only needed for problems outside the built-in library. Your key is stored in this browser and sent only to the provider you choose.</p></div><button class="dlg-x" id="k-x-top" aria-label="Close settings">'+lucide('x')+'</button></div>'+
    '<div class="field"><label>Provider</label><select id="k-p">'+opts+'</select></div><p class="small" id="k-blurb" style="margin-top:8px"></p>'+
    '<div class="field"><label>Base URL (OpenAI-compatible)</label><input id="k-b" spellcheck="false"></div>'+
    '<div class="field"><label>Model</label><input id="k-m" list="k-ml" spellcheck="false"><datalist id="k-ml"></datalist></div>'+
    '<div class="field"><label>API key</label><input id="k-k" type="password" autocomplete="off" placeholder="paste key"></div>'+
    '<div class="toolbar"><button class="btn small" id="k-s">Save</button><button class="btn small ghost" id="k-l">List models</button><a class="btn small ghost" id="k-g" target="_blank" rel="noopener">Get a key ↗</a><button class="btn small ghost" id="k-x">Close</button></div><div class="status" id="k-st" hidden></div>'+
-   '<div class="free"><b style="margin-top:20px;font-size:13px">Free-tier providers</b>'+['groq','gemini','openrouter','cerebras','mistral','nvidia','huggingface'].map(k=>'<span>• <a href="'+AI.PROV[k].get+'" target="_blank" rel="noopener">'+AI.PROV[k].n+'</a> — '+AI.PROV[k].blurb+'</span>').join('')+'<span class="small" style="margin-top:10px">Free tiers and model names change often; edit the Model field or press “List models”. Limits are per provider.</span></div>'+
+   '<div class="free"><b style="margin-top:20px;font-size:13px">Free-tier providers</b>'+['groq','gemini','openrouter','cerebras','mistral','nvidia','huggingface'].map(k=>'<span>• <a href="'+AI.PROV[k].get+'" target="_blank" rel="noopener">'+AI.PROV[k].n+'</a>, '+AI.PROV[k].blurb+'</span>').join('')+'<span class="small" style="margin-top:10px">Free tiers and model names change often; edit the Model field or press “List models”. Limits are per provider.</span></div>'+
    '<div class="toolbar"><button class="btn small ghost" id="k-c">Erase saved keys &amp; generated problems</button></div></div>';
   const P=$('#k-p',dlg);P.value=cur.prov;
   function fill(){const k=P.value,c=AI.cfgFor(k),d=AI.PROV[k];$('#k-b',dlg).value=c.base;$('#k-m',dlg).value=c.model;$('#k-k',dlg).value=c.key;$('#k-blurb',dlg).textContent=d.blurb;const g=$('#k-g',dlg);g.hidden=!d.get;g.href=d.get||'#';}
   P.onchange=fill;fill();
   const st=$('#k-st',dlg),val=()=>({prov:P.value,base:$('#k-b',dlg).value.trim(),model:$('#k-m',dlg).value.trim(),key:$('#k-k',dlg).value.trim()});
   $('#k-s',dlg).onclick=()=>{const c=val();AI.save(c.prov,c);st.hidden=false;st.className='status';st.textContent='Saved ✓';};
-  $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.textContent='Loading models…';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found — click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
+  $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.textContent='Loading models…';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found, click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
   $('#k-x',dlg).onclick=()=>dlg.close();
+  $('#k-x-top',dlg).onclick=()=>dlg.close();
+  dlg.onclick=e=>{if(e.target===dlg)dlg.close();};
   $('#k-c',dlg).onclick=()=>{if(confirm('Erase saved API keys and generated problems from this browser?')){['dr-ai','dr-mine'].forEach(k=>localStorage.removeItem(k));fill();st.hidden=false;st.className='status';st.textContent='Erased.';}};
   if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');
 }

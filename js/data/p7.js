@@ -1,7 +1,7 @@
-/* p7 — JavaScript utility problems (30-days-of-JS style) for the front-end track.
+/* p7, JavaScript utility problems (30-days-of-JS style) for the front-end track.
    lang:'js'. Tests live in jt (body of an async function; `sleep(ms)` is provided) with expected JSON in je
    (and jeb when variant 1 is expected to behave differently). Annotations: //? slow/naive line, //! key line.
-   Code is inside String.raw — no backticks and no dollar-brace sequences. */
+   Code is inside String.raw, no backticks and no dollar-brace sequences. */
 (function(){const r=String.raw,f=DR.f;
 
 DR.add(
@@ -106,7 +106,7 @@ o:r`var debounce = function(fn, t) {
   debounced.cancel = () => clearTimeout(timer); //! lets callers (e.g. on unmount) drop the pending call
   return debounced;
 };`,
-trick:'One timer in a closure. Each call clears it and starts a new one — only the quiet gap after the LAST call lets it fire.',
+trick:'One timer in a closure. Each call clears it and starts a new one, only the quiet gap after the LAST call lets it fire.',
 real:'Search-as-you-type, window resize handlers, autosave, validating form fields.',
 viz:{flow:[f('A user types: c1, c2, c3 quickly. Wait time t = 50 ms.',['c1','c2','c3','…','…','run'],{}),
  f('c1 starts a 50 ms timer.',['c1','c2','c3','…','…','run'],{h:[0]}),
@@ -122,7 +122,7 @@ b:r`var throttle = function(fn, t) {
   let last = 0;
   return function(...args) {
     const now = Date.now();
-    if (now - last >= t) { //? calls inside the window are simply dropped — the final call is lost
+    if (now - last >= t) { //? calls inside the window are simply dropped, the final call is lost
       last = now;
       fn(...args);
     }
@@ -170,7 +170,7 @@ o:r`function memoize(fn) {
     let node = root;
     for (const a of args) {
       if (!node.has(a)) node.set(a, new Map());
-      node = node.get(a); //! arguments are compared by identity — no serialisation
+      node = node.get(a); //! arguments are compared by identity, no serialisation
     }
     if (!node.has(END)) node.set(END, fn(...args));
     return node.get(END);
@@ -361,11 +361,11 @@ viz:{flow:[f('compose([x+1, 2x])(4) → first apply 2x, then x+1.',['x+1','2x'],
  f('Result 9. An empty list returns x unchanged.',['x+1','2x'],{g:[0,1],aux:[['result',9]]})]},
 jt:`return [compose([x=>x+1,x=>2*x])(4), compose([])(5), compose([x=>x*x,x=>x+1])(3)];`,je:`[9,5,16]`},
 
-{id:'sort-by',n:2724,t:'Sort By',d:'E',tg:['JavaScript','Sorting'],pat:'Decorate – Sort – Undecorate',lang:'js',
+{id:'sort-by',n:2724,t:'Sort By',d:'E',tg:['JavaScript','Sorting'],pat:'Decorate - Sort - Undecorate',lang:'js',
 br:'Sort an array ascending by the value returned from fn(item).',
 bt:'O(n log n) fn calls',bs:'O(1)',ot:'n fn calls',os:'O(n)',
 b:r`var sortBy = function(arr, fn) {
-  return arr.sort((a, b) => fn(a) - fn(b)); //? fn runs twice per comparison — O(n log n) calls
+  return arr.sort((a, b) => fn(a) - fn(b)); //? fn runs twice per comparison, O(n log n) calls
 };`,
 o:r`var sortBy = function(arr, fn) {
   return arr
@@ -377,7 +377,7 @@ trick:'If computing the key is costly, compute it once per item, sort the (key, 
 real:'Sorting by an expensive derived value: relevance scores, parsed dates, distance to a point.',
 viz:{flow:[f('Sort [5,4,1,2,3] by fn(x) = x. The comparator version calls fn twice on every comparison.',[5,4,1,2,3],{aux:[['fn calls',0]]}),
  f('Decorate: call fn once per item → pairs [key, item].',['5·5','4·4','1·1','2·2','3·3'],{aux:[['fn calls',5]]}),
- f('Sort the pairs by key. Comparisons only read stored keys — no more fn calls.',['1·1','2·2','3·3','4·4','5·5'],{h:[0,1,2,3,4],aux:[['fn calls',5]]}),
+ f('Sort the pairs by key. Comparisons only read stored keys, no more fn calls.',['1·1','2·2','3·3','4·4','5·5'],{h:[0,1,2,3,4],aux:[['fn calls',5]]}),
  f('Undecorate: keep the items → [1,2,3,4,5].',[1,2,3,4,5],{g:[0,1,2,3,4],aux:[['fn calls',5]]})]},
 jt:`let calls=0; const r=sortBy([5,4,1,2,3],x=>{calls++; return x;}); return [r, calls===5];`,je:`[[1,2,3,4,5],true]`,jeb:`[[1,2,3,4,5],false]`},
 

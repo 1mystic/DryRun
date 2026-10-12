@@ -1,4 +1,4 @@
-/* p2 — binary search, stacks, intervals, heaps, sorting, scheduling */
+/* p2, binary search, stacks, intervals, heaps, sorting, scheduling */
 (function(){const r=String.raw,f=DR.f;
 DR.add(
 {id:'binary-search',n:704,t:'Binary Search',d:'E',tg:['Array','Binary Search'],pat:'Halve the Search Space',
@@ -166,7 +166,7 @@ o:r`class Solution:
         k = 0
         for i, c in enumerate(haystack):
             while k and c != needle[k]:
-                k = lps[k - 1]  #! on a mismatch, fall back — never move i backwards
+                k = lps[k - 1]  #! on a mismatch, fall back, never move i backwards
             if c == needle[k]:
                 k += 1
             if k == len(needle):
@@ -423,11 +423,11 @@ o:r`class Solution:
         return len(rooms)`,
 trick:'"How many at once?" → keep a min-heap of end times; if the earliest end is before the next start, reuse that room.',
 real:'GPU / worker allocation: how many accelerators does a job queue need?',
-viz:{flow:[f('Meetings: (0,30) (5,10) (15,20). Heap holds the end time of each room in use.',['0–30','5–10','15–20'],{aux:[['room end-times']]}),
- f('(0,30): no rooms yet → open room 1.',['0–30','5–10','15–20'],{p:{i:0},h:[0],aux:[['room end-times',30]]}),
- f('(5,10): earliest end 30 > 5 → all busy → open room 2.',['0–30','5–10','15–20'],{p:{i:1},h:[1],aux:[['room end-times',10,30]]}),
- f('(15,20): earliest end 10 ≤ 15 → reuse that room (end becomes 20).',['0–30','5–10','15–20'],{p:{i:2},h:[2],aux:[['room end-times',20,30]]}),
- f('Heap size = 2 rooms needed.',['0–30','5–10','15–20'],{g:[0,1,2],aux:[['rooms',2]]})]},
+viz:{flow:[f('Meetings: (0,30) (5,10) (15,20). Heap holds the end time of each room in use.',['0-30','5-10','15-20'],{aux:[['room end-times']]}),
+ f('(0,30): no rooms yet → open room 1.',['0-30','5-10','15-20'],{p:{i:0},h:[0],aux:[['room end-times',30]]}),
+ f('(5,10): earliest end 30 > 5 → all busy → open room 2.',['0-30','5-10','15-20'],{p:{i:1},h:[1],aux:[['room end-times',10,30]]}),
+ f('(15,20): earliest end 10 ≤ 15 → reuse that room (end becomes 20).',['0-30','5-10','15-20'],{p:{i:2},h:[2],aux:[['room end-times',20,30]]}),
+ f('Heap size = 2 rooms needed.',['0-30','5-10','15-20'],{g:[0,1,2],aux:[['rooms',2]]})]},
 test:`res=[Solution().minMeetingRooms([[0,30],[5,10],[15,20]]),Solution().minMeetingRooms([[7,10],[2,4]])]`,exp:`[2,1]`},
 
 {id:'sort-colors',n:75,t:'Sort Colors',d:'M',tg:['Array','Two Pointers','Sorting'],pat:'Dutch National Flag',
@@ -478,7 +478,7 @@ o:r`class Solution:
             else:
                 r = i - 1`,
 trick:'"kth without sorting" → partition like quicksort but only follow ONE side. Average O(n). (Or keep a size-k min-heap.)',
-real:'Top-k sampling over logits in LLM decoding — keep only the k best candidates.',
+real:'Top-k sampling over logits in LLM decoding, keep only the k best candidates.',
 viz:{sim:'qselect',arr:[3,2,1,5,6,4],k:2},
 test:`res=[Solution().findKthLargest([3,2,1,5,6,4],2),Solution().findKthLargest([3,2,3,1,2,4,5,5,6],4)]`,exp:`[5,4]`},
 
@@ -492,7 +492,7 @@ o:r`class Solution:
     def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:
         heap = []  #! max-heap (negated distance) holding the k closest so far
         for x, y in points:
-            d = x * x + y * y  #! squared distance is enough — no sqrt
+            d = x * x + y * y  #! squared distance is enough, no sqrt
             heapq.heappush(heap, (-d, x, y))
             if len(heap) > k:
                 heapq.heappop(heap)  #! evict the farthest of the k+1
@@ -600,6 +600,6 @@ real:'Batching and rate-limited job scheduling (API calls with per-key cooldowns
 viz:{flow:[f('Tasks AAABBB, cooldown n = 2. A is the busiest (3×).',[...'AAABBB'],{aux:[['frame width','n + 1 = 3']]}),
  f('Frame 1: A B idle',['A','B','·'],{aux:[['time',3]]}),
  f('Frame 2: A B idle',['A','B','·','A','B','·'],{aux:[['time',6]]}),
- f('Last frame has no idle at the end — only the tied tasks (A, B): A B',['A','B','·','A','B','·','A','B'],{g:[6,7],aux:[['time',8],['formula','(3−1)·3 + 2 = 8']]})]},
+ f('Last frame has no idle at the end, only the tied tasks (A, B): A B',['A','B','·','A','B','·','A','B'],{g:[6,7],aux:[['time',8],['formula','(3−1)·3 + 2 = 8']]})]},
 test:`res=[Solution().leastInterval(list("AAABBB"),2),Solution().leastInterval(list("AAABBB"),0),Solution().leastInterval(list("AAAAAABCDEFG"),2)]`,exp:`[8,6,16]`}
 );})();

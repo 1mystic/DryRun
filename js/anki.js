@@ -1,4 +1,4 @@
-/* anki.js — build Anki cards: TSV download (File → Import) and AnkiConnect push */
+/* anki.js, build Anki cards: TSV download (File → Import) and AnkiConnect push */
 (function(){
 const E=HL.esc;
 const url=p=>'https://leetcode.com/problems/'+p.id+'/';
