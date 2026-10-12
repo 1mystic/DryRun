@@ -5377,6 +5377,8 @@ const LUCIDE={
   card:'<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
   globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
   arrow:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+  arrowL:'<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',
+  upRight:'<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
   x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
 };
 function lucide(n,cls){return '<svg class="lucide '+(cls||'')+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+LUCIDE[n]+'</svg>';}
@@ -5454,7 +5456,7 @@ function trackList(id){
   killLive();setView('track');remember('Track: '+T.name);const v=$('#v-track'),dn=done();
   const list=T.ids.map(i=>DR.P[i]);
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Track</div><h1 class="ptitle">'+E(T.name)+'</h1><p class="brief">'+E(T.blurb)+'</p>'+
-   '<div class="toolbar"><a class="btn small" href="#/p/'+list[0].id+'?t='+T.id+'">Start with #1 →</a><button class="btn small ghost" id="tk-dl">Download Anki cards</button><button class="btn small ghost" id="tk-push">Push to Anki</button><span class="small" id="tk-prog"></span></div><div class="status" id="tk-st" hidden></div>'+
+   '<div class="toolbar"><a class="btn small" href="#/p/'+list[0].id+'?t='+T.id+'">Start with #1 '+lucide('arrow')+'</a><button class="btn small ghost" id="tk-dl">Download Anki cards</button><button class="btn small ghost" id="tk-push">Push to Anki</button><span class="small" id="tk-prog"></span></div><div class="status" id="tk-st" hidden></div>'+
    '<div class="filters"><input id="q" placeholder="Filter by title, pattern or tag…"><span id="df"></span></div>'+
    '<table class="tbl"><thead><tr><th></th><th>#</th><th>Problem</th><th>Level</th><th class="hm">Pattern</th><th class="hm">Tags</th></tr></thead><tbody id="rows"></tbody></table>');
   const body=$('#rows',v);
@@ -5486,14 +5488,14 @@ function problem(id,query){
   v.innerHTML=pageShell(
     '<div class="crumbs"><a href="#/">Home</a> / '+(T?'<a href="#/t/'+T.id+'">'+E(T.name)+'</a> / '+(idx+1):(p.ai?'<a href="#/mine">Generated</a>':'Library'))+'</div>'+
     '<h1 class="ptitle">'+(p.n?'<span class="mono" style="color:var(--mute);font-size:.5em;margin-right:12px">#'+p.n+'</span>':'')+E(p.t)+'</h1>'+
-    '<div class="pmeta"><span class="chip '+p.d+'">'+DIFF[p.d]+'</span>'+(p.tg||[]).map(t=>'<span class="chip">'+E(t)+'</span>').join('')+(p.ai?'<span class="chip" style="color:var(--acc);border-color:var(--acc)">AI-generated · verify before relying</span>':'')+'<a class="btn small ghost" target="_blank" rel="noopener" href="'+lcUrl(p.id)+'">Open on LeetCode ↗</a><button class="btn small ghost" id="mk-done">'+(dn[id]?'✓ Done':'Mark done')+'</button></div>'+
+    '<div class="pmeta"><span class="chip '+p.d+'">'+DIFF[p.d]+'</span>'+(p.tg||[]).map(t=>'<span class="chip">'+E(t)+'</span>').join('')+(p.ai?'<span class="chip" style="color:var(--acc);border-color:var(--acc)">AI-generated · verify before relying</span>':'')+'<a class="btn small ghost" target="_blank" rel="noopener" href="'+lcUrl(p.id)+'">Open on LeetCode '+lucide('upRight')+'</a><button class="btn small ghost" id="mk-done">'+(dn[id]?'✓ Done':'Mark done')+'</button></div>'+
     (p.br?'<p class="brief">'+E(p.br)+'</p>':'')+
     '<div class="duo"><div class="sec duo-l"><h2>01 · Trace</h2><h3>Watch it run</h3><div id="viz"></div><p class="small" style="margin-top:10px">Tip: click the stage, then use ← → and space.</p></div>'+
     '<div class="sec duo-r"><h2>02 · Two variants</h2><h3>Beginner first, then the version interviewers want</h3><div class="tabs"><div class="tab on" data-t="1">Variant 1 · Beginner</div><div class="tab" data-t="2">Variant 2 · Optimized</div></div><div id="codebox"></div></div></div>'+
     '<div class="sec"><h2>03 · What changed</h2><h3>Morph the brute force into the best version</h3><div id="morph"></div><h3 style="margin-top:46px">…and why it matters at scale</h3><div id="race"></div></div>'+
     '<div class="sec"><h2>04 · Remember it</h2><h3>One hook, one flashcard</h3><div class="trick"><div class="card"><div class="pat">'+E(p.pat||'Pattern')+'</div><p class="big">'+E(p.trick||'')+'</p>'+(p.real?'<p class="small" style="margin-top:16px"><b style="color:var(--ink)">Where it shows up:</b> '+E(p.real)+'</p>':'')+'</div>'+
-    '<div class="card"><h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Anki</h3><p class="small">Two cards: pattern recall and write-the-code.</p><div style="display:grid;gap:10px;margin-top:16px"><button class="btn small" id="an-dl">Download cards (.txt)</button><button class="btn small ghost" id="an-push">Send to Anki (AnkiConnect)</button><a class="btn small ghost" target="_blank" rel="noopener" href="https://ankiweb.net/decks">Open AnkiWeb ↗</a></div><p class="small" style="margin-top:12px">Pushes need desktop Anki open with the <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect add-on ↗</a>.</p><div class="status" id="an-st" hidden style="font-size:12px"></div></div></div></div>'+
-    '<div class="pn">'+(T?nav(T.ids[idx-1],'← Previous')+nav(T.ids[idx+1],'Next →'):'<a class="btn small ghost" href="#/">← Home</a>')+'</div>',true);
+    '<div class="card"><h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Anki</h3><p class="small">Two cards: pattern recall and write-the-code.</p><div style="display:grid;gap:10px;margin-top:16px"><button class="btn small" id="an-dl">Download cards (.txt)</button><button class="btn small ghost" id="an-push">Send to Anki (AnkiConnect)</button><a class="btn small ghost" target="_blank" rel="noopener" href="https://ankiweb.net/decks">Open AnkiWeb '+lucide('upRight')+'</a></div><p class="small" style="margin-top:12px">Pushes need desktop Anki open with the <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect add-on ↗</a>.</p><div class="status" id="an-st" hidden style="font-size:12px"></div></div></div></div>'+
+    '<div class="pn">'+(T?nav(T.ids[idx-1],lucide('arrowL')+' Previous')+nav(T.ids[idx+1],'Next '+lucide('arrow')):'<a class="btn small ghost" href="#/">'+lucide('arrowL')+' Home</a>')+'</div>',true);
   live.push(Viz.mount($('#viz',v),p.viz||{flow:[]}));
   const cb=$('#codebox',v);function tab(n){$$('.tab',v).forEach(t=>t.classList.toggle('on',t.dataset.t==String(n)));cb.innerHTML=codeBox(n===1?p.b:p.o,lang,n,p);$('.cp',cb).onclick=e=>{const txt=HL.parse(n===1?p.b:p.o).map(l=>l.t).join('\n');(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>e.target.textContent='Copied ✓').catch(()=>e.target.textContent='Copy failed');};}
   $$('.tab',v).forEach(t=>t.onclick=()=>tab(+t.dataset.t));tab(1);
@@ -5583,7 +5585,7 @@ function openKeys(){
    '<div class="field"><label>Base URL (OpenAI-compatible)</label><input id="k-b" spellcheck="false"></div>'+
    '<div class="field"><label>Model</label><input id="k-m" list="k-ml" spellcheck="false"><datalist id="k-ml"></datalist></div>'+
    '<div class="field"><label>API key</label><input id="k-k" type="password" autocomplete="off" placeholder="paste key"></div>'+
-   '<div class="toolbar"><button class="btn small" id="k-s">Save</button><button class="btn small ghost" id="k-l">List models</button><a class="btn small ghost" id="k-g" target="_blank" rel="noopener">Get a key ↗</a><button class="btn small ghost" id="k-x">Close</button></div><div class="status" id="k-st" hidden></div>'+
+   '<div class="toolbar"><button class="btn small" id="k-s">Save</button><button class="btn small ghost" id="k-l">List models</button><a class="btn small ghost" id="k-g" target="_blank" rel="noopener">Get a key '+lucide('upRight')+'</a><button class="btn small ghost" id="k-x">Close</button></div><div class="status" id="k-st" hidden></div>'+
    '<div class="free"><b style="margin-top:20px;font-size:13px">Free-tier providers</b>'+['groq','gemini','openrouter','cerebras','mistral','nvidia','huggingface'].map(k=>'<span>• <a href="'+AI.PROV[k].get+'" target="_blank" rel="noopener">'+AI.PROV[k].n+'</a>, '+AI.PROV[k].blurb+'</span>').join('')+'<span class="small" style="margin-top:10px">Free tiers and model names change often; edit the Model field or press “List models”. Limits are per provider.</span></div>'+
    '<div class="toolbar"><button class="btn small ghost" id="k-c">Erase saved keys &amp; generated problems</button></div></div>';
   const Pc=DRUI.select($('#k-p',dlg),{options:opts,value:cur.prov,label:'AI provider',onChange:fill});
