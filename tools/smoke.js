@@ -65,6 +65,13 @@ const go=async h=>{w.location.hash=h;w.DRAPP.route();await sleep(0);};
  await go('#/p/two-sum?t=ds');$('#mk-done').click();ok(JSON.parse(w.localStorage.getItem('dr-done')||'{}')['two-sum']===1,'done saved');
  // mine
  await go('#/mine');ok(!$('#v-mine').hidden,'mine view');
+ // data view: progress, backup, anki help
+ await go('#/data');ok(!$('#v-data').hidden,'data view');
+ ok($$('#v-data .dbars .rbar').length>=9,'data progress bars '+$$('#v-data .dbars .rbar').length);
+ ok($('#d-exp')&&$('#d-imp')&&$('#d-wipe'),'backup controls');
+ w.HTMLAnchorElement.prototype.click=function(){if(this.hasAttribute('download'))return;};$('#d-exp').click();ok(/Backup exported/.test($('#d-st').textContent),'export writes status');
+ ok($('a[href="#/data"]'),'footer data link');
+ ok($('a[href*="ankiweb.net/shared"]')&&$('a[href*="ankiweb.net/shared"]').target==='_blank','anki addon link new tab');
  // settings dialog
  $('#btn-keys').click();const dlg=$('#dlg-keys');ok(dlg.hasAttribute('open'),'dialog open');
  const pBtn=$('#k-p .csel-btn',dlg);ok(!!pBtn,'provider dropdown trigger');

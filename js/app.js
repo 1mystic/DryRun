@@ -5,6 +5,12 @@ const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const E=HL.esc;
 const LS=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}};
 const SS=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
+const storeOK=()=>{try{localStorage.setItem('__dryrun_t','1');localStorage.removeItem('__dryrun_t');return true;}catch(e){return false;}};
+/* session: visits + last page, all local. Powers the "continue" chip. */
+const SKEY='dr-session';
+const session=()=>LS(SKEY,null)||{v:1,visits:0};
+const saveSession=s=>SS(SKEY,s);
+const remember=label=>{try{const s=session(),now=Date.now();s.last=now;if(!s.first)s.first=now;s.lastPage={hash:location.hash,label:label||location.hash,ts:now};saveSession(s);}catch(e){}};
 const DIFF={E:'Easy',M:'Medium',H:'Hard'};
 const lcUrl=id=>'https://leetcode.com/problems/'+id+'/';
 const find=id=>DR.P[id]||AI.mine()[id];
@@ -81,6 +87,10 @@ function initHome(){
   $('#sprites').innerHTML=BUGS.map(b=>pix(b)).join('');
   $$('canvas.dots').forEach(dots);
   $$('.try a').forEach(a=>a.onclick=()=>{$('#url').value='https://leetcode.com/problems/'+a.dataset.slug+'/';$('#urlform').requestSubmit();});
+  try{const s=session(),lp=s&&s.lastPage;
+    if(lp&&lp.hash&&lp.hash!==location.hash&&/^#\//.test(lp.hash)){
+      $('#resume').innerHTML='<span>Welcome back, visit #'+(s.visits||1)+'</span><a class="btn small ghost" href="'+lp.hash.replace(/"/g,'')+'">Continue: '+E(String(lp.label||'where you left off')).slice(0,60)+' '+lucide('arrow')+'</a>';
+    }}catch(e){}
   $('#urlform').addEventListener('submit',e=>{e.preventDefault();const v=$('#url').value.trim();
     const m=v.match(/leetcode\.(?:com|cn)\/problems\/([a-z0-9-]+)/i)||(/^[a-z0-9-]+$/i.test(v)?[0,v]:null);
     if(!m){$('#urlhint').textContent='Paste a link like https://leetcode.com/problems/two-sum/';return;}
@@ -94,7 +104,7 @@ function pageShell(inner){return '<div class="page"><div class="wrap">'+inner+'<
 
 function trackList(id){
   const T=DR.T.find(x=>x.id===id);if(!T)return notFound();
-  killLive();setView('track');const v=$('#v-track'),dn=done();
+  killLive();setView('track');remember('Track: '+T.name);const v=$('#v-track'),dn=done();
   const list=T.ids.map(i=>DR.P[i]);
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Track</div><h1 class="ptitle">'+E(T.name)+'</h1><p class="brief">'+E(T.blurb)+'</p>'+
    '<div class="toolbar"><a class="btn small" href="#/p/'+list[0].id+'?t='+T.id+'">Start with #1 →</a><button class="btn small ghost" id="tk-dl">Download Anki cards</button><button class="btn small ghost" id="tk-push">Push to Anki</button><span class="small" id="tk-prog"></span></div><div class="status" id="tk-st" hidden></div>'+
@@ -122,7 +132,7 @@ function codeBox(code,lang,tab,p){
 
 function problem(id,query){
   const p=find(id);if(!p)return location.replace('#/gen/'+id);
-  killLive();setView('problem');const v=$('#v-problem');
+  killLive();setView('problem');remember(p.t);const v=$('#v-problem');
   const tid=(query.match(/t=([\w-]+)/)||[])[1],T=DR.T.find(x=>x.id===tid),idx=T?T.ids.indexOf(id):-1;
   const lang=p.lang||'py',dn=done();
   const nav=(q,lab)=>q?'<a class="btn small ghost" href="#/p/'+q+'?t='+tid+'">'+lab+'</a>':'<span></span>';
@@ -135,7 +145,7 @@ function problem(id,query){
     '<div class="sec"><h2>02 · Two variants</h2><h3>Beginner first, then the version interviewers want</h3><div class="tabs"><div class="tab on" data-t="1">Variant 1 · Beginner</div><div class="tab" data-t="2">Variant 2 · Optimized</div></div><div id="codebox"></div></div>'+
     '<div class="sec"><h2>03 · What changed</h2><h3>Morph the brute force into the best version</h3><div id="morph"></div><h3 style="margin-top:46px">…and why it matters at scale</h3><div id="race"></div></div>'+
     '<div class="sec"><h2>04 · Remember it</h2><h3>One hook, one flashcard</h3><div class="trick"><div class="card"><div class="pat">'+E(p.pat||'Pattern')+'</div><p class="big">'+E(p.trick||'')+'</p>'+(p.real?'<p class="small" style="margin-top:16px"><b style="color:var(--ink)">Where it shows up:</b> '+E(p.real)+'</p>':'')+'</div>'+
-    '<div class="card"><h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Anki</h3><p class="small">Two cards: pattern recall and write-the-code.</p><div style="display:grid;gap:10px;margin-top:16px"><button class="btn small" id="an-dl">Download cards (.txt)</button><button class="btn small ghost" id="an-push">Send to Anki (AnkiConnect)</button><a class="btn small ghost" target="_blank" rel="noopener" href="https://ankiweb.net/decks">Open AnkiWeb ↗</a></div><div class="status" id="an-st" hidden style="font-size:12px"></div></div></div></div>'+
+    '<div class="card"><h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Anki</h3><p class="small">Two cards: pattern recall and write-the-code.</p><div style="display:grid;gap:10px;margin-top:16px"><button class="btn small" id="an-dl">Download cards (.txt)</button><button class="btn small ghost" id="an-push">Send to Anki (AnkiConnect)</button><a class="btn small ghost" target="_blank" rel="noopener" href="https://ankiweb.net/decks">Open AnkiWeb ↗</a></div><p class="small" style="margin-top:12px">Pushes need desktop Anki open with the <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect add-on ↗</a>.</p><div class="status" id="an-st" hidden style="font-size:12px"></div></div></div></div>'+
     '<div class="pn">'+(T?nav(T.ids[idx-1],'← Previous')+nav(T.ids[idx+1],'Next →'):'<a class="btn small ghost" href="#/">← Home</a>')+'</div>');
   live.push(Viz.mount($('#viz',v),p.viz||{flow:[]}));
   const cb=$('#codebox',v);function tab(n){$$('.tab',v).forEach(t=>t.classList.toggle('on',t.dataset.t==String(n)));cb.innerHTML=codeBox(n===1?p.b:p.o,lang,n,p);$('.cp',cb).onclick=e=>{const txt=HL.parse(n===1?p.b:p.o).map(l=>l.t).join('\n');(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>e.target.textContent='Copied ✓').catch(()=>e.target.textContent='Copy failed');};}
@@ -148,7 +158,7 @@ function problem(id,query){
 }
 
 function gen(slug){
-  killLive();setView('gen');const v=$('#v-gen');
+  killLive();setView('gen');remember('Generate: '+slug);const v=$('#v-gen');
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / New problem</div><h1 class="ptitle">Not in the library yet</h1><p class="brief">We will ask an LLM to produce the beginner solution, the optimal one, the trace and the memory trick for <b class="mono">'+E(slug)+'</b>. Results are saved in this browser only.</p>'+
     '<div class="field"><label>Problem statement (optional, paste it for better accuracy)</label><textarea id="gs" placeholder="Paste the problem description here, or leave empty…"></textarea></div>'+
     '<div class="toolbar"><button class="btn" id="gg">Generate</button><button class="btn ghost" id="gk">AI settings</button></div><div class="status" id="gst" hidden></div>');
@@ -166,13 +176,53 @@ function gen(slug){
 }
 
 function mineView(){
-  killLive();setView('mine');const v=$('#v-mine'),m=AI.mine(),ids=Object.keys(m);
+  killLive();setView('mine');remember('Your generated problems');const v=$('#v-mine'),m=AI.mine(),ids=Object.keys(m);
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Generated</div><h1 class="ptitle">Your generated problems</h1><p class="brief">Stored only in this browser (localStorage). Export a backup or turn them into Anki cards.</p>'+
    '<div class="toolbar"><button class="btn small ghost" id="m-exp">Export JSON</button><button class="btn small ghost" id="m-anki">Download Anki cards</button></div>'+
    (ids.length?'<table class="tbl"><tbody>'+ids.map(i=>'<tr class="row" data-id="'+i+'"><td class="t">'+E(m[i].t)+'</td><td><span class="chip '+m[i].d+'">'+DIFF[m[i].d]+'</span></td><td class="small">'+E(m[i].pat||'')+'</td><td><button class="btn small ghost del" style="padding:4px 12px;box-shadow:none">Delete</button></td></tr>').join('')+'</tbody></table>':'<p class="small" style="margin-top:30px">Nothing yet. Paste a LeetCode URL on the home page.</p>'));
   $$('.row',v).forEach(r=>r.onclick=e=>{if(e.target.classList.contains('del')){AI.delMine(r.dataset.id);mineView();return;}location.hash='#/p/'+r.dataset.id;});
   $('#m-exp',v).onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(m,null,1)],{type:'application/json'}));a.download='dryrun-generated.json';a.click();};
   $('#m-anki',v).onclick=()=>Anki.download('dryrun-generated.txt',Anki.tsv(ids.map(i=>m[i])));
+  window.scrollTo(0,0);
+}
+/* ---------- your data: progress, backup export/import, Anki help ---------- */
+const ANKI_ADDON='https://ankiweb.net/shared/info/2055492159';
+function dataView(){
+  killLive();setView('data');remember('Your data');const v=$('#v-data');
+  const dn=done(),m=AI.mine(),s=session();
+  const uniq=Object.keys(DR.P).length,dc=Object.keys(dn).length;
+  const bar=(label,href,c,n)=>'<a href="'+href+'"><div class="rbar b"><span>'+label+'</span><div class="tr"><div class="fl" style="width:'+Math.round(100*c/Math.max(1,n))+'%"></div></div><span class="v">'+c+'/'+n+'</span></div></a>';
+  const bytes=['dr-done','dr-mine','dr-ai','dr-theme','dr-session'].reduce((a,k)=>{try{return a+((localStorage.getItem(k)||'').length);}catch(e){return a;}},0);
+  v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Your data</div><h1 class="ptitle">Your data, on this device</h1><p class="brief">Progress, generated problems, keys and settings live only in this browser. Nothing is uploaded anywhere. Export a backup before clearing browser data or switching devices.</p>'+
+   '<div class="sec"><h2>01 · Progress</h2><h3>'+dc+' of '+uniq+' library problems done, plus '+Object.keys(m).length+' generated</h3><div class="dbars">'+bar('All tracks','#tracks',dc,uniq)+DR.T.map(t=>bar(E(t.name),'#/t/'+t.id,t.ids.filter(id=>dn[id]).length,t.ids.length)).join('')+'</div></div>'+
+   '<div class="sec"><h2>02 · Backup</h2><h3>Export or import everything</h3><div class="toolbar"><button class="btn small" id="d-exp">Export backup (.json)</button><label class="btn small ghost">Import backup<input type="file" id="d-imp" accept="application/json,.json"></label><button class="btn small ghost" id="d-wipe">Erase everything</button></div><div class="status" id="d-st" hidden></div><p class="small" style="margin-top:12px">Visits: '+(s.visits||1)+' · Storage used: ~'+(bytes/1024).toFixed(1)+' KB · A backup holds progress, generated problems, provider keys and theme.</p></div>'+
+   '<div class="sec"><h2>03 · Anki</h2><h3>Push cards without anything looking broken</h3><p class="brief" style="margin-top:0">Card pushes go to desktop Anki on this machine through AnkiConnect (localhost, never the network). If a push fails, install the <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect add-on (code 2055492159) ↗</a>, keep desktop Anki open, and allow this site in its webCorsOriginList. Background reading: <a href="https://docs.ankiweb.net/" target="_blank" rel="noopener">Anki docs ↗</a>.</p></div>');
+  const st=$('#d-st',v),say=(m2,err)=>{st.hidden=false;st.className='status'+(err?' err':'');st.textContent=m2;};
+  $('#d-exp',v).onclick=()=>{
+    const out={app:'dryrun-backup',v:1,exportedAt:new Date().toISOString(),done:done(),mine:AI.mine(),ai:AI.get(),theme:null,session:session()};
+    try{out.theme=localStorage.getItem('dr-theme')||'dark';}catch(e){}
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out)],{type:'application/json'}));
+    const d=new Date(),p2=n=>String(n).padStart(2,'0');a.download='dryrun-backup-'+d.getFullYear()+p2(d.getMonth()+1)+p2(d.getDate())+'.json';a.click();
+    setTimeout(()=>{try{URL.revokeObjectURL(a.href);}catch(e){}},4000);
+    say('Backup exported as '+a.download+'. Keep it somewhere safe.');
+  };
+  $('#d-imp',v).onchange=e=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=()=>{try{
+      const j=JSON.parse(r.result);
+      if(!j||typeof j!=='object'||(!j.done&&!j.mine&&!j.ai))throw new Error('not a DryRun backup (expected app "dryrun-backup")');
+      if(!confirm('Import this backup from '+(j.exportedAt||'unknown date')+'? Progress and generated problems merge in. Provider keys and theme from the file replace what is saved here.'))return;
+      const d0=done();Object.assign(d0,j.done||{});SS('dr-done',d0);
+      const m0=AI.mine();Object.assign(m0,j.mine||{});SS('dr-mine',m0);
+      if(j.ai&&j.ai.cfg){const cur=AI.get();if(j.ai.prov)cur.prov=j.ai.prov;Object.assign(cur.cfg,j.ai.cfg);SS('dr-ai',cur);}
+      if(j.theme){try{localStorage.setItem('dr-theme',j.theme);document.documentElement.dataset.theme=j.theme;}catch(_){}}
+      say('Backup imported: '+Object.keys(done()).length+' done, '+Object.keys(AI.mine()).length+' generated.');
+      dataView();
+    }catch(err){say('Import failed: '+err.message,true);}};
+    r.readAsText(f);e.target.value='';
+  };
+  $('#d-wipe',v).onclick=()=>{if(confirm('Erase ALL DryRun data in this browser (progress, generated problems, keys, theme)? This cannot be undone. Export a backup first.')){['dr-done','dr-mine','dr-ai','dr-theme','dr-session'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});location.hash='#/';location.reload();}};
   window.scrollTo(0,0);
 }
 function notFound(){killLive();setView('gen');$('#v-gen').innerHTML=pageShell('<h1 class="ptitle">Page not found</h1><p class="brief"><a href="#/" style="color:var(--acc)">Back home</a></p>');}
@@ -210,9 +260,12 @@ function route(){
   if(parts[0]==='p')return problem(parts[1],query||'');
   if(parts[0]==='gen')return gen(parts[1]);
   if(parts[0]==='mine')return mineView();
+  if(parts[0]==='data')return dataView();
   notFound();
 }
 function boot(){
+  try{const s=session();s.visits=(s.visits||0)+1;s.last=Date.now();if(!s.first)s.first=Date.now();saveSession(s);}catch(e){}
+  if(!storeOK()){const w=$('#storewarn');if(w)w.hidden=false;}
   initHome();
   $('#btn-theme').onclick=()=>{const t=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=t;try{localStorage.setItem('dr-theme',t);}catch(e){}};
   $('#btn-keys').onclick=openKeys;
