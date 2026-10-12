@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DRYRUN — see every algorithm run</title>
+<meta name="description" content="Paste a LeetCode link. Get a beginner and an optimized solution, an animated step-by-step trace, a memory trick and an Anki card. 200 curated problems across 8 role tracks.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' rx='2' fill='%230f1013' stroke='%23c8f542' stroke-width='2'/%3E%3Cpath d='M10 7l7 5-7 5z' fill='%23c8f542'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@300..700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('dr-theme')||'dark'}catch(e){}</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#/" aria-label="DRYRUN home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/></svg>DRYRUN
+  </a>
+  <div class="top-actions">
+    <button class="sq" id="btn-keys" title="AI settings &amp; API keys" aria-label="AI settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/></svg></button>
+    <button class="sq" id="btn-theme" title="Toggle theme" aria-label="Toggle theme"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></svg></button>
+  </div>
+</header>
+
+<main>
+<!-- HOME -->
+<section id="v-home" class="view">
+  <div class="hero">
+    <canvas class="dots" data-h="300"></canvas>
+    <div class="logo-glow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/><path d="M6 21v1.5M12 21v1.5M18 21v1.5" opacity=".5"/></svg></div>
+    <h1 class="wordmark">DRYRUN</h1>
+    <p class="tag">See every algorithm run.</p>
+    <p class="lede">Paste a LeetCode link. Get a beginner and an optimized solution, an animated trace of how it works, a memory trick and an Anki card — in one page.</p>
+    <form class="urlform" id="urlform" autocomplete="off">
+      <input id="url" type="text" placeholder="https://leetcode.com/problems/two-sum/" aria-label="LeetCode problem URL" spellcheck="false">
+      <button class="btn" type="submit">Dry-run it <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </form>
+    <div class="hint" id="urlhint"></div>
+    <div class="try">Try: <a data-slug="two-sum">two-sum</a>·<a data-slug="lru-cache">lru-cache</a>·<a data-slug="kth-largest-element-in-an-array">kth-largest</a>·<a data-slug="edit-distance">edit-distance</a></div>
+  </div>
+
+  <div class="strip" aria-hidden="true"><div class="run" id="ticker"></div></div>
+
+  <section class="block"><div class="wrap">
+    <div class="eyebrow">What's inside</div>
+    <h2 class="big">Every problem, in <span class="pix">TWO</span> speeds</h2>
+    <p class="sub">Beginner-friendly first, then the version interviewers want. Watch exactly what changes — line by line.</p>
+    <div class="grid4" id="feat1"></div>
+    <div class="grid3c" id="feat2"></div>
+  </div></section>
+
+  <section class="block" id="tracks"><div class="wrap">
+    <div class="eyebrow">Pick your track</div>
+    <h2 class="big">Eight roles. <span class="pix">200</span> drills.</h2>
+    <p class="sub">25 problems per role, chosen for what that job actually asks — from KV-cache eviction to debounce.</p>
+    <div class="tracks" id="trackgrid"></div>
+  </div></section>
+
+  <section class="block"><div class="wrap">
+    <div class="eyebrow">By the numbers</div>
+    <h2 class="big">Lean by <span class="pix">DESIGN</span></h2>
+    <div class="stats" id="stats"></div>
+  </div></section>
+
+  <section class="block" style="position:relative"><div class="wrap">
+    <div class="eyebrow">How it works</div>
+    <h2 class="big">Paste. <span class="pix">WATCH</span>. Remember.</h2>
+    <div class="steps">
+      <div class="step"><div class="no">01</div><div><h3>Paste a link, or pick a track</h3><p>Library problems open instantly. A brand-new URL is solved on the fly by the AI provider of your choice.</p></div></div>
+      <div class="step"><div class="no">02</div><div><h3>Watch the trace, compare the variants</h3><p>Step through an animated run, then morph the brute-force into the optimal code and race their operation counts.</p></div></div>
+      <div class="step"><div class="no">03</div><div><h3>Lock it in</h3><p>One memorable trick per problem, plus a ready-made Anki card you can download or push straight to your deck.</p></div></div>
+    </div>
+    <canvas class="dots" data-h="220"></canvas>
+  </div></section>
+
+  <section class="block"><div class="wrap">
+    <div class="eyebrow">Bring your own brain</div>
+    <h2 class="big">Any provider. Your <span class="pix">KEY</span>.</h2>
+    <p class="sub">New problems need an LLM. Keys stay in your browser and go only to the provider you pick. These have free tiers:</p>
+    <div class="prov" id="prov"></div>
+    <div style="text-align:center;margin-top:36px"><button class="btn ghost" id="open-keys">Open AI settings</button></div>
+  </div></section>
+
+  <div class="final">
+    <div class="eyebrow">Built for late-night grinders</div>
+    <div class="sprites" id="sprites"></div>
+    <div class="eyebrow">Ready?</div>
+    <h2 class="big">Ready to see your code <span class="pix">RUN</span>?</h2>
+    <div style="margin-top:40px"><a class="btn" href="#tracks" id="cta-top">Pick a track <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></div>
+    <p class="small" style="margin-top:18px">Free. Static. No sign-up. Works offline for the 200 built-in drills.</p>
+  </div>
+  <footer>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M10 8l6 4-6 4z" fill="currentColor"/></svg><br>
+    <b>DRYRUN</b> — an open, static study site<br>
+    Not affiliated with LeetCode. Problem titles belong to their owners; explanations, code and visuals here are original.<br>
+    <a href="#/mine">Your generated problems</a>
+  </footer>
+</section>
+
+<section id="v-track" class="view" hidden></section>
+<section id="v-problem" class="view" hidden></section>
+<section id="v-gen" class="view" hidden></section>
+<section id="v-mine" class="view" hidden></section>
+</main>
+
+<dialog id="dlg-keys"></dialog>
+
+<script src="js/data/boot.js"></script>
+<script src="js/data/p1.js"></script>
+<script src="js/data/p2.js"></script>
+<script src="js/data/p3.js"></script>
+<script src="js/data/p4.js"></script>
+<script src="js/data/p5.js"></script>
+<script src="js/data/p6.js"></script>
+<script src="js/data/p7.js"></script>
+<script src="js/data/tracks.js"></script>
+<script src="js/hl.js"></script>
+<script src="js/sims.js"></script>
+<script src="js/viz.js"></script>
+<script src="js/anki.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
