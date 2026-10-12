@@ -9,7 +9,7 @@
 <rect x="0" y="0" width="130" height="130" rx="32"/>
 <circle cx="32" cy="65" r="7" fill="#c8f542" stroke="none"/>
 <circle cx="56" cy="65" r="7" fill="#c8f542" stroke="none"/>
-<path d="M72 32 L118 65 L72 98 Z" fill="#c8f542" stroke="none"/>
+<path d="M78 42 L106 65 L78 88 Z" fill="#c8f542" stroke="none"/>
 </g>
 <text x="260" y="162" font-size="92" font-weight="bold" letter-spacing="16" fill="#ece8dc">DRY<tspan fill="#c8f542">RUN</tspan></text>
 <text x="264" y="217" font-family="Menlo, Consolas, 'Courier New', monospace" font-size="30" fill="#8e8b82">See every algorithm run.</text>
