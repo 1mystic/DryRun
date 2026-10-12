@@ -40,7 +40,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* generic */
 .view{min-height:100vh}
-.wrap{width:min(1120px,92vw);margin:0 auto}
+.wrap{width:min(1120px,92vw);margin:0 auto;position:relative;z-index:1}
 .eyebrow{font-size:11px;letter-spacing:.55em;text-transform:uppercase;color:var(--acc);text-align:center;margin-bottom:18px;padding-left:.55em}
 h2.big{font-size:clamp(30px,5vw,48px);font-weight:500;letter-spacing:-.02em;text-align:center;line-height:1.15}
 .pix{font-family:var(--pix);font-weight:800;color:var(--acc);letter-spacing:.02em}
@@ -113,8 +113,8 @@ canvas.dots{position:absolute;left:0;right:0;bottom:0;width:100%;height:300px;po
 .stat span{font-size:13px;color:var(--mute);text-align:center;padding:0 10px}
 
 /* steps */
-.steps{width:min(730px,92vw);margin:50px auto 0;display:grid;gap:18px}
-.step{display:flex;gap:26px;align-items:flex-start;background:var(--bg2);border:2px solid var(--line);padding:24px 28px;box-shadow:6px 6px 0 var(--shadow)}
+.steps{width:min(730px,92vw);margin:50px auto 0;display:grid;gap:18px;position:relative;z-index:1}
+.step{display:flex;gap:26px;align-items:flex-start;background:var(--bg2);border:2px solid var(--line);padding:24px 28px;box-shadow:6px 6px 0 var(--shadow);position:relative;z-index:1}
 .step .no{font-family:var(--pix);font-weight:800;font-size:30px;color:var(--acc);min-width:44px;line-height:1.1}
 .step h3{font-size:17px;font-weight:500}
 .step p{font-size:13.5px;color:var(--mute);margin-top:4px}
@@ -278,6 +278,11 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
 .status{margin-top:16px;padding:12px 14px;border:1.5px dashed var(--line);font-size:13px;white-space:pre-wrap}
 .status.err{border-color:var(--red);color:var(--red)}
 .spin{display:inline-block;width:12px;height:12px;border:2px solid var(--acc);border-top-color:transparent;border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px;margin-right:8px}
+.march{display:inline-flex;gap:7px;margin-right:10px;vertical-align:-3px}
+.march svg{width:17px;height:17px;animation:hop .7s ease-in-out infinite}
+.march svg:nth-child(2){animation-delay:.12s;color:var(--acc)}
+.march svg:nth-child(3){animation-delay:.24s}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 @keyframes sp{to{transform:rotate(1turn)}}
 
 /* lucide icons */
@@ -5396,13 +5401,15 @@ const LUCIDE={
 };
 function lucide(n,cls){return '<svg class="lucide '+(cls||'')+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+LUCIDE[n]+'</svg>';}
 const BUGS=[
-  ['#.#..#.#','.######.','##.##.##','########','.######.','#.####.#','#......#','.#....#.'],
-  ['..####..','.######.','##.##.##','########','.######.','..#..#..','.#.##.#.','#......#'],
-  ['#......#','.#....#.','.######.','##.##.##','########','.######.','.#....#.','#......#'],
-  ['..#..#..','...##...','..####..','.######.','##.##.##','########','#.#..#.#','.#....#.'],
-  ['...##...','..####..','.######.','##.##.##','########','.#.##.#.','#.#..#.#','.#....#.'],
+  ['........','.######.','.##...#.','.###..#.','.####.#.','.###..#.','.##...#.','.######.'],
+  ['..####..','..#..#..','..####..','.######.','.#....#.','########','#......#','########'],
+  ['...##...','...##...','#..##..#','#..##..#','...##...','.######.','..####..','...##...'],
+  ['##......','###.....','.####...','...####.','....####','.....###','......##','........'],
+  ['########','#..##..#','#..##..#','########','#..##..#','#..##..#','########','........'],
   ['.######.','########','#.####.#','########','########','.######.','..#..#..','.##..##.']
 ];
+/* mini marching loader for busy states: three critters hopping in a row */
+function marchHTML(){return '<span class="march" aria-hidden="true">'+[BUGS[0],BUGS[2],BUGS[4]].map(b=>pix(b)).join('')+'</span>';}
 
 /* ---------- dot-matrix skyline ---------- */
 function dots(cv){
@@ -5483,7 +5490,7 @@ function trackList(id){
   function prog(){const d=done();$('#tk-prog',v).textContent=list.filter(p=>d[p.id]).length+' / '+list.length+' done';}
   $('#q',v).oninput=draw;draw();
   $('#tk-dl',v).onclick=()=>Anki.download('dryrun-'+T.id+'.txt',Anki.tsv(list));
-  $('#tk-push',v).onclick=async()=>{const s=$('#tk-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push(list,'DryRun::'+T.name);}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
+  $('#tk-push',v).onclick=async()=>{const s=$('#tk-st',v);s.hidden=false;s.className='status';s.innerHTML=marchHTML()+'<span>Contacting AnkiConnect…</span>';try{s.textContent=await Anki.push(list,'DryRun::'+T.name);}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
   window.scrollTo(0,0);
 }
 
@@ -5515,7 +5522,7 @@ function problem(id,query){
   live.push(Viz.morph($('#morph',v),p.b,p.o,lang));Viz.race($('#race',v),p);
   $('#mk-done',v).onclick=e=>{const d=done();if(d[id]){delete d[id];e.target.textContent='Mark done';}else{d[id]=1;e.target.textContent='✓ Done';}SS('dr-done',d);};
   $('#an-dl',v).onclick=()=>Anki.download('dryrun-'+id+'.txt',Anki.tsv([p]));
-  $('#an-push',v).onclick=async()=>{const s=$('#an-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push([p],'DryRun');}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
+  $('#an-push',v).onclick=async()=>{const s=$('#an-st',v);s.hidden=false;s.className='status';s.innerHTML=marchHTML()+'<span>Contacting AnkiConnect…</span>';try{s.textContent=await Anki.push([p],'DryRun');}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
   window.scrollTo(0,0);
 }
 
@@ -5526,7 +5533,7 @@ function gen(slug){
     '<div class="toolbar"><button class="btn" id="gg">Generate</button><button class="btn ghost" id="gk">AI settings</button></div><div class="status" id="gst" hidden></div>');
   const st=$('#gst',v);let busy=false;
   async function run(){if(busy)return;busy=true;st.hidden=false;st.className='status';
-    const say=m=>{st.innerHTML='<span class="spin"></span>'+E(m);};
+    const say=m=>{st.innerHTML=marchHTML()+'<span>'+E(m)+'</span>';};
     try{const p=await AI.generate(slug,$('#gs',v).value.trim(),say);AI.saveMine(p);location.hash='#/p/'+slug;}
     catch(e){st.className='status err';
       if(e.message==='NOKEY'){st.innerHTML='No AI provider is configured yet. Pick one and paste a key, Groq, Gemini and OpenRouter all have free tiers. Then press Generate again.';}
@@ -5624,7 +5631,7 @@ function openKeys(){
   fill();
   const st=$('#k-st',dlg),val=()=>({prov:Pc.value,base:$('#k-b',dlg).value.trim(),model:$('#k-m',dlg).value.trim(),key:$('#k-k',dlg).value.trim()});
   $('#k-s',dlg).onclick=()=>{const c=val();AI.save(c.prov,c);st.hidden=false;st.className='status';st.textContent='Saved ✓';};
-  $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.textContent='Loading models…';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found, click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
+  $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.innerHTML=marchHTML()+'<span>Loading models…</span>';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found, click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
   $('#k-x',dlg).onclick=()=>dlg.close();
   $('#k-x-top',dlg).onclick=()=>dlg.close();
   dlg.onclick=e=>{if(e.target===dlg)dlg.close();};

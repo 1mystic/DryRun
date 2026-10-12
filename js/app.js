@@ -36,13 +36,15 @@ const LUCIDE={
 };
 function lucide(n,cls){return '<svg class="lucide '+(cls||'')+'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+LUCIDE[n]+'</svg>';}
 const BUGS=[
-  ['#.#..#.#','.######.','##.##.##','########','.######.','#.####.#','#......#','.#....#.'],
-  ['..####..','.######.','##.##.##','########','.######.','..#..#..','.#.##.#.','#......#'],
-  ['#......#','.#....#.','.######.','##.##.##','########','.######.','.#....#.','#......#'],
-  ['..#..#..','...##...','..####..','.######.','##.##.##','########','#.#..#.#','.#....#.'],
-  ['...##...','..####..','.######.','##.##.##','########','.#.##.#.','#.#..#.#','.#....#.'],
+  ['........','.######.','.##...#.','.###..#.','.####.#.','.###..#.','.##...#.','.######.'],
+  ['..####..','..#..#..','..####..','.######.','.#....#.','########','#......#','########'],
+  ['...##...','...##...','#..##..#','#..##..#','...##...','.######.','..####..','...##...'],
+  ['##......','###.....','.####...','...####.','....####','.....###','......##','........'],
+  ['########','#..##..#','#..##..#','########','#..##..#','#..##..#','########','........'],
   ['.######.','########','#.####.#','########','########','.######.','..#..#..','.##..##.']
 ];
+/* mini marching loader for busy states: three critters hopping in a row */
+function marchHTML(){return '<span class="march" aria-hidden="true">'+[BUGS[0],BUGS[2],BUGS[4]].map(b=>pix(b)).join('')+'</span>';}
 
 /* ---------- dot-matrix skyline ---------- */
 function dots(cv){
@@ -123,7 +125,7 @@ function trackList(id){
   function prog(){const d=done();$('#tk-prog',v).textContent=list.filter(p=>d[p.id]).length+' / '+list.length+' done';}
   $('#q',v).oninput=draw;draw();
   $('#tk-dl',v).onclick=()=>Anki.download('dryrun-'+T.id+'.txt',Anki.tsv(list));
-  $('#tk-push',v).onclick=async()=>{const s=$('#tk-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push(list,'DryRun::'+T.name);}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
+  $('#tk-push',v).onclick=async()=>{const s=$('#tk-st',v);s.hidden=false;s.className='status';s.innerHTML=marchHTML()+'<span>Contacting AnkiConnect…</span>';try{s.textContent=await Anki.push(list,'DryRun::'+T.name);}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
   window.scrollTo(0,0);
 }
 
@@ -155,7 +157,7 @@ function problem(id,query){
   live.push(Viz.morph($('#morph',v),p.b,p.o,lang));Viz.race($('#race',v),p);
   $('#mk-done',v).onclick=e=>{const d=done();if(d[id]){delete d[id];e.target.textContent='Mark done';}else{d[id]=1;e.target.textContent='✓ Done';}SS('dr-done',d);};
   $('#an-dl',v).onclick=()=>Anki.download('dryrun-'+id+'.txt',Anki.tsv([p]));
-  $('#an-push',v).onclick=async()=>{const s=$('#an-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push([p],'DryRun');}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
+  $('#an-push',v).onclick=async()=>{const s=$('#an-st',v);s.hidden=false;s.className='status';s.innerHTML=marchHTML()+'<span>Contacting AnkiConnect…</span>';try{s.textContent=await Anki.push([p],'DryRun');}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
   window.scrollTo(0,0);
 }
 
@@ -166,7 +168,7 @@ function gen(slug){
     '<div class="toolbar"><button class="btn" id="gg">Generate</button><button class="btn ghost" id="gk">AI settings</button></div><div class="status" id="gst" hidden></div>');
   const st=$('#gst',v);let busy=false;
   async function run(){if(busy)return;busy=true;st.hidden=false;st.className='status';
-    const say=m=>{st.innerHTML='<span class="spin"></span>'+E(m);};
+    const say=m=>{st.innerHTML=marchHTML()+'<span>'+E(m)+'</span>';};
     try{const p=await AI.generate(slug,$('#gs',v).value.trim(),say);AI.saveMine(p);location.hash='#/p/'+slug;}
     catch(e){st.className='status err';
       if(e.message==='NOKEY'){st.innerHTML='No AI provider is configured yet. Pick one and paste a key, Groq, Gemini and OpenRouter all have free tiers. Then press Generate again.';}
@@ -264,7 +266,7 @@ function openKeys(){
   fill();
   const st=$('#k-st',dlg),val=()=>({prov:Pc.value,base:$('#k-b',dlg).value.trim(),model:$('#k-m',dlg).value.trim(),key:$('#k-k',dlg).value.trim()});
   $('#k-s',dlg).onclick=()=>{const c=val();AI.save(c.prov,c);st.hidden=false;st.className='status';st.textContent='Saved ✓';};
-  $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.textContent='Loading models…';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found, click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
+  $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.innerHTML=marchHTML()+'<span>Loading models…</span>';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found, click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
   $('#k-x',dlg).onclick=()=>dlg.close();
   $('#k-x-top',dlg).onclick=()=>dlg.close();
   dlg.onclick=e=>{if(e.target===dlg)dlg.close();};
