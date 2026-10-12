@@ -74,7 +74,19 @@ git add -A && git commit -m "Short summary of the change" && git push
 
 ## Project map
 
-`index.html` shell and views, `css/style.css` theme, `js/app.js` router and
-pages, `js/viz.js` player, `js/sims.js` simulators, `js/hl.js` highlighting
-plus the `DRUI` dropdown, `js/anki.js`, `js/ai.js`, `js/data/` the library,
-`assets/` README art, `tools/` checks, `dist/` the generated single file.
+| Path | What lives there |
+|------|------------------|
+| `index.html` | Page shell, hero, view sections, settings dialog |
+| `css/style.css` | Theme: dark first, cream ink, volt lime accent, hard offset shadows |
+| `js/app.js` | Router, pages, settings, data backup, session |
+| `js/viz.js` | Trace player, code renderer, morph diff, complexity race |
+| `js/sims.js` | Pattern simulators that emit trace frames |
+| `js/hl.js` | Syntax highlight, line diff, complexity maths, `DRUI` dropdown |
+| `js/anki.js` | TSV download plus AnkiConnect push |
+| `js/ai.js` | Bring your own key generation for new problems |
+| `js/data/boot.js` | Registry (`DR.P` / `DR.T`) plus shared helpers |
+| `js/data/p1..p7.js` | 117 problems in two variants with embedded tests |
+| `js/data/tracks.js` | 8 role tracks (slug lists) |
+| `assets/` | README banner and animated preview (pure SVG, no JS) |
+| `tools/` | Checks: dump, check, checkjs, frames, smoke, bundle |
+| `dist/dryrun.html` | Generated single file build (commit it with source changes) |
