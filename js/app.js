@@ -123,7 +123,7 @@ function trackList(id){
   function prog(){const d=done();$('#tk-prog',v).textContent=list.filter(p=>d[p.id]).length+' / '+list.length+' done';}
   $('#q',v).oninput=draw;draw();
   $('#tk-dl',v).onclick=()=>Anki.download('dryrun-'+T.id+'.txt',Anki.tsv(list));
-  $('#tk-push',v).onclick=async()=>{const s=$('#tk-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push(list,'DryRun::'+T.name);}catch(e){s.className='status err';s.textContent='Could not reach Anki: '+e.message+'\nOpen Anki with the AnkiConnect add-on (code 2055492159) and allow this site in its webCorsOriginList.';}};
+  $('#tk-push',v).onclick=async()=>{const s=$('#tk-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push(list,'DryRun::'+T.name);}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
   window.scrollTo(0,0);
 }
 
@@ -147,7 +147,7 @@ function problem(id,query){
     '<div class="sec duo-r"><h2>02 · Two variants</h2><h3>Beginner first, then the version interviewers want</h3><div class="tabs"><div class="tab on" data-t="1">Variant 1 · Beginner</div><div class="tab" data-t="2">Variant 2 · Optimized</div></div><div id="codebox"></div></div></div>'+
     '<div class="sec"><h2>03 · What changed</h2><h3>Morph the brute force into the best version</h3><div id="morph"></div><h3 style="margin-top:46px">…and why it matters at scale</h3><div id="race"></div></div>'+
     '<div class="sec"><h2>04 · Remember it</h2><h3>One hook, one flashcard</h3><div class="trick"><div class="card"><div class="pat">'+E(p.pat||'Pattern')+'</div><p class="big">'+E(p.trick||'')+'</p>'+(p.real?'<p class="small" style="margin-top:16px"><b style="color:var(--ink)">Where it shows up:</b> '+E(p.real)+'</p>':'')+'</div>'+
-    '<div class="card"><h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Anki</h3><p class="small">Two cards: pattern recall and write-the-code.</p><div style="display:grid;gap:10px;margin-top:16px"><button class="btn small" id="an-dl">Download cards (.txt)</button><button class="btn small ghost" id="an-push">Send to Anki (AnkiConnect)</button><a class="btn small ghost" target="_blank" rel="noopener" href="https://ankiweb.net/decks">Open AnkiWeb '+lucide('upRight')+'</a></div><p class="small" style="margin-top:12px">Pushes need desktop Anki open with the <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect add-on ↗</a>.</p><div class="status" id="an-st" hidden style="font-size:12px"></div></div></div></div>'+
+    '<div class="card"><h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Anki</h3><p class="small">Two cards: pattern recall and write-the-code.</p><div style="display:grid;gap:10px;margin-top:16px"><button class="btn small" id="an-dl">Download cards (.txt)</button><button class="btn small ghost" id="an-push">Send to Anki (AnkiConnect)</button><a class="btn small ghost" target="_blank" rel="noopener" href="https://ankiweb.net/decks">Open AnkiWeb '+lucide('upRight')+'</a></div><p class="small" style="margin-top:12px">Pushes need desktop Anki open with the <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect add-on ↗</a>. Stuck? See the <a href="#/anki">setup guide</a>.</p><div class="status" id="an-st" hidden style="font-size:12px"></div></div></div></div>'+
     '<div class="pn">'+(T?nav(T.ids[idx-1],lucide('arrowL')+' Previous')+nav(T.ids[idx+1],'Next '+lucide('arrow')):'<a class="btn small ghost" href="#/">'+lucide('arrowL')+' Home</a>')+'</div>',true);
   live.push(Viz.mount($('#viz',v),p.viz||{flow:[]}));
   const cb=$('#codebox',v);function tab(n){$$('.tab',v).forEach(t=>t.classList.toggle('on',t.dataset.t==String(n)));cb.innerHTML=codeBox(n===1?p.b:p.o,lang,n,p);$('.cp',cb).onclick=e=>{const txt=HL.parse(n===1?p.b:p.o).map(l=>l.t).join('\n');(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>e.target.textContent='Copied ✓').catch(()=>e.target.textContent='Copy failed');};}
@@ -155,7 +155,7 @@ function problem(id,query){
   live.push(Viz.morph($('#morph',v),p.b,p.o,lang));Viz.race($('#race',v),p);
   $('#mk-done',v).onclick=e=>{const d=done();if(d[id]){delete d[id];e.target.textContent='Mark done';}else{d[id]=1;e.target.textContent='✓ Done';}SS('dr-done',d);};
   $('#an-dl',v).onclick=()=>Anki.download('dryrun-'+id+'.txt',Anki.tsv([p]));
-  $('#an-push',v).onclick=async()=>{const s=$('#an-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push([p],'DryRun');}catch(e){s.className='status err';s.textContent='Could not reach Anki ('+e.message+'). Open Anki with the AnkiConnect add-on (2055492159) and add this site to its webCorsOriginList.';}};
+  $('#an-push',v).onclick=async()=>{const s=$('#an-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push([p],'DryRun');}catch(e){s.className='status err';s.innerHTML='Could not reach Anki ('+E(e.message)+'). <a href="#/anki">Follow the 2-minute setup guide</a>.';}};
   window.scrollTo(0,0);
 }
 
@@ -198,7 +198,7 @@ function dataView(){
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Your data</div><h1 class="ptitle">Your data, on this device</h1><p class="brief">Progress, generated problems, keys and settings live only in this browser. Nothing is uploaded anywhere. Export a backup before clearing browser data or switching devices.</p>'+
    '<div class="sec"><h2>01 · Progress</h2><h3>'+dc+' of '+uniq+' library problems done, plus '+Object.keys(m).length+' generated</h3><div class="dbars">'+bar('All tracks','#tracks',dc,uniq)+DR.T.map(t=>bar(E(t.name),'#/t/'+t.id,t.ids.filter(id=>dn[id]).length,t.ids.length)).join('')+'</div></div>'+
    '<div class="sec"><h2>02 · Backup</h2><h3>Export or import everything</h3><div class="toolbar"><button class="btn small" id="d-exp">Export backup (.json)</button><label class="btn small ghost">Import backup<input type="file" id="d-imp" accept="application/json,.json"></label><button class="btn small ghost" id="d-wipe">Erase everything</button></div><div class="status" id="d-st" hidden></div><p class="small" style="margin-top:12px">Visits: '+(s.visits||1)+' · Storage used: ~'+(bytes/1024).toFixed(1)+' KB · A backup holds progress, generated problems, provider keys and theme.</p></div>'+
-   '<div class="sec"><h2>03 · Anki</h2><h3>Push cards without anything looking broken</h3><p class="brief" style="margin-top:0">Card pushes go to desktop Anki on this machine through AnkiConnect (localhost, never the network). If a push fails, install the <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect add-on (code 2055492159) ↗</a>, keep desktop Anki open, and allow this site in its webCorsOriginList. Background reading: <a href="https://docs.ankiweb.net/" target="_blank" rel="noopener">Anki docs ↗</a>.</p></div>');
+   '<div class="sec"><h2>03 · Anki</h2><h3>Push cards without anything looking broken</h3><div class="toolbar"><a class="btn small" href="#/anki">Open the setup guide</a></div><p class="brief" style="margin-top:12px">Card pushes go to desktop Anki on this machine through AnkiConnect (localhost, never the network). If a push fails, install the <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect add-on (code 2055492159) ↗</a>, keep desktop Anki open, and allow this site in its webCorsOriginList. Background reading: <a href="https://docs.ankiweb.net/" target="_blank" rel="noopener">Anki docs ↗</a>.</p></div>');
   const st=$('#d-st',v),say=(m2,err)=>{st.hidden=false;st.className='status'+(err?' err':'');st.textContent=m2;};
   $('#d-exp',v).onclick=()=>{
     const out={app:'dryrun-backup',v:1,exportedAt:new Date().toISOString(),done:done(),mine:AI.mine(),ai:AI.get(),theme:null,session:session()};
@@ -225,6 +225,24 @@ function dataView(){
     r.readAsText(f);e.target.value='';
   };
   $('#d-wipe',v).onclick=()=>{if(confirm('Erase ALL DryRun data in this browser (progress, generated problems, keys, theme)? This cannot be undone. Export a backup first.')){['dr-done','dr-mine','dr-ai','dr-theme','dr-session'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});location.hash='#/';location.reload();}};
+  window.scrollTo(0,0);
+}
+/* ---------- connect Anki: setup guide instead of a dead-end error ---------- */
+function ankiView(){
+  killLive();setView('anki');remember('Connect Anki');const v=$('#v-anki');
+  const isFile=location.protocol==='file:';
+  const origin=isFile?'null':location.origin;
+  const cfg='{\n  "apiKey": null,\n  "apiLogPath": null,\n  "webCorsOriginList": [\n    "http://localhost:8765",\n    "'+origin+'"\n  ]\n}';
+  v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Connect Anki</div><h1 class="ptitle">Connect Anki in 2 minutes</h1><p class="brief">Pushes go straight to desktop Anki on your machine through AnkiConnect. If a push says it cannot reach Anki, walk these steps once and it stays fixed.</p>'+
+   '<div class="sec"><h2>Setup</h2><h3>Four steps, once per computer</h3><div class="steps">'+
+   '<div class="step"><div class="no">01</div><div><h3>Install desktop Anki and open it</h3><p>Grab it from <a href="https://apps.ankiweb.net/" target="_blank" rel="noopener">apps.ankiweb.net ↗</a>. Only the desktop app can receive pushes, not the web or mobile apps. Keep it open whenever you push.</p></div></div>'+
+   '<div class="step"><div class="no">02</div><div><h3>Add AnkiConnect</h3><p>In Anki: Tools → Add-ons → Get Add-ons → paste <b class="mono">2055492159</b> → OK, then restart Anki. Add-on page: <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect ↗</a>.</p></div></div>'+
+   '<div class="step"><div class="no">03</div><div><h3>Allow this site (the step everyone misses)</h3><p>In Anki: Tools → Add-ons → select AnkiConnect → Config. Add this site to <b class="mono">webCorsOriginList</b> so the browser lets the page talk to Anki:</p><div class="snap">'+E(cfg)+'</div><div class="toolbar"><button class="btn small ghost" id="anki-copy">Copy my origin</button></div><p class="small" style="margin-top:10px">Your origin right now: <b class="mono" id="anki-origin">'+E(origin)+'</b>'+(isFile?' (a directly opened file has no origin, so run step 04 below)':'')+'</p></div></div>'+
+   '<div class="step"><div class="no">04</div><div><h3>Push again</h3><p>With Anki open, head back and press Send to Anki on any track, problem or generated page.</p><div class="toolbar"><a class="btn small" href="#/mine">Your generated problems</a><a class="btn small ghost" href="#/data">Your data</a></div></div></div>'+
+   '</div></div>'+
+   '<div class="sec"><h2>No add-on?</h2><h3>Download cards instead</h3><p class="brief" style="margin-top:0">Every track, problem and generated page has a Download cards (.txt) button. In Anki: File → Import, pick the file, enable Allow HTML. Zero setup needed.</p></div>'+
+   '<div class="sec"><h2>Local copy</h2><h3>Run this site from GitHub</h3><p class="brief" style="margin-top:0">Prefer localhost, or want to hack on the site? Clone it and serve the folder. Opening index.html directly gives a null origin, which AnkiConnect rejects, so serve it:</p><div class="snap">git clone https://github.com/1mystic/DryRun.git\ncd DryRun\npython3 -m http.server 8000</div><p class="brief">Then open <b class="mono">http://localhost:8000</b> and add that origin in step 03. The single-file build at <b class="mono">dist/dryrun.html</b> works the same way.</p></div>');
+  $('#anki-copy',v).onclick=e=>{const t=$('#anki-origin',v).textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>e.target.textContent='Copied ✓').catch(()=>e.target.textContent='Copy failed');};
   window.scrollTo(0,0);
 }
 function notFound(){killLive();setView('gen');$('#v-gen').innerHTML=pageShell('<h1 class="ptitle">Page not found</h1><p class="brief"><a href="#/" style="color:var(--acc)">Back home</a></p>');}
@@ -263,6 +281,7 @@ function route(){
   if(parts[0]==='gen')return gen(parts[1]);
   if(parts[0]==='mine')return mineView();
   if(parts[0]==='data')return dataView();
+  if(parts[0]==='anki')return ankiView();
   notFound();
 }
 function boot(){
