@@ -5599,12 +5599,15 @@ function ankiView(){
   killLive();setView('anki');remember('Connect Anki');const v=$('#v-anki');
   const isFile=location.protocol==='file:';
   const origin=isFile?'null':location.origin;
-  const cfg='{\n  "apiKey": null,\n  "apiLogPath": null,\n  "webCorsOriginList": [\n    "http://localhost:8765",\n    "'+origin+'"\n  ]\n}';
+  const DEPLOYED='https://1mystic.github.io';
+  const origins=['http://localhost:8765',DEPLOYED];
+  if(!origins.includes(origin))origins.push(origin);
+  const cfg='{\n  "apiKey": null,\n  "apiLogPath": null,\n  "webCorsOriginList": [\n'+origins.map(o=>'    "'+o+'"').join(',\n')+'\n  ]\n}';
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Connect Anki</div><h1 class="ptitle">Connect Anki in 2 minutes</h1><p class="brief">Pushes go straight to desktop Anki on your machine through AnkiConnect. If a push says it cannot reach Anki, walk these steps once and it stays fixed.</p>'+
    '<div class="sec"><h2>Setup</h2><h3>Four steps, once per computer</h3><div class="steps">'+
    '<div class="step"><div class="no">01</div><div><h3>Install desktop Anki and open it</h3><p>Grab it from <a href="https://apps.ankiweb.net/" target="_blank" rel="noopener">apps.ankiweb.net ↗</a>. Only the desktop app can receive pushes, not the web or mobile apps. Keep it open whenever you push.</p></div></div>'+
    '<div class="step"><div class="no">02</div><div><h3>Add AnkiConnect</h3><p>In Anki: Tools → Add-ons → Get Add-ons → paste <b class="mono">2055492159</b> → OK, then restart Anki. Add-on page: <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect ↗</a>.</p></div></div>'+
-   '<div class="step"><div class="no">03</div><div><h3>Allow this site (the step everyone misses)</h3><p>In Anki: Tools → Add-ons → select AnkiConnect → Config. Add this site to <b class="mono">webCorsOriginList</b> so the browser lets the page talk to Anki:</p><div class="snap">'+E(cfg)+'</div><div class="toolbar"><button class="btn small ghost" id="anki-copy">Copy my origin</button></div><p class="small" style="margin-top:10px">Your origin right now: <b class="mono" id="anki-origin">'+E(origin)+'</b>'+(isFile?' (a directly opened file has no origin, so run step 04 below)':'')+'</p></div></div>'+
+   '<div class="step"><div class="no">03</div><div><h3>Allow this site (the step everyone misses)</h3><p>In Anki: Tools → Add-ons → select AnkiConnect → Config. Add these origins to <b class="mono">webCorsOriginList</b> so the browser lets the page talk to Anki: Anki itself, the deployed site, and wherever you opened this page right now:</p><div class="snap">'+E(cfg)+'</div><div class="toolbar"><button class="btn small ghost" id="anki-copy">Copy my origin</button></div><p class="small" style="margin-top:10px">Your origin right now: <b class="mono" id="anki-origin">'+E(origin)+'</b>'+(isFile?' (a directly opened file has no origin, so run step 04 below)':'')+'</p></div></div>'+
    '<div class="step"><div class="no">04</div><div><h3>Push again</h3><p>With Anki open, head back and press Send to Anki on any track, problem or generated page.</p><div class="toolbar"><a class="btn small" href="#/mine">Your generated problems</a><a class="btn small ghost" href="#/data">Your data</a></div></div></div>'+
    '</div></div>'+
    '<div class="sec"><h2>No add-on?</h2><h3>Download cards instead</h3><p class="brief" style="margin-top:0">Every track, problem and generated page has a Download cards (.txt) button. In Anki: File → Import, pick the file, enable Allow HTML. Zero setup needed.</p></div>'+

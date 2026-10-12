@@ -73,6 +73,7 @@ const go=async h=>{w.location.hash=h;w.DRAPP.route();await sleep(0);};
  ok($('a[href="#/data"]'),'footer data link');
  await go('#/anki');ok(!$('#v-anki').hidden,'anki guide');
  ok(/webCorsOriginList/.test($('#v-anki').textContent),'cors step shown');
+ ok(/1mystic\.github\.io/.test($('#v-anki').textContent),'deployed origin listed');
  ok($('#anki-copy')&&$('#anki-origin'),'origin copy controls');
  ok($('a[href*="ankiweb.net/shared"]')&&$('a[href*="ankiweb.net/shared"]').target==='_blank','anki addon link new tab');
  // settings dialog
