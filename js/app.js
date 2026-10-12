@@ -100,7 +100,7 @@ function initHome(){
 
 /* ---------- views ---------- */
 function setView(name){$$('.view').forEach(v=>v.hidden=v.id!=='v-'+name);}
-function pageShell(inner){return '<div class="page"><div class="wrap">'+inner+'</div></div>';}
+function pageShell(inner,wide){return '<div class="page'+(wide?' page-wide':'')+'"><div class="wrap">'+inner+'</div></div>';}
 
 function trackList(id){
   const T=DR.T.find(x=>x.id===id);if(!T)return notFound();
@@ -141,12 +141,12 @@ function problem(id,query){
     '<h1 class="ptitle">'+(p.n?'<span class="mono" style="color:var(--mute);font-size:.5em;margin-right:12px">#'+p.n+'</span>':'')+E(p.t)+'</h1>'+
     '<div class="pmeta"><span class="chip '+p.d+'">'+DIFF[p.d]+'</span>'+(p.tg||[]).map(t=>'<span class="chip">'+E(t)+'</span>').join('')+(p.ai?'<span class="chip" style="color:var(--acc);border-color:var(--acc)">AI-generated · verify before relying</span>':'')+'<a class="btn small ghost" target="_blank" rel="noopener" href="'+lcUrl(p.id)+'">Open on LeetCode ↗</a><button class="btn small ghost" id="mk-done">'+(dn[id]?'✓ Done':'Mark done')+'</button></div>'+
     (p.br?'<p class="brief">'+E(p.br)+'</p>':'')+
-    '<div class="sec"><h2>01 · Trace</h2><h3>Watch it run</h3><div id="viz"></div><p class="small" style="margin-top:10px">Tip: click the stage, then use ← → and space.</p></div>'+
-    '<div class="sec"><h2>02 · Two variants</h2><h3>Beginner first, then the version interviewers want</h3><div class="tabs"><div class="tab on" data-t="1">Variant 1 · Beginner</div><div class="tab" data-t="2">Variant 2 · Optimized</div></div><div id="codebox"></div></div>'+
+    '<div class="duo"><div class="sec duo-l"><h2>01 · Trace</h2><h3>Watch it run</h3><div id="viz"></div><p class="small" style="margin-top:10px">Tip: click the stage, then use ← → and space.</p></div>'+
+    '<div class="sec duo-r"><h2>02 · Two variants</h2><h3>Beginner first, then the version interviewers want</h3><div class="tabs"><div class="tab on" data-t="1">Variant 1 · Beginner</div><div class="tab" data-t="2">Variant 2 · Optimized</div></div><div id="codebox"></div></div></div>'+
     '<div class="sec"><h2>03 · What changed</h2><h3>Morph the brute force into the best version</h3><div id="morph"></div><h3 style="margin-top:46px">…and why it matters at scale</h3><div id="race"></div></div>'+
     '<div class="sec"><h2>04 · Remember it</h2><h3>One hook, one flashcard</h3><div class="trick"><div class="card"><div class="pat">'+E(p.pat||'Pattern')+'</div><p class="big">'+E(p.trick||'')+'</p>'+(p.real?'<p class="small" style="margin-top:16px"><b style="color:var(--ink)">Where it shows up:</b> '+E(p.real)+'</p>':'')+'</div>'+
     '<div class="card"><h3 style="font-size:16px;font-weight:600;margin-bottom:6px">Anki</h3><p class="small">Two cards: pattern recall and write-the-code.</p><div style="display:grid;gap:10px;margin-top:16px"><button class="btn small" id="an-dl">Download cards (.txt)</button><button class="btn small ghost" id="an-push">Send to Anki (AnkiConnect)</button><a class="btn small ghost" target="_blank" rel="noopener" href="https://ankiweb.net/decks">Open AnkiWeb ↗</a></div><p class="small" style="margin-top:12px">Pushes need desktop Anki open with the <a href="'+ANKI_ADDON+'" target="_blank" rel="noopener">AnkiConnect add-on ↗</a>.</p><div class="status" id="an-st" hidden style="font-size:12px"></div></div></div></div>'+
-    '<div class="pn">'+(T?nav(T.ids[idx-1],'← Previous')+nav(T.ids[idx+1],'Next →'):'<a class="btn small ghost" href="#/">← Home</a>')+'</div>');
+    '<div class="pn">'+(T?nav(T.ids[idx-1],'← Previous')+nav(T.ids[idx+1],'Next →'):'<a class="btn small ghost" href="#/">← Home</a>')+'</div>',true);
   live.push(Viz.mount($('#viz',v),p.viz||{flow:[]}));
   const cb=$('#codebox',v);function tab(n){$$('.tab',v).forEach(t=>t.classList.toggle('on',t.dataset.t==String(n)));cb.innerHTML=codeBox(n===1?p.b:p.o,lang,n,p);$('.cp',cb).onclick=e=>{const txt=HL.parse(n===1?p.b:p.o).map(l=>l.t).join('\n');(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>e.target.textContent='Copied ✓').catch(()=>e.target.textContent='Copy failed');};}
   $$('.tab',v).forEach(t=>t.onclick=()=>tab(+t.dataset.t));tab(1);

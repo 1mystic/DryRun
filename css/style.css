@@ -342,3 +342,12 @@ label.btn{cursor:pointer}
 @media(max-width:980px){.grid4,.tracks{grid-template-columns:repeat(2,1fr)}.grid3c{width:100%;grid-template-columns:repeat(2,1fr)}.prov{grid-template-columns:1fr}.trick{grid-template-columns:1fr}}
 @media(max-width:560px){.grid4,.tracks,.grid3c{grid-template-columns:1fr}.urlform{flex-direction:column}.urlform input{border-right:2px solid var(--line)}.urlform .btn{justify-content:center}.rbar{grid-template-columns:90px 1fr 90px}.step{padding:18px}.tbl .hm{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* problem page: trace + code side by side on wide screens */
+.duo{display:grid;gap:0;margin-top:64px}
+.duo .sec{margin-top:0;min-width:0}
+@media(min-width:1080px){
+  .page-wide .wrap{width:min(1400px,94vw)}
+  .duo{grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:36px;align-items:start}
+  .duo-r{position:sticky;top:86px}
+}
