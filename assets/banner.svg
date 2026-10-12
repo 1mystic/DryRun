@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 340" font-family="Verdana, Geneva, 'Segoe UI', sans-serif">
+<rect x="10" y="14" width="1180" height="316" rx="10" fill="#3a3c33"/>
+<rect x="0" y="4" width="1180" height="316" rx="10" fill="#0f1013" stroke="#ece8dc" stroke-width="3"/>
+<circle cx="1000" cy="60" r="3" fill="#c8f542" opacity="0.9"/><circle cx="1024" cy="60" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1048" cy="60" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1072" cy="60" r="3" fill="#c8f542" opacity="0.9"/><circle cx="1096" cy="60" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1120" cy="60" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1144" cy="60" r="3" fill="#c8f542" opacity="0.9"/><circle cx="1000" cy="84" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1024" cy="84" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1048" cy="84" r="3" fill="#c8f542" opacity="0.9"/><circle cx="1072" cy="84" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1096" cy="84" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1120" cy="84" r="3" fill="#c8f542" opacity="0.9"/><circle cx="1144" cy="84" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1000" cy="108" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1024" cy="108" r="3" fill="#c8f542" opacity="0.9"/><circle cx="1048" cy="108" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1072" cy="108" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1096" cy="108" r="3" fill="#c8f542" opacity="0.9"/><circle cx="1120" cy="108" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1144" cy="108" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1000" cy="132" r="3" fill="#c8f542" opacity="0.9"/><circle cx="1024" cy="132" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1048" cy="132" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1072" cy="132" r="3" fill="#c8f542" opacity="0.9"/><circle cx="1096" cy="132" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1120" cy="132" r="3" fill="#8e8b82" opacity="0.35"/><circle cx="1144" cy="132" r="3" fill="#c8f542" opacity="0.9"/>
+<g transform="translate(90,105)" stroke="#c8f542" stroke-width="9" fill="none" stroke-linecap="round">
+<rect x="0" y="0" width="130" height="130" rx="32"/>
+<circle cx="42" cy="65" r="7" fill="#c8f542" stroke="none"/>
+<circle cx="66" cy="65" r="7" fill="#c8f542" stroke="none"/>
+<path d="M82 32 L128 65 L82 98 Z" fill="#c8f542" stroke="none"/>
+</g>
+<text x="260" y="185" font-size="92" font-weight="bold" letter-spacing="16" fill="#ece8dc">DRY<tspan fill="#c8f542">RUN</tspan></text>
+<text x="264" y="240" font-family="Menlo, Consolas, 'Courier New', monospace" font-size="30" fill="#8e8b82">See every algorithm run.</text>
+<text x="264" y="288" font-family="Menlo, Consolas, 'Courier New', monospace" font-size="22" fill="#c8f542">200 drills &#183; 8 tracks &#183; 0 backend &#183; works offline</text>
+</svg>
