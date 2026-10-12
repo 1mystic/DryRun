@@ -317,6 +317,30 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
 .dlg-x:hover{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);transform:rotate(90deg)}
 .dlg-x .lucide{width:16px;height:16px}
 
+/* custom select dropdown */
+.csel{display:inline-block;min-width:0;vertical-align:middle}
+.csel-btn{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;background:var(--bg2);border:1.5px solid var(--line);padding:10px 14px;font-size:13px;cursor:pointer;text-align:left;transition:border-color .2s,box-shadow .2s}
+.csel-btn:hover{border-color:var(--acc)}
+.csel-btn[aria-expanded=true]{border-color:var(--acc);box-shadow:4px 4px 0 var(--shadow)}
+.csel-val{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.csel-btn .chev{width:15px;height:15px;flex:none;color:var(--mute);transition:transform .22s,color .2s}
+.csel-btn:hover .chev{color:var(--acc)}
+.csel-btn[aria-expanded=true] .chev{transform:rotate(180deg);color:var(--acc)}
+.filters .csel{flex:1 1 190px;max-width:280px}
+.field .csel{width:100%}
+.csel.compact .csel-btn{background:var(--bg);border-width:1.5px;padding:8px 10px;font-size:12px;gap:8px}
+.cmenu{position:fixed;z-index:400;background:var(--bg2);border:2px solid var(--line);box-shadow:6px 6px 0 var(--shadow);padding:6px;overflow-y:auto;animation:pop-in .16s ease}
+.cmenu.up{animation-name:pop-in-up}
+@keyframes pop-in{from{opacity:0;transform:translateY(-6px)}}
+@keyframes pop-in-up{from{opacity:0;transform:translateY(6px)}}
+.copt{display:flex;align-items:center;gap:12px;padding:10px 12px;font-size:13px;cursor:pointer;border:1px solid transparent;transition:background .12s,color .12s,border-color .12s}
+.copt:hover{background:color-mix(in srgb,var(--acc) 12%,transparent);border-color:color-mix(in srgb,var(--acc) 45%,transparent)}
+.copt.cur{background:var(--acc);color:var(--acc-ink);font-weight:600}
+.copt .tx{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copt .tick{width:15px;height:15px;flex:none;visibility:hidden}
+.copt.cur .tick{visibility:visible}
+@media(pointer:coarse){.copt{padding:12px;font-size:14px}}
+
 @media(max-width:980px){.grid4,.tracks{grid-template-columns:repeat(2,1fr)}.grid3c{width:100%;grid-template-columns:repeat(2,1fr)}.prov{grid-template-columns:1fr}.trick{grid-template-columns:1fr}}
 @media(max-width:560px){.grid4,.tracks,.grid3c{grid-template-columns:1fr}.urlform{flex-direction:column}.urlform input{border-right:2px solid var(--line)}.urlform .btn{justify-content:center}.rbar{grid-template-columns:90px 1fr 90px}.step{padding:18px}.tbl .hm{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -4572,6 +4596,129 @@ function ops(c,n){
   return 1;
 }
 window.HL={line,parse,diff,ops,esc};
+
+/* ---------- DRUI.select: custom dropdown. Fixed menu, measured against the
+   viewport on every open/scroll/resize; flips above the trigger when there is
+   not enough room below. One shared menu, moved into the owning <dialog> so it
+   renders above modal top-layer. Keyboard: arrows/Home/End/type-ahead/Enter/Esc. */
+window.DRUI=(function(){
+const CHEV='<svg class="chev" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+const TICK='<svg class="tick" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+let menu=null,cur=null,bound=false,raf=0,typeT='',typeT0=0;
+function ensureMenu(){if(menu)return menu;menu=document.createElement('div');menu.className='cmenu';menu.setAttribute('role','listbox');menu.hidden=true;document.body.appendChild(menu);return menu;}
+function place(){
+  if(!cur)return;const m=ensureMenu(),r=cur.btn.getBoundingClientRect();
+  const gap=6,pad=8,vw=window.innerWidth||1024,vh=window.innerHeight||768;
+  const below=vh-r.bottom-gap-pad,above=r.top-gap-pad;
+  const maxH=Math.max(120,Math.min(320,vh-32,Math.max(below,above,120)));
+  m.style.minWidth=Math.max(r.width||0,140)+'px';
+  m.style.maxWidth=(vw-16)+'px';m.style.maxHeight=maxH+'px';
+  m.style.visibility='hidden';m.hidden=false;
+  const mh=m.offsetHeight||maxH,mw=m.offsetWidth||140;
+  const down=below>=mh||below>=above;
+  let top=down?r.bottom+gap:r.top-gap-mh;
+  top=Math.max(pad,Math.min(top,Math.max(pad,vh-mh-pad)));
+  let left=Math.max(pad,Math.min(Math.max(r.left,0),Math.max(pad,vw-mw-pad)));
+  m.style.top=top+'px';m.style.left=left+'px';
+  m.classList.toggle('up',!down);
+  m.style.visibility='';m.hidden=false;
+}
+function schedule(){if(raf||typeof requestAnimationFrame!=='function'){if(!raf)place();return;}raf=requestAnimationFrame(()=>{raf=0;place();});}
+function close(refocus){
+  if(!cur)return;const c=cur;cur=null;
+  ensureMenu().hidden=true;c.btn.setAttribute('aria-expanded','false');
+  if(refocus){try{c.btn.focus();}catch(e){}}
+}
+function choose(comp,v,fire){
+  comp._v=String(v);
+  comp.btn.querySelector('.csel-val').textContent=comp.text(comp._v);
+  close(true);
+  if(fire&&comp._on)comp._on(comp._v);
+}
+function items(){return [...ensureMenu().querySelectorAll('.copt')];}
+function focusItem(el){try{el.focus({preventScroll:true});}catch(e){try{el.focus();}catch(_){}}try{el.scrollIntoView({block:'nearest'});}catch(_){}}
+function move(d){
+  if(!cur)return;const list=items();if(!list.length)return;
+  let i=list.indexOf(document.activeElement);
+  if(d==='home')i=0;else if(d==='end')i=list.length-1;
+  else if(i<0)i=d>0?0:list.length-1;else i=(i+d+list.length)%list.length;
+  focusItem(list[i]);
+}
+function typeAhead(ch){
+  const now=Date.now();if(now-typeT0>700)typeT='';typeT0=now;typeT+=ch.toLowerCase();
+  const f=items().find(el=>(el.textContent||'').toLowerCase().trim().startsWith(typeT));
+  if(f)focusItem(f);
+}
+function bind(){
+  if(bound)return;bound=true;
+  document.addEventListener('pointerdown',e=>{if(cur&&!ensureMenu().contains(e.target)&&!cur.btn.contains(e.target))close(false);},true);
+  document.addEventListener('keydown',e=>{
+    if(!cur)return;
+    if(e.key==='Escape'){e.preventDefault();close(true);}
+    else if(e.key==='ArrowDown'){e.preventDefault();move(1);}
+    else if(e.key==='ArrowUp'){e.preventDefault();move(-1);}
+    else if(e.key==='Home'){e.preventDefault();move('home');}
+    else if(e.key==='End'){e.preventDefault();move('end');}
+    else if(e.key==='Enter'||e.key===' '){const a=document.activeElement;if(a&&a.classList&&a.classList.contains('copt')){e.preventDefault();choose(cur.comp,a.dataset.v,true);}}
+    else if(e.key==='Tab'){close(false);}
+    else if(e.key&&e.key.length===1&&/\S/.test(e.key)){typeAhead(e.key);}
+  },true);
+  document.addEventListener('scroll',()=>{if(cur)schedule();},true);
+  window.addEventListener('resize',()=>{if(cur)place();});
+  window.addEventListener('orientationchange',()=>{if(cur)place();});
+  window.addEventListener('hashchange',()=>close(false));
+}
+function open(comp){
+  if(cur&&cur.comp===comp){close(true);return;}
+  close(false);
+  const m=ensureMenu(),btn=comp.btn,root=btn.closest('dialog')||document.body;
+  if(m.parentNode!==root)root.appendChild(m);
+  m.innerHTML='';m.setAttribute('aria-label',comp.label||'Options');
+  comp._opts.forEach(([v,l])=>{
+    const it=document.createElement('div');
+    const on=String(v)===String(comp._v);
+    it.className='copt'+(on?' cur':'');
+    it.setAttribute('role','option');it.tabIndex=-1;
+    it.setAttribute('aria-selected',on?'true':'false');
+    it.dataset.v=String(v);
+    const t=document.createElement('span');t.className='tx';t.textContent=l;it.append(t);
+    it.insertAdjacentHTML('beforeend',TICK);
+    it.addEventListener('click',()=>choose(comp,String(v),true));
+    m.append(it);
+  });
+  bind();
+  cur={comp,btn};btn.setAttribute('aria-expanded','true');
+  place();
+  const dlg=btn.closest('dialog');
+  if(dlg)dlg.addEventListener('close',()=>close(false),{once:true});
+  focusItem(m.querySelector('.copt.cur')||m.firstChild||m);
+}
+/* mount: element to append into. cfg: {options:[[value,label]], value, onChange, label, compact} */
+function select(mount,cfg){
+  const wrap=document.createElement('span');wrap.className='csel'+(cfg.compact?' compact':'');
+  const btn=document.createElement('button');btn.type='button';btn.className='csel-btn';
+  btn.setAttribute('aria-haspopup','listbox');btn.setAttribute('aria-expanded','false');
+  const lab=cfg.label||'Choose';btn.setAttribute('aria-label',lab);
+  const v=document.createElement('span');v.className='csel-val';btn.append(v);
+  btn.insertAdjacentHTML('beforeend',CHEV);wrap.append(btn);mount.append(wrap);
+  const comp={el:wrap,btn,label:lab,_opts:[],_v:'',_on:cfg.onChange||null,
+    text(x){const f=this._opts.find(o=>o[0]===String(x));return f?f[1]:'';},
+    get value(){return this._v;},
+    set value(nv){this._v=String(nv);v.textContent=this.text(this._v);},
+    choose(nv){choose(this,nv,true);},
+    setOptions(opts,keep){this._opts=(opts||[]).map(o=>[String(o[0]),String(o[1])]);
+      if(!keep||!this._opts.some(o=>o[0]===this._v))this.value=this._opts.length?this._opts[0][0]:'';
+      else v.textContent=this.text(this._v);},
+    destroy(){if(cur&&cur.comp===this)close(false);wrap.remove();}
+  };
+  comp.setOptions(cfg.options||[],false);
+  if(cfg.value!=null)comp.value=cfg.value;
+  btn.addEventListener('click',()=>open(comp));
+  btn.addEventListener('keydown',e=>{if((e.key==='ArrowDown'||e.key==='ArrowUp')&&!(cur&&cur.comp===comp)){e.preventDefault();open(comp);}});
+  return comp;
+}
+return {select,close:()=>close(false)};
+})();
 })();
 
 </script>
@@ -4875,9 +5022,10 @@ function mount(el,vspec,opts){
   const st=h('div','stage');st.tabIndex=0;
   const sv=h('div','sv'),main=h('div','sv-main');sv.append(main);
   const aux=h('div','aux'),ctrl=h('div','ctrl');let note=h('div','note');
-  ctrl.innerHTML='<button data-a="first" title="First">⏮</button><button data-a="prev" title="Back (←)">◀</button><button class="play" data-a="play">▶ Play</button><button data-a="next" title="Next (→)">▶|</button><button data-a="last" title="Last">⏭</button><input type="range" min="0" max="'+(frames.length-1)+'" value="0" aria-label="Step"><span class="ct"></span><select aria-label="Speed"><option value="2200">0.5×</option><option value="1400" selected>1×</option><option value="700">2×</option></select>';
+  ctrl.innerHTML='<button data-a="first" title="First">⏮</button><button data-a="prev" title="Back (←)">◀</button><button class="play" data-a="play">▶ Play</button><button data-a="next" title="Next (→)">▶|</button><button data-a="last" title="Last">⏭</button><input type="range" min="0" max="'+(frames.length-1)+'" value="0" aria-label="Step"><span class="ct"></span><span class="spd"></span>';
   st.append(sv,aux,note,ctrl);el.append(st);
-  const range=$('input',ctrl),ct=$('.ct',ctrl),sel=$('select',ctrl),playBtn=$('.play',ctrl);
+  const range=$('input',ctrl),ct=$('.ct',ctrl),playBtn=$('.play',ctrl);
+  const sel=DRUI.select($('.spd',ctrl),{options:[['2200','0.5×'],['1400','1×'],['700','2×']],value:'1400',label:'Speed',compact:true,onChange:()=>{if(timer){stop();play();}}});
   let i=0,timer=null,prevAux={};
 
   // persistent parts
@@ -4970,13 +5118,12 @@ function mount(el,vspec,opts){
   }
   function play(){if(timer){stop();return;}if(i>=frames.length-1)show(0);playBtn.textContent='❚❚ Pause';timer=setInterval(()=>show(i+1),+sel.value);}
   function stop(){clearInterval(timer);timer=null;playBtn.textContent='▶ Play';}
-  ctrl.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;stop();
+  ctrl.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!b.dataset.a)return;const a=b.dataset.a;stop();
     if(a==='first')show(0);else if(a==='prev')show(i-1);else if(a==='next')show(i+1);else if(a==='last')show(frames.length-1);else if(a==='play')play();});
   range.addEventListener('input',()=>{stop();show(+range.value);});
-  sel.addEventListener('change',()=>{if(timer){stop();play();}});
   st.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){stop();show(i+1);e.preventDefault();}else if(e.key==='ArrowLeft'){stop();show(i-1);e.preventDefault();}else if(e.key===' '){play();e.preventDefault();}});
   show(0);
-  return {destroy(){stop();},show,frames};
+  return {destroy(){stop();sel.destroy();},show,frames};
 }
 
 /* ---------- code ---------- */
@@ -5277,17 +5424,18 @@ function trackList(id){
   const list=T.ids.map(i=>DR.P[i]);
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Track</div><h1 class="ptitle">'+E(T.name)+'</h1><p class="brief">'+E(T.blurb)+'</p>'+
    '<div class="toolbar"><a class="btn small" href="#/p/'+list[0].id+'?t='+T.id+'">Start with #1 →</a><button class="btn small ghost" id="tk-dl">Download Anki cards</button><button class="btn small ghost" id="tk-push">Push to Anki</button><span class="small" id="tk-prog"></span></div><div class="status" id="tk-st" hidden></div>'+
-   '<div class="filters"><input id="q" placeholder="Filter by title, pattern or tag…"><select id="df"><option value="">All difficulties</option><option value="E">Easy</option><option value="M">Medium</option><option value="H">Hard</option></select></div>'+
+   '<div class="filters"><input id="q" placeholder="Filter by title, pattern or tag…"><span id="df"></span></div>'+
    '<table class="tbl"><thead><tr><th></th><th>#</th><th>Problem</th><th>Level</th><th class="hm">Pattern</th><th class="hm">Tags</th></tr></thead><tbody id="rows"></tbody></table>');
   const body=$('#rows',v);
-  function draw(){const q=$('#q',v).value.toLowerCase(),df=$('#df',v).value,d2=done();let c=0;
+  const dfC=DRUI.select($('#df',v),{options:[['','All difficulties'],['E','Easy'],['M','Medium'],['H','Hard']],value:'',label:'Difficulty filter',onChange:draw});
+  function draw(){const q=$('#q',v).value.toLowerCase(),df=dfC.value,d2=done();let c=0;
     body.innerHTML=list.map((p,i)=>{const hay=(p.t+' '+(p.pat||'')+' '+(p.tg||[]).join(' ')).toLowerCase();if((q&&!hay.includes(q))||(df&&p.d!==df))return '';
       return '<tr class="row" data-id="'+p.id+'"><td><input type="checkbox" class="done" '+(d2[p.id]?'checked':'')+' aria-label="Mark done"></td><td class="num">'+(i+1)+'</td><td class="t">'+E(p.t)+'</td><td><span class="chip '+p.d+'">'+DIFF[p.d]+'</span></td><td class="hm small">'+E(p.pat||'')+'</td><td class="hm small">'+E((p.tg||[]).slice(0,3).join(' · '))+'</td></tr>';}).join('');
     $$('.row',body).forEach(r=>r.onclick=e=>{if(e.target.classList.contains('done'))return;location.hash='#/p/'+r.dataset.id+'?t='+T.id;});
     $$('.done',body).forEach(cb=>cb.onchange=()=>{const d=done();const id2=cb.closest('tr').dataset.id;if(cb.checked)d[id2]=1;else delete d[id2];SS('dr-done',d);prog();});
     prog();}
   function prog(){const d=done();$('#tk-prog',v).textContent=list.filter(p=>d[p.id]).length+' / '+list.length+' done';}
-  $('#q',v).oninput=draw;$('#df',v).onchange=draw;draw();
+  $('#q',v).oninput=draw;draw();
   $('#tk-dl',v).onclick=()=>Anki.download('dryrun-'+T.id+'.txt',Anki.tsv(list));
   $('#tk-push',v).onclick=async()=>{const s=$('#tk-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push(list,'DryRun::'+T.name);}catch(e){s.className='status err';s.textContent='Could not reach Anki: '+e.message+'\nOpen Anki with the AnkiConnect add-on (code 2055492159) and allow this site in its webCorsOriginList.';}};
   window.scrollTo(0,0);
@@ -5358,19 +5506,19 @@ function notFound(){killLive();setView('gen');$('#v-gen').innerHTML=pageShell('<
 /* ---------- AI settings dialog ---------- */
 function openKeys(){
   const dlg=$('#dlg-keys'),cur=AI.get();
-  const opts=Object.entries(AI.PROV).map(([k,p])=>'<option value="'+k+'">'+E(p.n)+', '+E(p.tag)+'</option>').join('');
+  const opts=Object.entries(AI.PROV).map(([k,p])=>[k,p.n+', '+p.tag]);
   dlg.innerHTML='<div class="dbody"><div class="dlg-head"><div><h3>AI settings</h3><p class="small">Only needed for problems outside the built-in library. Your key is stored in this browser and sent only to the provider you choose.</p></div><button class="dlg-x" id="k-x-top" aria-label="Close settings">'+lucide('x')+'</button></div>'+
-   '<div class="field"><label>Provider</label><select id="k-p">'+opts+'</select></div><p class="small" id="k-blurb" style="margin-top:8px"></p>'+
+   '<div class="field"><label>Provider</label><span id="k-p"></span></div><p class="small" id="k-blurb" style="margin-top:8px"></p>'+
    '<div class="field"><label>Base URL (OpenAI-compatible)</label><input id="k-b" spellcheck="false"></div>'+
    '<div class="field"><label>Model</label><input id="k-m" list="k-ml" spellcheck="false"><datalist id="k-ml"></datalist></div>'+
    '<div class="field"><label>API key</label><input id="k-k" type="password" autocomplete="off" placeholder="paste key"></div>'+
    '<div class="toolbar"><button class="btn small" id="k-s">Save</button><button class="btn small ghost" id="k-l">List models</button><a class="btn small ghost" id="k-g" target="_blank" rel="noopener">Get a key ↗</a><button class="btn small ghost" id="k-x">Close</button></div><div class="status" id="k-st" hidden></div>'+
    '<div class="free"><b style="margin-top:20px;font-size:13px">Free-tier providers</b>'+['groq','gemini','openrouter','cerebras','mistral','nvidia','huggingface'].map(k=>'<span>• <a href="'+AI.PROV[k].get+'" target="_blank" rel="noopener">'+AI.PROV[k].n+'</a>, '+AI.PROV[k].blurb+'</span>').join('')+'<span class="small" style="margin-top:10px">Free tiers and model names change often; edit the Model field or press “List models”. Limits are per provider.</span></div>'+
    '<div class="toolbar"><button class="btn small ghost" id="k-c">Erase saved keys &amp; generated problems</button></div></div>';
-  const P=$('#k-p',dlg);P.value=cur.prov;
-  function fill(){const k=P.value,c=AI.cfgFor(k),d=AI.PROV[k];$('#k-b',dlg).value=c.base;$('#k-m',dlg).value=c.model;$('#k-k',dlg).value=c.key;$('#k-blurb',dlg).textContent=d.blurb;const g=$('#k-g',dlg);g.hidden=!d.get;g.href=d.get||'#';}
-  P.onchange=fill;fill();
-  const st=$('#k-st',dlg),val=()=>({prov:P.value,base:$('#k-b',dlg).value.trim(),model:$('#k-m',dlg).value.trim(),key:$('#k-k',dlg).value.trim()});
+  const Pc=DRUI.select($('#k-p',dlg),{options:opts,value:cur.prov,label:'AI provider',onChange:fill});
+  function fill(){const k=Pc.value,c=AI.cfgFor(k),d=AI.PROV[k];$('#k-b',dlg).value=c.base;$('#k-m',dlg).value=c.model;$('#k-k',dlg).value=c.key;$('#k-blurb',dlg).textContent=d.blurb;const g=$('#k-g',dlg);g.hidden=!d.get;g.href=d.get||'#';}
+  fill();
+  const st=$('#k-st',dlg),val=()=>({prov:Pc.value,base:$('#k-b',dlg).value.trim(),model:$('#k-m',dlg).value.trim(),key:$('#k-k',dlg).value.trim()});
   $('#k-s',dlg).onclick=()=>{const c=val();AI.save(c.prov,c);st.hidden=false;st.className='status';st.textContent='Saved ✓';};
   $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.textContent='Loading models…';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found, click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
   $('#k-x',dlg).onclick=()=>dlg.close();

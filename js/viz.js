@@ -27,9 +27,10 @@ function mount(el,vspec,opts){
   const st=h('div','stage');st.tabIndex=0;
   const sv=h('div','sv'),main=h('div','sv-main');sv.append(main);
   const aux=h('div','aux'),ctrl=h('div','ctrl');let note=h('div','note');
-  ctrl.innerHTML='<button data-a="first" title="First">⏮</button><button data-a="prev" title="Back (←)">◀</button><button class="play" data-a="play">▶ Play</button><button data-a="next" title="Next (→)">▶|</button><button data-a="last" title="Last">⏭</button><input type="range" min="0" max="'+(frames.length-1)+'" value="0" aria-label="Step"><span class="ct"></span><select aria-label="Speed"><option value="2200">0.5×</option><option value="1400" selected>1×</option><option value="700">2×</option></select>';
+  ctrl.innerHTML='<button data-a="first" title="First">⏮</button><button data-a="prev" title="Back (←)">◀</button><button class="play" data-a="play">▶ Play</button><button data-a="next" title="Next (→)">▶|</button><button data-a="last" title="Last">⏭</button><input type="range" min="0" max="'+(frames.length-1)+'" value="0" aria-label="Step"><span class="ct"></span><span class="spd"></span>';
   st.append(sv,aux,note,ctrl);el.append(st);
-  const range=$('input',ctrl),ct=$('.ct',ctrl),sel=$('select',ctrl),playBtn=$('.play',ctrl);
+  const range=$('input',ctrl),ct=$('.ct',ctrl),playBtn=$('.play',ctrl);
+  const sel=DRUI.select($('.spd',ctrl),{options:[['2200','0.5×'],['1400','1×'],['700','2×']],value:'1400',label:'Speed',compact:true,onChange:()=>{if(timer){stop();play();}}});
   let i=0,timer=null,prevAux={};
 
   // persistent parts
@@ -122,13 +123,12 @@ function mount(el,vspec,opts){
   }
   function play(){if(timer){stop();return;}if(i>=frames.length-1)show(0);playBtn.textContent='❚❚ Pause';timer=setInterval(()=>show(i+1),+sel.value);}
   function stop(){clearInterval(timer);timer=null;playBtn.textContent='▶ Play';}
-  ctrl.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.a;stop();
+  ctrl.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!b.dataset.a)return;const a=b.dataset.a;stop();
     if(a==='first')show(0);else if(a==='prev')show(i-1);else if(a==='next')show(i+1);else if(a==='last')show(frames.length-1);else if(a==='play')play();});
   range.addEventListener('input',()=>{stop();show(+range.value);});
-  sel.addEventListener('change',()=>{if(timer){stop();play();}});
   st.addEventListener('keydown',e=>{if(e.key==='ArrowRight'){stop();show(i+1);e.preventDefault();}else if(e.key==='ArrowLeft'){stop();show(i-1);e.preventDefault();}else if(e.key===' '){play();e.preventDefault();}});
   show(0);
-  return {destroy(){stop();},show,frames};
+  return {destroy(){stop();sel.destroy();},show,frames};
 }
 
 /* ---------- code ---------- */

@@ -98,17 +98,18 @@ function trackList(id){
   const list=T.ids.map(i=>DR.P[i]);
   v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Track</div><h1 class="ptitle">'+E(T.name)+'</h1><p class="brief">'+E(T.blurb)+'</p>'+
    '<div class="toolbar"><a class="btn small" href="#/p/'+list[0].id+'?t='+T.id+'">Start with #1 →</a><button class="btn small ghost" id="tk-dl">Download Anki cards</button><button class="btn small ghost" id="tk-push">Push to Anki</button><span class="small" id="tk-prog"></span></div><div class="status" id="tk-st" hidden></div>'+
-   '<div class="filters"><input id="q" placeholder="Filter by title, pattern or tag…"><select id="df"><option value="">All difficulties</option><option value="E">Easy</option><option value="M">Medium</option><option value="H">Hard</option></select></div>'+
+   '<div class="filters"><input id="q" placeholder="Filter by title, pattern or tag…"><span id="df"></span></div>'+
    '<table class="tbl"><thead><tr><th></th><th>#</th><th>Problem</th><th>Level</th><th class="hm">Pattern</th><th class="hm">Tags</th></tr></thead><tbody id="rows"></tbody></table>');
   const body=$('#rows',v);
-  function draw(){const q=$('#q',v).value.toLowerCase(),df=$('#df',v).value,d2=done();let c=0;
+  const dfC=DRUI.select($('#df',v),{options:[['','All difficulties'],['E','Easy'],['M','Medium'],['H','Hard']],value:'',label:'Difficulty filter',onChange:draw});
+  function draw(){const q=$('#q',v).value.toLowerCase(),df=dfC.value,d2=done();let c=0;
     body.innerHTML=list.map((p,i)=>{const hay=(p.t+' '+(p.pat||'')+' '+(p.tg||[]).join(' ')).toLowerCase();if((q&&!hay.includes(q))||(df&&p.d!==df))return '';
       return '<tr class="row" data-id="'+p.id+'"><td><input type="checkbox" class="done" '+(d2[p.id]?'checked':'')+' aria-label="Mark done"></td><td class="num">'+(i+1)+'</td><td class="t">'+E(p.t)+'</td><td><span class="chip '+p.d+'">'+DIFF[p.d]+'</span></td><td class="hm small">'+E(p.pat||'')+'</td><td class="hm small">'+E((p.tg||[]).slice(0,3).join(' · '))+'</td></tr>';}).join('');
     $$('.row',body).forEach(r=>r.onclick=e=>{if(e.target.classList.contains('done'))return;location.hash='#/p/'+r.dataset.id+'?t='+T.id;});
     $$('.done',body).forEach(cb=>cb.onchange=()=>{const d=done();const id2=cb.closest('tr').dataset.id;if(cb.checked)d[id2]=1;else delete d[id2];SS('dr-done',d);prog();});
     prog();}
   function prog(){const d=done();$('#tk-prog',v).textContent=list.filter(p=>d[p.id]).length+' / '+list.length+' done';}
-  $('#q',v).oninput=draw;$('#df',v).onchange=draw;draw();
+  $('#q',v).oninput=draw;draw();
   $('#tk-dl',v).onclick=()=>Anki.download('dryrun-'+T.id+'.txt',Anki.tsv(list));
   $('#tk-push',v).onclick=async()=>{const s=$('#tk-st',v);s.hidden=false;s.className='status';s.textContent='Contacting AnkiConnect…';try{s.textContent=await Anki.push(list,'DryRun::'+T.name);}catch(e){s.className='status err';s.textContent='Could not reach Anki: '+e.message+'\nOpen Anki with the AnkiConnect add-on (code 2055492159) and allow this site in its webCorsOriginList.';}};
   window.scrollTo(0,0);
@@ -179,19 +180,19 @@ function notFound(){killLive();setView('gen');$('#v-gen').innerHTML=pageShell('<
 /* ---------- AI settings dialog ---------- */
 function openKeys(){
   const dlg=$('#dlg-keys'),cur=AI.get();
-  const opts=Object.entries(AI.PROV).map(([k,p])=>'<option value="'+k+'">'+E(p.n)+', '+E(p.tag)+'</option>').join('');
+  const opts=Object.entries(AI.PROV).map(([k,p])=>[k,p.n+', '+p.tag]);
   dlg.innerHTML='<div class="dbody"><div class="dlg-head"><div><h3>AI settings</h3><p class="small">Only needed for problems outside the built-in library. Your key is stored in this browser and sent only to the provider you choose.</p></div><button class="dlg-x" id="k-x-top" aria-label="Close settings">'+lucide('x')+'</button></div>'+
-   '<div class="field"><label>Provider</label><select id="k-p">'+opts+'</select></div><p class="small" id="k-blurb" style="margin-top:8px"></p>'+
+   '<div class="field"><label>Provider</label><span id="k-p"></span></div><p class="small" id="k-blurb" style="margin-top:8px"></p>'+
    '<div class="field"><label>Base URL (OpenAI-compatible)</label><input id="k-b" spellcheck="false"></div>'+
    '<div class="field"><label>Model</label><input id="k-m" list="k-ml" spellcheck="false"><datalist id="k-ml"></datalist></div>'+
    '<div class="field"><label>API key</label><input id="k-k" type="password" autocomplete="off" placeholder="paste key"></div>'+
    '<div class="toolbar"><button class="btn small" id="k-s">Save</button><button class="btn small ghost" id="k-l">List models</button><a class="btn small ghost" id="k-g" target="_blank" rel="noopener">Get a key ↗</a><button class="btn small ghost" id="k-x">Close</button></div><div class="status" id="k-st" hidden></div>'+
    '<div class="free"><b style="margin-top:20px;font-size:13px">Free-tier providers</b>'+['groq','gemini','openrouter','cerebras','mistral','nvidia','huggingface'].map(k=>'<span>• <a href="'+AI.PROV[k].get+'" target="_blank" rel="noopener">'+AI.PROV[k].n+'</a>, '+AI.PROV[k].blurb+'</span>').join('')+'<span class="small" style="margin-top:10px">Free tiers and model names change often; edit the Model field or press “List models”. Limits are per provider.</span></div>'+
    '<div class="toolbar"><button class="btn small ghost" id="k-c">Erase saved keys &amp; generated problems</button></div></div>';
-  const P=$('#k-p',dlg);P.value=cur.prov;
-  function fill(){const k=P.value,c=AI.cfgFor(k),d=AI.PROV[k];$('#k-b',dlg).value=c.base;$('#k-m',dlg).value=c.model;$('#k-k',dlg).value=c.key;$('#k-blurb',dlg).textContent=d.blurb;const g=$('#k-g',dlg);g.hidden=!d.get;g.href=d.get||'#';}
-  P.onchange=fill;fill();
-  const st=$('#k-st',dlg),val=()=>({prov:P.value,base:$('#k-b',dlg).value.trim(),model:$('#k-m',dlg).value.trim(),key:$('#k-k',dlg).value.trim()});
+  const Pc=DRUI.select($('#k-p',dlg),{options:opts,value:cur.prov,label:'AI provider',onChange:fill});
+  function fill(){const k=Pc.value,c=AI.cfgFor(k),d=AI.PROV[k];$('#k-b',dlg).value=c.base;$('#k-m',dlg).value=c.model;$('#k-k',dlg).value=c.key;$('#k-blurb',dlg).textContent=d.blurb;const g=$('#k-g',dlg);g.hidden=!d.get;g.href=d.get||'#';}
+  fill();
+  const st=$('#k-st',dlg),val=()=>({prov:Pc.value,base:$('#k-b',dlg).value.trim(),model:$('#k-m',dlg).value.trim(),key:$('#k-k',dlg).value.trim()});
   $('#k-s',dlg).onclick=()=>{const c=val();AI.save(c.prov,c);st.hidden=false;st.className='status';st.textContent='Saved ✓';};
   $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.textContent='Loading models…';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found, click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
   $('#k-x',dlg).onclick=()=>dlg.close();

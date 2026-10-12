@@ -66,9 +66,11 @@ const go=async h=>{w.location.hash=h;w.DRAPP.route();await sleep(0);};
  // mine
  await go('#/mine');ok(!$('#v-mine').hidden,'mine view');
  // settings dialog
- $('#btn-keys').click();const dlg=$('#dlg-keys');ok(dlg.hasAttribute('open'),'dialog open');ok($$('#k-p option',dlg).length>=10,'providers in dialog '+$$('#k-p option',dlg).length);
- for(const o of $$('#k-p option',dlg)){$('#k-p',dlg).value=o.value;$('#k-p',dlg).onchange();ok($('#k-b',dlg).value.startsWith('http')||o.value==='custom','base url for '+o.value);}
- $('#k-p',dlg).value='groq';$('#k-p',dlg).onchange();$('#k-k',dlg).value='sk-test';$('#k-s',dlg).click();ok(/Saved/.test($('#k-st',dlg).textContent),'save key');
+ $('#btn-keys').click();const dlg=$('#dlg-keys');ok(dlg.hasAttribute('open'),'dialog open');
+ const pBtn=$('#k-p .csel-btn',dlg);ok(!!pBtn,'provider dropdown trigger');
+ pBtn.click();ok($$('.copt',dlg).length>=10,'providers in dialog '+$$('.copt',dlg).length);
+ for(let i=0;i<$$('.copt',dlg).length;i++){pBtn.click();$$('.copt',dlg)[i].click();ok($('#k-b',dlg).value.startsWith('http'),'base url #'+i);}
+ pBtn.click();[...$$('.copt',dlg)].find(o=>/Groq/.test(o.textContent)).click();$('#k-k',dlg).value='sk-test';$('#k-s',dlg).click();ok(/Saved/.test($('#k-st',dlg).textContent),'save key');
  ok(w.AI.ready(),'AI.ready after save');
  // sanitise generated JSON
  const fake={title:'Fake Problem',difficulty:'Medium',tags:['Array'],pattern:'X',brief:'b',brute:'def f(a):\n    return a  #? slow',opt:'def f(a):\n    return a  #! fast',bt:'O(n^2)',bs:'O(1)',ot:'O(n)',os:'O(1)',trick:'t',real:'r',flow:[{note:'one',a:[1,2,3],h:[0]},{note:'two',a:[1,2,3],g:[1]}]};

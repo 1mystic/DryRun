@@ -306,6 +306,30 @@ dialog::backdrop{background:rgba(0,0,0,.65)}
 .dlg-x:hover{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);transform:rotate(90deg)}
 .dlg-x .lucide{width:16px;height:16px}
 
+/* custom select dropdown */
+.csel{display:inline-block;min-width:0;vertical-align:middle}
+.csel-btn{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;background:var(--bg2);border:1.5px solid var(--line);padding:10px 14px;font-size:13px;cursor:pointer;text-align:left;transition:border-color .2s,box-shadow .2s}
+.csel-btn:hover{border-color:var(--acc)}
+.csel-btn[aria-expanded=true]{border-color:var(--acc);box-shadow:4px 4px 0 var(--shadow)}
+.csel-val{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.csel-btn .chev{width:15px;height:15px;flex:none;color:var(--mute);transition:transform .22s,color .2s}
+.csel-btn:hover .chev{color:var(--acc)}
+.csel-btn[aria-expanded=true] .chev{transform:rotate(180deg);color:var(--acc)}
+.filters .csel{flex:1 1 190px;max-width:280px}
+.field .csel{width:100%}
+.csel.compact .csel-btn{background:var(--bg);border-width:1.5px;padding:8px 10px;font-size:12px;gap:8px}
+.cmenu{position:fixed;z-index:400;background:var(--bg2);border:2px solid var(--line);box-shadow:6px 6px 0 var(--shadow);padding:6px;overflow-y:auto;animation:pop-in .16s ease}
+.cmenu.up{animation-name:pop-in-up}
+@keyframes pop-in{from{opacity:0;transform:translateY(-6px)}}
+@keyframes pop-in-up{from{opacity:0;transform:translateY(6px)}}
+.copt{display:flex;align-items:center;gap:12px;padding:10px 12px;font-size:13px;cursor:pointer;border:1px solid transparent;transition:background .12s,color .12s,border-color .12s}
+.copt:hover{background:color-mix(in srgb,var(--acc) 12%,transparent);border-color:color-mix(in srgb,var(--acc) 45%,transparent)}
+.copt.cur{background:var(--acc);color:var(--acc-ink);font-weight:600}
+.copt .tx{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copt .tick{width:15px;height:15px;flex:none;visibility:hidden}
+.copt.cur .tick{visibility:visible}
+@media(pointer:coarse){.copt{padding:12px;font-size:14px}}
+
 @media(max-width:980px){.grid4,.tracks{grid-template-columns:repeat(2,1fr)}.grid3c{width:100%;grid-template-columns:repeat(2,1fr)}.prov{grid-template-columns:1fr}.trick{grid-template-columns:1fr}}
 @media(max-width:560px){.grid4,.tracks,.grid3c{grid-template-columns:1fr}.urlform{flex-direction:column}.urlform input{border-right:2px solid var(--line)}.urlform .btn{justify-content:center}.rbar{grid-template-columns:90px 1fr 90px}.step{padding:18px}.tbl .hm{display:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
