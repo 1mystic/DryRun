@@ -229,9 +229,9 @@ footer b{color:var(--ink)}footer a{color:var(--acc)}
 
 /* diff morph */
 .diff .ln{display:flex;gap:14px;padding:0 16px;white-space:pre;overflow:hidden;max-height:34px;min-height:22px;transition:max-height .6s ease,opacity .5s ease,background .4s;transition-delay:var(--d,0s)}
-.diff .ln.add{max-height:0;opacity:0;background:color-mix(in srgb,var(--acc) 16%,transparent);box-shadow:inset 3px 0 var(--acc)}
+.diff .ln.add{max-height:0;min-height:0;opacity:0;background:color-mix(in srgb,var(--acc) 16%,transparent);box-shadow:inset 3px 0 var(--acc)}
 .diff .ln.del{background:color-mix(in srgb,var(--red) 16%,transparent);box-shadow:inset 3px 0 var(--red)}
-.diff .ln.del.gone{max-height:0;opacity:0;text-decoration:line-through}
+.diff .ln.del.gone{max-height:0;min-height:0;opacity:0;text-decoration:line-through}
 .diff .ln.add.show{max-height:60px;opacity:1}
 .diff .sg{width:14px;flex:none;color:var(--mute)}
 .dnote{margin-top:18px;min-height:52px}
@@ -361,7 +361,7 @@ label.btn{cursor:pointer}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* problem page: trace + code side by side on wide screens */
-.duo{display:grid;gap:0;margin-top:64px}
+.duo{display:grid;gap:56px;margin-top:64px}
 .duo .sec{margin-top:0;min-width:0}
 @media(min-width:1080px){
   .page-wide .wrap{width:min(1400px,94vw)}
