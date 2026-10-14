@@ -380,6 +380,26 @@ label.btn{cursor:pointer}
   .duo-r{position:sticky;top:86px}
 }
 
+/* returning-user dashboard */
+.dash-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:28px}
+.dash-stats .stat{width:auto;min-width:0;height:150px;padding:14px;box-shadow:5px 5px 0 var(--shadow)}
+.dash-stats .stat b{font-size:clamp(34px,4.5vw,58px);overflow-wrap:anywhere}
+.dash-stats .stat span{font-size:12px}
+.dash-continue{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:26px;padding:22px 24px;background:var(--bg2);border:2px solid var(--line);box-shadow:5px 5px 0 var(--shadow)}
+.dash-continue h2,.dash-empty-note h2{font-size:clamp(19px,2.5vw,26px);font-weight:600;margin-top:5px}
+.dash-continue .small{margin-top:7px;color:var(--mute)}
+.dash-continue .btn{flex:none}
+.dash-empty-note{margin-top:22px;padding:22px 24px;border:1.5px dashed var(--line);background:color-mix(in srgb,var(--acc) 5%,var(--bg));}
+.dash-empty-note p{color:var(--mute);margin:8px 0 16px;max-width:650px}
+.dash-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:36px}
+.dash-links .card{display:block;color:inherit;text-decoration:none;min-width:0}
+.dash-links h3{font-size:20px;margin:8px 0}
+.dash-links p{color:var(--mute);font-size:13px;line-height:1.6;margin-bottom:18px}
+.dash-links .go{font-size:12px;color:var(--acc);letter-spacing:.04em}
+.dash-links .go .lucide{width:14px;height:14px;vertical-align:-3px}
+@media(max-width:800px){.dash-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.dash-stats,.dash-links{grid-template-columns:1fr}.dash-stats .stat{height:116px}.dash-continue{align-items:flex-start;flex-direction:column;padding:18px}.dash-continue .btn{width:100%;justify-content:center}.dash-empty-note{padding:18px}}
+
 </style>
 <script>try{document.documentElement.dataset.theme=localStorage.getItem('dr-theme')||'dark'}catch(e){}</script>
 </head>
@@ -389,6 +409,7 @@ label.btn{cursor:pointer}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="4.5"/><circle cx="7.6" cy="12" r=".9" fill="currentColor" stroke="none"/><circle cx="10.2" cy="12" r=".9" fill="currentColor" stroke="none"/><path d="M12.6 8.6l5.2 3.4-5.2 3.4z" fill="currentColor" stroke="none"/></svg>DRYRUN
   </a>
   <div class="top-actions">
+    <a class="sq" href="#/dashboard" title="Progress dashboard" aria-label="Progress dashboard"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 16v-4M12 16V8M16 16v-6"/></svg></a>
     <button class="sq" id="btn-keys" title="AI settings &amp; API keys" aria-label="AI settings"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg></button>
     <button class="sq" id="btn-theme" title="Toggle theme" aria-label="Toggle theme"><svg class="lucide" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
   </div>
@@ -476,6 +497,7 @@ label.btn{cursor:pointer}
 <section id="v-gen" class="view" hidden></section>
 <section id="v-mine" class="view" hidden></section>
 <section id="v-data" class="view" hidden></section>
+<section id="v-dashboard" class="view" hidden></section>
 <section id="v-anki" class="view" hidden></section>
 </main>
 
@@ -5373,8 +5395,11 @@ const SS=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}};
 const storeOK=()=>{try{localStorage.setItem('__dryrun_t','1');localStorage.removeItem('__dryrun_t');return true;}catch(e){return false;}};
 /* session: visits + last page, all local. Powers the "continue" chip. */
 const SKEY='dr-session';
-const session=()=>LS(SKEY,null)||{v:1,visits:0};
+const session=()=>{const s=LS(SKEY,null);return s&&typeof s==='object'&&!Array.isArray(s)?s:{v:1,visits:0};};
 const saveSession=s=>SS(SKEY,s);
+const dayKey=(date=new Date())=>date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+const recordActiveDay=s=>{const today=dayKey(),days=Array.isArray(s.activeDays)?s.activeDays.filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)):[];if(!days.includes(today))days.push(today);s.activeDays=[...new Set(days)].sort().slice(-400);};
+const currentStreak=s=>{const days=new Set(Array.isArray(s.activeDays)?s.activeDays:[]);let cursor=new Date(),count=0;while(days.has(dayKey(cursor))){count++;cursor.setDate(cursor.getDate()-1);}return count;};
 const remember=label=>{try{const s=session(),now=Date.now();s.last=now;if(!s.first)s.first=now;s.lastPage={hash:location.hash,label:label||location.hash,ts:now};saveSession(s);}catch(e){}};
 const DIFF={E:'Easy',M:'Medium',H:'Hard'};
 const lcUrl=id=>'https://leetcode.com/problems/'+id+'/';
@@ -5554,6 +5579,26 @@ function mineView(){
   $('#m-anki',v).onclick=()=>Anki.download('dryrun-generated.txt',Anki.tsv(ids.map(i=>m[i])));
   window.scrollTo(0,0);
 }
+/* ---------- dashboard: returning-user progress home ---------- */
+function dashboardView(){
+  killLive();setView('dashboard');const v=$('#v-dashboard');
+  const dn=done(),m=AI.mine(),s=session();
+  const all=Object.keys(DR.P).length,doneCount=Object.keys(dn).length,generated=Object.keys(m).length;
+  const visits=Math.max(0,Number(s.visits)||0),streak=currentStreak(s);
+  const stat=(n,label)=>'<div class="stat"><b>'+n+'</b><span>'+label+'</span></div>';
+  const bar=(label,href,c,n)=>{const total=Math.max(0,Number(n)||0),count=Math.max(0,Number(c)||0),pct=total?Math.max(0,Math.min(100,Math.round(100*count/total))):0;return '<a href="'+href+'"><div class="rbar b"><span>'+E(label)+'</span><div class="tr"><div class="fl" style="width:'+pct+'%"></div></div><span class="v">'+count+'/'+total+'</span></div></a>';};
+  const lp=s.lastPage,validResume=lp&&typeof lp.hash==='string'&&/^#\/(?:t\/[^/?#]+|p\/[^/?#]+|gen\/[^/?#]+|mine|data|anki)(?:\?.*)?$/.test(lp.hash)&&lp.hash!=='#/dashboard';
+  const resume=validResume?'<div class="dash-continue"><div><div class="eyebrow">Continue where you left off</div><h2>'+E(String(lp.label||'Your last page')).slice(0,90)+'</h2><p class="small">Pick up from your previous DryRun page.</p></div><a class="btn small" href="'+E(lp.hash)+'">Continue '+lucide('arrow')+'</a></div>':'<div class="dash-continue dash-empty"><div><div class="eyebrow">Continue where you left off</div><h2>Your next session starts here.</h2><p class="small">Open a track or problem and it will appear here next time you return.</p></div><a class="btn small" href="#tracks">Explore tracks '+lucide('arrow')+'</a></div>';
+  const trackBars=DR.T.map(t=>{const count=t.ids.filter(id=>dn[id]).length;return bar(t.name,'#/t/'+t.id,count,t.ids.length);}).join('');
+  const hasProgress=doneCount>0||generated>0;
+  v.innerHTML=pageShell('<div class="crumbs"><a href="#/">Home</a> / Dashboard</div><h1 class="ptitle">Your progress</h1><p class="brief">A quick view of your practice on this device. Your progress stays in this browser.</p>'+resume+
+    '<div class="dash-stats">'+stat(doneCount,'problems marked done')+stat(generated,'generated problems')+stat(visits,'visits')+stat(streak,streak===1?'day current streak':'days current streak')+'</div>'+
+    (!hasProgress?'<div class="dash-empty-note"><h2>Your progress starts here.</h2><p>No completed or generated problems yet. Choose a track, solve a problem, and mark it done to build your progress.</p><a class="btn small" href="#tracks">Browse tracks '+lucide('arrow')+'</a></div>':'')+
+    '<div class="sec"><h2>Track progress</h2><h3>'+doneCount+' of '+all+' library problems done</h3><div class="dbars">'+bar('All tracks','#tracks',doneCount,all)+trackBars+'</div></div>'+
+    '<div class="dash-links"><a class="card" href="#/data"><div class="eyebrow">Backup &amp; restore</div><h3>Your data</h3><p>Export a backup or restore progress on this device.</p><span class="go">Open data &amp; backups '+lucide('arrow')+'</span></a><a class="card" href="#/mine"><div class="eyebrow">Generated problems</div><h3>'+generated+' saved problem'+(generated===1?'':'s')+'</h3><p>Review, export, or continue working on your generated problems.</p><span class="go">Open generated problems '+lucide('arrow')+'</span></a></div>');
+  window.scrollTo(0,0);
+}
+
 /* ---------- your data: progress, backup export/import, Anki help ---------- */
 const ANKI_ADDON='https://ankiweb.net/shared/info/2055492159';
 function dataView(){
@@ -5626,7 +5671,7 @@ function openKeys(){
    '<div class="field"><label>Base URL (OpenAI-compatible)</label><input id="k-b" spellcheck="false"></div>'+
    '<div class="field"><label>Model</label><input id="k-m" list="k-ml" spellcheck="false"><datalist id="k-ml"></datalist></div>'+
    '<div class="field"><label>API key</label><input id="k-k" type="password" autocomplete="off" placeholder="paste key"></div>'+
-   '<div class="toolbar"><button class="btn small" id="k-s">Save</button><button class="btn small ghost" id="k-l">List models</button><a class="btn small ghost" id="k-g" target="_blank" rel="noopener">Get a key '+lucide('upRight')+'</a><button class="btn small ghost" id="k-x">Close</button></div><div class="status" id="k-st" hidden></div>'+
+   '<div class="toolbar"><button class="btn small" id="k-s">Save</button><button class="btn small ghost" id="k-l">List models</button><a class="btn small ghost" id="k-g" target="_blank" rel="noopener">Get a key '+lucide('upRight')+'</a><button class="btn small ghost" id="k-dashboard">Progress dashboard</button><button class="btn small ghost" id="k-x">Close</button></div><div class="status" id="k-st" hidden></div>'+
    '<div class="free"><b style="margin-top:20px;font-size:13px">Free-tier providers</b>'+['groq','gemini','openrouter','cerebras','mistral','nvidia','huggingface'].map(k=>'<span>• <a href="'+AI.PROV[k].get+'" target="_blank" rel="noopener">'+AI.PROV[k].n+'</a>, '+AI.PROV[k].blurb+'</span>').join('')+'<span class="small" style="margin-top:10px">Free tiers and model names change often; edit the Model field or press “List models”. Limits are per provider.</span></div>'+
    '<div class="toolbar"><button class="btn small ghost" id="k-c">Erase saved keys &amp; generated problems</button></div></div>';
   const Pc=DRUI.select($('#k-p',dlg),{options:opts,value:cur.prov,label:'AI provider',onChange:fill});
@@ -5636,6 +5681,7 @@ function openKeys(){
   $('#k-s',dlg).onclick=()=>{const c=val();AI.save(c.prov,c);st.hidden=false;st.className='status';st.textContent='Saved ✓';};
   $('#k-l',dlg).onclick=async()=>{const c=val();st.hidden=false;st.className='status';st.innerHTML=marchHTML()+'<span>Loading models…</span>';try{const ms=await AI.listModels(c);$('#k-ml',dlg).innerHTML=ms.map(m=>'<option value="'+E(m)+'">').join('');st.textContent=ms.length+' models found, click the Model field to choose.';}catch(e){st.className='status err';st.textContent='Could not list models: '+e.message;}};
   $('#k-x',dlg).onclick=()=>dlg.close();
+  $('#k-dashboard',dlg).onclick=()=>{dlg.close();location.hash='#/dashboard';};
   $('#k-x-top',dlg).onclick=()=>dlg.close();
   dlg.onclick=e=>{if(e.target===dlg)dlg.close();};
   $('#k-c',dlg).onclick=()=>{if(confirm('Erase saved API keys and generated problems from this browser?')){['dr-ai','dr-mine'].forEach(k=>localStorage.removeItem(k));fill();st.hidden=false;st.className='status';st.textContent='Erased.';}};
@@ -5651,11 +5697,12 @@ function route(){
   if(parts[0]==='gen')return gen(parts[1]);
   if(parts[0]==='mine')return mineView();
   if(parts[0]==='data')return dataView();
+  if(parts[0]==='dashboard')return dashboardView();
   if(parts[0]==='anki')return ankiView();
   notFound();
 }
 function boot(){
-  try{const s=session();s.visits=(s.visits||0)+1;s.last=Date.now();if(!s.first)s.first=Date.now();saveSession(s);}catch(e){}
+  try{const s=session(),now=Date.now();s.visits=Math.max(0,Number(s.visits)||0)+1;s.last=now;if(!s.first)s.first=now;recordActiveDay(s);saveSession(s);}catch(e){}
   if(!storeOK()){const w=$('#storewarn');if(w)w.hidden=false;}
   initHome();
   $('#btn-theme').onclick=()=>{const t=document.documentElement.dataset.theme==='light'?'dark':'light';document.documentElement.dataset.theme=t;try{localStorage.setItem('dr-theme',t);}catch(e){}};
